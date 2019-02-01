@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>激活成功</title>
+    <style>
+        html{
+            background: #fffbea;
+        }
+        .container{
+            font-family: 华文楷体,serif;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .page-title{
+            text-align: center;
+            font-weight: 400;
+        }
+        .btn{
+            outline: none;
+            font-family: 华文楷体, serif;
+            width: 115px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+        }
+        .input-group{
+            width: 280px;
+            height: 30px;
+            background: #fffbea;
+            text-align: center;
+            border: none;
+            outline: none;
+        }
+        td{
+            font-size: 20px;
+            background: #fffbea;
+            border: solid 1px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-title">
+        <h1 style="font-size: 70px;margin: 0;padding: 0">Yummy</h1>
+        <div class="subtitle">
+            <p style="font-size: 35px;margin: 0;padding: 0;">完善个人信息</p>
+            <button class="btn" id="skip">稍后再完善</button>
+        </div>
+    </div>
+    <!--完善信息条目-->
+    <div style="margin-top: 20px;margin-left: auto;margin-right: auto;width: 35%;text-align: center">
+        <table border="0" style="margin: auto;">
+            <tr>
+                <td align="center">邮箱</td>
+                <td align="center"><input type="text" class="input-group" id="email"></td>
+            </tr>
+            <tr>
+                <td align="center">确认密码</td>
+                <td align="center"><input type="password" class="input-group" id="password"></td>
+            </tr>
+            <tr>
+                <td align="center">姓氏</td>
+                <td align="center"><input type="text" class="input-group" id="first-name"></td>
+            </tr>
+            <tr>
+                <td align="center">收货电话</td>
+                <td align="center"><input type="tel" class="input-group" id="telephone"></td>
+            </tr>
+            <tr>
+                <td align="center">绑定银行卡</td>
+                <td align="center"><input type="text" class="input-group" id="bank-card"></td>
+            </tr>
+        </table>
+        <button style="text-align: center;margin-top: 30px;font-size: 22px;width: 150px;" class="btn" id="signup">完成</button>
+    </div>
+
+</div>
+</body>
+</html>
