@@ -30,14 +30,16 @@ public class UserBL implements UserBLService {
                 newCustomer.setActivecode(activeCode);
                 newCustomer.setLevel(0);
                 customerDao.save(newCustomer);
-                MailUtil.sendMail(email, activeCode);
+                new Thread( new MailUtil(email, activeCode)).start();
+//                MailUtil.sendMail(email, activeCode);
                 //发送邮件
                 return ResultMessage.SUCCESS;
             }else if(customer.getState() == UserState.WaitToActive){//该邮箱注册过，但是未激活
                 String activeCode = MailUtil.generateCode();
                 customer.setActivecode(activeCode);
                 customerDao.saveAndFlush(customer);
-                MailUtil.sendMail(email, activeCode);
+                new Thread( new MailUtil(email, activeCode)).start();
+//                MailUtil.sendMail(email, activeCode);
                 //再次发送邮件
                 return ResultMessage.SUCCESS;
             }else{//该邮箱已经被注册过，正在使用中或者已被注销
@@ -90,10 +92,12 @@ public class UserBL implements UserBLService {
                 return ResultMessage.NotExist;
             } else if (customer.getState() == UserState.CloseAccount) {
                 return ResultMessage.InValid;
+            } else if(customer.getState() == UserState.WaitToActive){
+                return ResultMessage.ToActive;
             } else if (!password.equals(customer.getPassword())) {
                 return ResultMessage.PassError;
             } else {
-                return ResultMessage.SUCCESS;
+                return ResultMessage.CustomerLogin;
             }
         }catch (Exception e){
             e.printStackTrace();

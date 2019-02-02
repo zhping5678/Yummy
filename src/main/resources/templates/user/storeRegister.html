@@ -2,9 +2,199 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>StoreRegister</title>
+    <title>商户入驻</title>
+    <script type="text/javascript" src="/js/jquery-3.2.1.js"></script>
+    <style>
+        html{
+            margin: 0;
+            padding: 0;
+            background: #fffbea;
+        }
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            font-family: 华文楷体,serif;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .page-title{
+            text-align: center;
+            font-size: 60px;
+            font-weight: bold;
+        }
+        .input-box{
+            width: 480px;
+            height: 30px;
+            background: #fffbea;
+            text-align: center;
+            border: none;
+            outline: none;
+        }
+        .input-box2{
+            width: 167px;
+            height: 30px;
+            background: #fffbea;
+            text-align: center;
+            border: none;
+            outline: none;
+            margin: 3px;
+        }
+        .btn{
+            outline: none;
+            font-family: 华文楷体, serif;
+            width: 150px;
+            font-size: 25px;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+        }
+        td{
+            height: 40px;
+            padding: 0;
+            margin: 0;
+            border: solid 1px;
+            /*outline: none;*/
+        }
+        .store-type{
+            width: 80px;
+            height: 35px;
+            border: none;
+            text-align: center;
+            background: #fffbea;
+            outline: none;
+            color: gray;
+        }
+        .col1{
+            border: none;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="page-title">
+        <p style="margin-top: 20px; margin-bottom: 20px;">欢迎入驻Yummy!</p>
+    </div>
+    <div style="text-align: center;font-size: 20px;margin-left: auto;margin-right:auto;">
+        <table border="0" style="margin:auto">
+            <tr>
+                <td class="col1">店铺编码</td>
+                <td colspan="3"><input class="input-box" id="store-id" value="" type="text" readonly></td>
+            </tr>
+            <tr>
+                <td class="col1">店铺名称</td>
+                <td colspan="3"><input class="input-box" id="store-name" type="text" placeholder="请填写店铺名称"></td>
+            </tr>
+            <tr>
+                <td class="col1">法定代表人</td>
+                <td colspan="3"><input class="input-box" id="store-boss" type="text" placeholder="请填写法人姓名"></td>
+            </tr>
+            <tr>
+                <td class="col1">联系方式</td>
+                <td colspan="3"><input class="input-box" id="store-email" type="text" placeholder="请填写邮箱"></td>
+            </tr>
+            <tr>
+                <td class="col1">设置登录密码</td>
+                <td colspan="3"><input class="input-box" id="store-pass" type="password" placeholder="请填写8-12位密码"></td>
+            </tr>
+            <tr>
+                <td class="col1">确认登录密码</td>
+                <td colspan="3"><input class="input-box" id="store-pass-confirm" type="password" placeholder="请再次填写密码"></td>
+            </tr>
+            <tr>
+                <td class="col1">经营范围</td>
+                <td colspan="3">
+                    <select class="store-type" id="storeType">
+                        <option value="HotFood">热制食品</option>
+                        <option value="FruitAndVegetable">果蔬生鲜</option>
+                        <option value="Market">商店超市</option>
+                        <option value="FlowerAndPlant">鲜花绿植</option>
+                        <option value="HealthAndMedicine">医药健康</option>
+                        <option value="Other">其他</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="col1" rowspan="2">商铺地址</td>
+                <td><input class="input-box2" id="province" type="text" placeholder="省"></td>
+                <td><input class="input-box2" id="city" type="text" placeholder="市"></td>
+                <td><input class="input-box2" id="area" type="text" placeholder="区"></td>
+            </tr>
+            <tr>
+                <td colspan="3"><input class="input-box" id="detail-address" type="text" placeholder="具体街道"></td>
+            </tr>
+        </table>
+    </div>
+    <div style="text-align: center">
+        <button class="btn" id="signup">提交申请</button>
+    </div>
+</div>
 
+<script>
+    window.onload=function (ev) {
+        var nextID;
+        $.ajax({
+            url: "getNextStoreId",
+            type: "POST",
+            cache: false,
+            async: false,
+            data:{},
+            success: function (data) {
+                nextID = data;
+                $("#store-id").attr("value",nextID);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log("错误状态码："+XMLHttpRequest.status+" 错误信息："+textStatus+" "+errorThrown);
+            }
+        });
+    };
+    $("#signup").click(function () {
+        var store_id = $("#store-id").val();
+        var store_name = $("#store-name").val();
+        var store_boss = $("#store-boss").val();
+        var store_email = $("#store-email").val();
+        var store_pass = $("#store-pass").val();
+        var store_pass_confirm = $("#store-pass-confirm").val();
+        var store_type = $("#storeType").val();
+        var province = $("#province").val(), city = $("#city").val(),
+            area = $("#area").val(), detail_add = $("#detail-address").val();
+
+        var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
+        if(store_name===""||store_boss===""||store_email===""||store_pass===""
+            ||store_pass_confirm===""||province===""||city===""||area===""||detail_add===""){
+            alert("请将信息填写完全")
+        }else if(!reg.test(store_email)){
+            alert("邮箱格式不正确")
+        }else if(store_pass !== store_pass_confirm){
+            alert("两次密码不一致")
+        }else {
+            $.ajax({
+                url: "applyStore",
+                type: "POST",
+                cache: false,
+                async: false,
+                data: {
+                    store_id: store_id,
+                    store_name: store_name,
+                    store_boss: store_boss,
+                    store_email: store_email,
+                    store_pass: store_pass,
+                    store_type: store_type,
+                    province: province,
+                    city: city,
+                    area: area,
+                    detail_address: detail_add
+                },
+                success: function (data) {
+
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
+                }
+            })
+        }
+    })
+</script>
 </body>
 </html>

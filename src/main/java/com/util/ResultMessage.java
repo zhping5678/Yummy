@@ -8,5 +8,6 @@ public enum ResultMessage {
     NotExist,
     CustomerLogin,
     StoreLogin,
-    InValid
+    InValid,
+    ToActive
 }

@@ -20,11 +20,11 @@ public class Address {
 
     private String email;//用户ID
 
+    private String province;//省
+
     private String city;//市
 
     private String area;//区
 
     private String detail;//详细地址
-
-    private String location;//收获地点
 }

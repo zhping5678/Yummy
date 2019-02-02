@@ -9,7 +9,7 @@ import com.util.ResultMessage;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class UserController {
+public class CustomerController {
 
     @Autowired
     private UserBLService userBLService;
@@ -45,6 +45,7 @@ public class UserController {
 
     @RequestMapping(value = "/signIn", method = RequestMethod.POST)
     public @ResponseBody ResultMessage signIn(String username, String password){
+        System.out.println("登录用户名："+username+", 密码："+password);
         if(username.contains("@")){
             return userBLService.customerLogin(username,password);
         }else{

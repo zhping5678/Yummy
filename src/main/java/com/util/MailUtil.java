@@ -8,9 +8,17 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
 
-public class MailUtil {
+public class MailUtil implements Runnable{
 
-    public static void sendMail(String emailTo, String activeCode) throws Exception {
+    private String emailTo;
+    private String activeCode;
+
+    public MailUtil(String emailTo, String activeCode){
+        this.emailTo = emailTo;
+        this.activeCode = activeCode;
+    }
+
+    public void run() {
 
         String mailHost = "smtp.163.com";
         String mailFrom = "ipnet2018@163.com";
@@ -28,22 +36,25 @@ public class MailUtil {
         // 2. 根据配置创建会话对象, 用于和邮件服务器交互
         Session session = Session.getDefaultInstance(props);
 //        session.setDebug(true);                                 // 设置为debug模式, 可以查看详细的发送 log
+        try {
+            // 3. 创建一封邮件
+            MimeMessage message = createRegisterMessage(session, mailFrom, emailTo, activeCode);
 
-        // 3. 创建一封邮件
-        MimeMessage message = createRegisterMessage(session, mailFrom, emailTo, activeCode);
+            // 4. 根据 Session 获取邮件传输对象
+            Transport transport = session.getTransport();
 
-        // 4. 根据 Session 获取邮件传输对象
-        Transport transport = session.getTransport();
+            // 5. 使用 邮箱账号 和 密码 连接邮件服务器
+            //    这里认证的邮箱必须与 message 中的发件人邮箱一致，否则报错
+            transport.connect(mailFrom, password);
 
-        // 5. 使用 邮箱账号 和 密码 连接邮件服务器
-        //    这里认证的邮箱必须与 message 中的发件人邮箱一致，否则报错
-        transport.connect(mailFrom, password);
+            // 6. 发送邮件, 发到所有的收件地址, message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人
+            transport.sendMessage(message, message.getAllRecipients());
 
-        // 6. 发送邮件, 发到所有的收件地址, message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人
-        transport.sendMessage(message, message.getAllRecipients());
-
-        // 7. 关闭连接
-        transport.close();
+            // 7. 关闭连接
+            transport.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private static MimeMessage createRegisterMessage(Session session, String emailFrom, String emailTo, String code) throws Exception{

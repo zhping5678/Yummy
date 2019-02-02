@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>激活成功</title>
+    <title>完善信息</title>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S05BbP0B9UL0fjYlbuWTAbnRBES8jndB"></script>
+    <script type="text/javascript" src="/js/jquery-3.2.1.js"></script>
     <style>
         html{
             background: #fffbea;
@@ -102,7 +103,7 @@
                 success: function (data) {
                     if (data === 'SUCCESS'){
                         localStorage.setItem("username",email);
-                        window.location.href="/home";
+                        window.location.href="/user_home";
                     }else if(data === 'PassError'){
                         alert("密码错误")
                     }else {
