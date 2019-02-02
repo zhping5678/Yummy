@@ -60,7 +60,7 @@ public class MailUtil {
                     "<body>\n" +
                     "<h1>欢迎注册Yummy</h1>\n" +
                     "<p>这是一封激活邮件，请点击下方的链接激活账号，注意链接仅一次有效。</p>\n" +
-                    "<a href='http://localhost:8000/active?code="+code+"'>激活链接</a>\n" +
+                    "<a href='http://localhost:8000/active?code="+code+"'>http://localhost:8000/active?code="+code+"</a>\n" +
                     "</body>\n" +
                     "</html>";
             message.setContent(context, "text/html;charset=UTF-8");

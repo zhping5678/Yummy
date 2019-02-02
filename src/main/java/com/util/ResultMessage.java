@@ -3,5 +3,10 @@ package com.util;
 public enum ResultMessage {
     SUCCESS,
     FAIL,
-    EXIST
+    EXIST,
+    PassError,
+    NotExist,
+    CustomerLogin,
+    StoreLogin,
+    InValid
 }

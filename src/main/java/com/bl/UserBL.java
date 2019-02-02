@@ -1,24 +1,25 @@
 package com.bl;
 
 import com.blservice.UserBLService;
-import com.dao.UserDao;
+import com.dao.CustomerDao;
 import com.model.Customer;
 import com.util.MailUtil;
 import com.util.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.util.ResultMessage;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserBL implements UserBLService {
 
     @Autowired
-    private UserDao userDao;
+    private CustomerDao customerDao;
 
     @Override
     public ResultMessage signUpByEmail(String email, String password) {
         try {
-            Customer customer = userDao.find(email);
+            Customer customer = customerDao.find(email);
             if(customer == null ){//该邮箱之前未注册过
                 String activeCode = MailUtil.generateCode();
                 Customer newCustomer = new Customer();
@@ -28,14 +29,14 @@ public class UserBL implements UserBLService {
                 newCustomer.setState(UserState.WaitToActive);
                 newCustomer.setActivecode(activeCode);
                 newCustomer.setLevel(0);
-                userDao.save(newCustomer);
+                customerDao.save(newCustomer);
                 MailUtil.sendMail(email, activeCode);
                 //发送邮件
                 return ResultMessage.SUCCESS;
             }else if(customer.getState() == UserState.WaitToActive){//该邮箱注册过，但是未激活
                 String activeCode = MailUtil.generateCode();
                 customer.setActivecode(activeCode);
-                userDao.saveAndFlush(customer);
+                customerDao.saveAndFlush(customer);
                 MailUtil.sendMail(email, activeCode);
                 //再次发送邮件
                 return ResultMessage.SUCCESS;
@@ -50,8 +51,62 @@ public class UserBL implements UserBLService {
     }
 
     @Override
+    @Transactional
     public ResultMessage activeUser(String code) {
-//        return userDao.activeUser(code);
+        if(customerDao.activeUser(code)==1){
+            return ResultMessage.SUCCESS;
+        }
+        return ResultMessage.FAIL;
+    }
+
+    @Override
+    public ResultMessage firstCompleteInfo(String email, String pass, String name, String tel, String bankCard) {
+        try {
+            Customer customer = customerDao.find(email);
+            if (customer == null) {
+                return ResultMessage.FAIL;
+            } else if (!customer.getPassword().equals(pass)) {
+                return ResultMessage.PassError;
+            } else {
+                customer.setName(name);
+                customer.setTelephone(tel);
+                customer.setBankAccount(bankCard);
+                customer.setBalance(getRandomBalance());
+
+                customerDao.save(customer);
+                return ResultMessage.SUCCESS;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultMessage.FAIL;
+        }
+    }
+
+    @Override
+    public ResultMessage customerLogin(String username, String password) {
+        try {
+            Customer customer = customerDao.find(username);
+            if (customer == null) {
+                return ResultMessage.NotExist;
+            } else if (customer.getState() == UserState.CloseAccount) {
+                return ResultMessage.InValid;
+            } else if (!password.equals(customer.getPassword())) {
+                return ResultMessage.PassError;
+            } else {
+                return ResultMessage.SUCCESS;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultMessage.FAIL;
+        }
+    }
+
+    @Override
+    public ResultMessage storeLogin(String username, String password) {
         return null;
+    }
+
+    private int getRandomBalance(){
+        return (int) (Math.random()*1000);
     }
 }

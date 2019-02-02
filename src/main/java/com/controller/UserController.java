@@ -36,4 +36,19 @@ public class UserController {
             return "user/activeError";
         }
     }
+
+    @RequestMapping(value = "/completeInfo", method = RequestMethod.POST)
+    public @ResponseBody ResultMessage completeInfo(String email, String password, String first_name,
+                                                    String telephone, String bank_card){
+        return userBLService.firstCompleteInfo(email, password, first_name, telephone, bank_card);
+    }
+
+    @RequestMapping(value = "/signIn", method = RequestMethod.POST)
+    public @ResponseBody ResultMessage signIn(String username, String password){
+        if(username.contains("@")){
+            return userBLService.customerLogin(username,password);
+        }else{
+            return userBLService.storeLogin(username,password);
+        }
+    }
 }

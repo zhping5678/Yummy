@@ -90,7 +90,8 @@
                 success: function (data) {
                     console.log(data.toString());
                     if(data === "SUCCESS"){
-                        alert("已向您的邮箱发送邮件，请激活")
+                        alert("已向您的邮箱发送邮件，请激活（注意查看垃圾箱）")
+                        window.location.href='/login';
                     }else if(data === "EXIST"){
                         alert("该邮箱已被注册，请重新注册")
                     }else{
