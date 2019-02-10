@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>商户入驻</title>
     <script type="text/javascript" src="/js/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
     <style>
         html{
             margin: 0;
@@ -76,7 +77,7 @@
     <div class="page-title">
         <p style="margin-top: 20px; margin-bottom: 20px;">欢迎入驻Yummy!</p>
     </div>
-    <div style="text-align: center;font-size: 20px;margin-left: auto;margin-right:auto;">
+    <div style="text-align: center;font-size: 20px;margin-left: -115px;">
         <table border="0" style="margin:auto">
             <tr>
                 <td class="col1">店铺编码</td>
@@ -170,7 +171,7 @@
             alert("两次密码不一致")
         }else {
             $.ajax({
-                url: "applyStore",
+                url: "/applyStore",
                 type: "POST",
                 cache: false,
                 async: false,
@@ -187,7 +188,12 @@
                     detail_address: detail_add
                 },
                 success: function (data) {
-
+                    if(data === 'SUCCESS'){
+                        alert("申请已提交，登录可查看进度");
+                        window.location.href="/login"
+                    }else{
+                        alert("申请失败，请重试")
+                    }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);

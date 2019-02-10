@@ -2,7 +2,7 @@ package com.blservice;
 
 import com.util.ResultMessage;
 
-public interface UserBLService {
+public interface CustomerBLService {
 
     ResultMessage signUpByEmail(String email, String password);
 
@@ -11,6 +11,4 @@ public interface UserBLService {
     ResultMessage firstCompleteInfo(String email,String pass, String name,String tel, String bankCard);
 
     ResultMessage customerLogin(String username, String password);
-
-    ResultMessage storeLogin(String username, String password);
 }

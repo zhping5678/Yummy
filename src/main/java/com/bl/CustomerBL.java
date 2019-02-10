@@ -1,6 +1,6 @@
 package com.bl;
 
-import com.blservice.UserBLService;
+import com.blservice.CustomerBLService;
 import com.dao.CustomerDao;
 import com.model.Customer;
 import com.util.MailUtil;
@@ -11,7 +11,7 @@ import com.util.ResultMessage;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserBL implements UserBLService {
+public class CustomerBL implements CustomerBLService {
 
     @Autowired
     private CustomerDao customerDao;
@@ -103,11 +103,6 @@ public class UserBL implements UserBLService {
             e.printStackTrace();
             return ResultMessage.FAIL;
         }
-    }
-
-    @Override
-    public ResultMessage storeLogin(String username, String password) {
-        return null;
     }
 
     private int getRandomBalance(){

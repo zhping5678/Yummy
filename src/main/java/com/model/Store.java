@@ -1,12 +1,12 @@
 package com.model;
 
 import com.util.StoreType;
+import com.util.UserState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "store")
@@ -28,13 +28,15 @@ public class Store {
 
     private String introduce;//店铺简介
 
-    @ElementCollection(targetClass = StoreType.class, fetch = FetchType.LAZY)
+//    @ElementCollection(targetClass = StoreType.class, fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    private List<StoreType> type;//店铺类型
+    private StoreType type;//店铺类型
 
     //地址
     private String province;//
     private String city;//市
     private String area;//区
     private String detail;//具体地址
+
+    private UserState state;//店铺状态，审核中/已通过/已注销
 }
