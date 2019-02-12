@@ -2,6 +2,7 @@ package com.controller;
 
 import com.blservice.StoreBLService;
 import com.blservice.CustomerBLService;
+import com.model.Store;
 import com.util.StoreType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -105,5 +106,22 @@ public class UserController {
                                 StoreType store_type, String province, String city, String area, String detail_address){
         return storeBLService.applyNewStore(store_id, store_name,store_boss, store_email,store_pass,store_type,
                 province,city,area,detail_address);
+    }
+
+    @RequestMapping(value = "/getStoreInfo", method = RequestMethod.POST)
+    public @ResponseBody
+    Store getStoreInfo(String store_id){
+        return storeBLService.getStoreInfo(store_id);
+    }
+
+    @RequestMapping(value = "/modifyIntroduce", method = RequestMethod.POST)
+    public @ResponseBody
+    void modifyIntroduce(String store_id, String introduce){
+        storeBLService.modifyIntroduce(store_id, introduce);
+    }
+
+    @RequestMapping(value = "/modifyPass", method = RequestMethod.POST)
+    public @ResponseBody ResultMessage modifyPass(String store_id, String oldPass, String newPass){
+        return storeBLService.modifyPassword(store_id, oldPass, newPass);
     }
 }

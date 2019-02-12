@@ -58,5 +58,27 @@ public class StoreBL implements StoreBLService {
         }
     }
 
+    @Override
+    public Store getStoreInfo(String id) {
+        return storeDao.find(id);
+    }
+
+    @Override
+    public void modifyIntroduce(String id, String introduce) {
+        storeDao.updateIntroduce(id,introduce);
+    }
+
+    @Override
+    public ResultMessage modifyPassword(String id, String oldPass, String newPass) {
+        Store store = storeDao.find(id);
+        if(!store.getPassword().equals(oldPass)){
+            return ResultMessage.PassError;
+        }else{
+            store.setPassword(newPass);
+            storeDao.saveAndFlush(store);
+            return ResultMessage.SUCCESS;
+        }
+    }
+
 
 }

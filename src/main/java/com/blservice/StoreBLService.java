@@ -1,5 +1,6 @@
 package com.blservice;
 
+import com.model.Store;
 import com.util.ResultMessage;
 import com.util.StoreType;
 
@@ -9,4 +10,10 @@ public interface StoreBLService {
                                 StoreType store_type, String province, String city, String area, String detail_address);
 
     ResultMessage storeLogin(String username, String password);
+
+    Store getStoreInfo(String id);
+
+    void modifyIntroduce(String id, String introduce);
+
+    ResultMessage modifyPassword(String id, String oldPass, String newPass);
 }

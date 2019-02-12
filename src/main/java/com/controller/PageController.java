@@ -49,7 +49,7 @@ public class PageController{
      */
     @RequestMapping(value = "/user_home", method = RequestMethod.GET)
     public String getCustomerHome(){
-        return "stock/customerHome";
+        return "customer/customerHome";
     }
 
     /*
@@ -57,6 +57,30 @@ public class PageController{
      */
     @RequestMapping(value = "/store_home", method = RequestMethod.GET)
     public String getStoreHome(){
-        return "stock/storeHome";
+        return "store/storeHome";
+    }
+
+    /*
+     * 商户订单管理界面
+     */
+    @RequestMapping(value = "/orderManage", method = RequestMethod.GET)
+    public String getStoreOrderManagePage(){
+        return "store/storeOrder";
+    }
+
+    /*
+     * 商户商品管理界面
+     */
+    @RequestMapping(value = "/stockManage", method = RequestMethod.GET)
+    public String getStoreStockManagePage(){
+        return "store/stockManage";
+    }
+
+    /*
+     * 商户统计数据页面
+     */
+    @RequestMapping(value = "/financial", method = RequestMethod.GET)
+    public String getStoreFinancialPage(){
+        return "store/financial";
     }
 }

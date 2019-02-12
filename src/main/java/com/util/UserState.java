@@ -7,6 +7,7 @@ public enum UserState{
 
     //平台店铺状态
     ToCheck,//待审核状态
+    ToModify,//店铺信息更改审核中
 
     Valid//账号正使用中
 }

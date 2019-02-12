@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>商户界面</title>
+    <style>
+        .input-box:focus{
+            background: none;
+            border-bottom: solid 1px rgba(0,0,0,0.4);
+            width: -webkit-fill-available
+        }
+        .input-box{
+            border: solid 1px rgba(0,0,0,0);
+            background: none;
+            outline: none;
+            width: -webkit-fill-available
+        }
+        .select-box{
+            border: none;
+            outline: none;
+            background: none;
+        }
+        .page-title{
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <!--导航栏-->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin: 0;font-size: 23px;font-family: 华文楷体, serif;">
+        <div class="container-fluid">
+            <div class="navbar-header" style="margin-right: 20px;">
+                <a class="navbar-brand" href="#" style="font-size: 30px;color: rgba(0,0,0,1)">Yummy商家版</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/store_info">店铺信息</a></li>
+                    <li><a href="/orderManage">订单管理</a></li>
+                    <li><a href="/stockManage">商品管理</a></li>
+                    <li><a href="/financial">财务数据</a> </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a id="title-store-name" class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            店铺名
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" style="font-size: 20px">
+                            <li><a href="/login">登出</a></li>
+                            <li><a href="/modifyPass">修改密码</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!--页面内容-->
+    <div style="width: 70%;margin-top: 60px;margin-left: auto;margin-right: auto; text-align: center">
+        <h3 class="page-title">认证信息 <small id="store-state" style="color: cornflowerblue;">信息审核状态</small></h3>
+        <table class="table table-hover" style="">
+            <tbody>
+                <tr>
+                    <td>店铺编号</td>
+                    <td style="text-align: left;"><input type="text" id="store-id" value="" readonly style="background: none;outline: none;border: none;"></td>
+                </tr>
+                <tr>
+                    <td>店铺名称</td>
+                    <td><input type="text" class="input-box" id="name" value=""></td>
+                </tr>
+                <tr>
+                    <td>店铺类型</td>
+                    <td style="text-align: left">
+                        <select class="select-box" id="type-select">
+                            <option id="store-type" value=""></option>
+                            <option value="all" style="font-weight: 700;">店铺类别</option>
+                            <option value="HotFood">热制食品</option>
+                            <option value="FruitAndVegetable">果蔬生鲜</option>
+                            <option value="Market">商店超市</option>
+                            <option value="FlowerAndPlant">鲜花绿植</option>
+                            <option value="HealthAndMedicine">医药健康</option>
+                            <option value="Other">其他</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>店铺负责人</td>
+                    <td><input type="text" class="input-box" id="boss" value=""></td>
+                </tr>
+                <tr>
+                    <td>联系方式</td>
+                    <td><input type="text" class="input-box" id="contact" value=""></td>
+                </tr>
+                <tr>
+                    <td class="col1" rowspan="5">商铺地址</td>
+                </tr>
+                <tr>
+                    <td><input class="input-box" id="province" type="text" value=""></td>
+                </tr>
+                <tr>
+                    <td><input class="input-box" id="city" type="text" value=""></td>
+                </tr>
+                <tr>
+                    <td><input class="input-box" id="area" type="text" value=""></td>
+                </tr>
+                <tr>
+                    <td><input class="input-box" id="detail-address" type="text" value=""></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-success" style="outline: none">确认更改</button>
+        <h3 class="page-title">店铺简介</h3>
+        <div class="form-group">
+            <textarea id="introduce" class="form-control" rows="3" placeholder="100字以内"></textarea>
+        </div>
+        <button class="btn btn-success" style="outline: none;margin-bottom: 30px;" onclick="modifyIntroduce(this.text)">保存</button>
+    </div>
+</div>
+<script>
+    window.onload=function (ev) {
+        var store_id = localStorage.getItem("username");
+        var storeInfo;
+        $.ajax({
+            url: "/getStoreInfo",
+            type: "POST",
+            cache: false,
+            async: false,
+            data:{
+                store_id: store_id
+            },
+            success:function (data) {
+                storeInfo = data;
+                console.log("查找到的店铺信息："+storeInfo.name+", "+storeInfo.boss+", "+storeInfo.email+", "+storeInfo.type)
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log("错误状态码："+XMLHttpRequest.status+" 错误信息："+textStatus+" "+errorThrown);
+            }
+        });
+
+        $("#title-store-name").text(storeInfo.name);
+        $("#store-state").text(changeStateToChinese(storeInfo.state));
+        $("#store-id").attr("value",storeInfo.id);
+        $("#name").attr("value",storeInfo.name);
+
+        var store_type=document.getElementById("type-select");
+        store_type.options[0].value=storeInfo.type;
+        store_type.options[0].text=changeTypeToChinese(storeInfo.type);
+
+        $("#boss").attr("value",storeInfo.boss);
+        $("#contact").attr("value",storeInfo.email);
+        $("#province").attr("value",storeInfo.province);
+        $("#city").attr("value",storeInfo.city);
+        $("#area").attr("value",storeInfo.area);
+        $("#detail-address").attr("value",storeInfo.detail);
+
+        $("#introduce").val(storeInfo.introduce);
+    };
+    function modifyIntroduce(newIntroduce) {
+        if(newIntroduce.length > 100){
+            alert("店铺简介过长")
+        }else {
+            var store_id = localStorage.getItem("username");
+            console.log("newInroduce: "+newIntroduce);
+            $.ajax({
+                url: modifyIntroduce,
+                type: "POST",
+                cache: false,
+                async: false,
+                data:{
+                    store_id: store_id,
+                    introduce: newIntroduce
+                },
+                success:function (data) {
+                    console.log("店铺简介更改成功");
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
+                }
+            })
+        }
+    }
+    function changeTypeToChinese(type) {
+        switch (type) {
+            case 'HotFood':
+                return "热制食品类";
+            case 'FruitAndVegetable':
+                return "果蔬生鲜";
+            case 'Market':
+                return "商店超市";
+            case 'FlowerAndPlant':
+                return "鲜花绿植";
+            case 'HealthAndMedicine':
+                return "医药健康";
+            default:
+                return "其他类别"
+        }
+    }
+    function changeStateToChinese(state) {
+        switch (state) {
+            case 'ToCheck':
+                return "审核中";
+            case 'ToModify':
+                return "信息更改审核中";
+            case 'Valid':
+                return "已通过";
+        }
+    }
+</script>
+</body>
+</html>

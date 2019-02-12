@@ -28,15 +28,15 @@ public class Store {
 
     private String introduce;//店铺简介
 
-//    @ElementCollection(targetClass = StoreType.class, fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     private StoreType type;//店铺类型
 
     //地址
-    private String province;//
+    private String province;//省
     private String city;//市
     private String area;//区
     private String detail;//具体地址
 
-    private UserState state;//店铺状态，审核中/已通过/已注销
+    @Enumerated(EnumType.STRING)
+    private UserState state;//店铺状态，审核中/已通过/已注销/信息更改中
 }
