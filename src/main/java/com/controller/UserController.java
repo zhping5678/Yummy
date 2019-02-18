@@ -72,6 +72,15 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "/forgetPass", method = RequestMethod.POST)
+    public @ResponseBody ResultMessage forgetPass(String username){
+        if(username.contains("@")){//普通用户找回密码
+            return customerBLService.findBackPass(username);
+        }else{//店铺用户找回密码
+            return storeBLService.findBackPass(username);
+        }
+    }
+
     @RequestMapping(value = "/getNextStoreId", method = RequestMethod.POST)
     public @ResponseBody String getNextStoreId(){
         try{

@@ -3,6 +3,7 @@ package com.bl;
 import com.blservice.StoreBLService;
 import com.dao.StoreDao;
 import com.model.Store;
+import com.util.MailUtil;
 import com.util.ResultMessage;
 import com.util.StoreType;
 import com.util.UserState;
@@ -75,6 +76,21 @@ public class StoreBL implements StoreBLService {
             return ResultMessage.PassError;
         }else{
             store.setPassword(newPass);
+            storeDao.saveAndFlush(store);
+            return ResultMessage.SUCCESS;
+        }
+    }
+
+    @Override
+    public ResultMessage findBackPass(String store_id) {
+        Store store = storeDao.find(store_id);
+        String email = store.getEmail();
+        if(email ==null || email.equals("")){
+            return ResultMessage.NoEmail;
+        }else{
+            String newPass = MailUtil.getRandomPassword();
+            store.setPassword(newPass);
+            new Thread(new MailUtil(email, newPass, false)).start();
             storeDao.saveAndFlush(store);
             return ResultMessage.SUCCESS;
         }

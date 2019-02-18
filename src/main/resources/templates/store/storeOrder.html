@@ -2,12 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="import" href="storeHome.html">
+    <title>订单管理</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--<link rel="import" href="storeHome.html">-->
+    <style>
+        .order-inline{
+            display: inline;
+        }
+        .order{
+            width: 90%;
+            margin-top:10px;
+            /*background: rgba(15,15,15,0.05);*/
+            border-radius: 5px;
+        }
+        .header{
+            font-family: 华文楷体, serif;
+            font-size: 25px;
+            display: inline;
+            text-decoration: underline black;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <div>
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin: 0;font-size: 23px;font-family: 华文楷体, serif;">
+    <!--导航栏-->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin:0;font-size: 23px;font-family: 华文楷体, serif;">
         <div class="container-fluid">
             <div class="navbar-header" style="margin-right: 20px;">
                 <a class="navbar-brand" href="#" style="font-size: 30px;color: rgba(0,0,0,1)">Yummy商家版</a>
@@ -25,7 +48,7 @@
                             店铺名
                             <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu" style="font-size: 20px">
+                        <ul class="dropdown-menu" style="font-size: 18px;min-width: 115px;text-align: center;">
                             <li><a href="/login">登出</a></li>
                             <li><a href="/modifyPass">修改密码</a></li>
                         </ul>
@@ -34,6 +57,67 @@
             </div>
         </div>
     </nav>
+    <!--订单标签页-->
+    <div class="orders container" style="margin-top: 60px;font-family: 华文楷体, serif;">
+        <ul id="order-tab" class="nav nav-tabs" style="font-size: 22px">
+            <li class="active" style="background: none;">
+                <a href="#new-order" data-toggle="tab">新订单</a>
+            </li>
+            <li><a href="#on-order" data-toggle="tab">进行中</a> </li>
+            <li><a href="#end-order" data-toggle="tab">结束订单</a></li>
+            <li><a href="#cancel-order" data-toggle="tab">取消订单</a> </li>
+        </ul>
+        <div id="order-content" class="tab-content" style="font-size: 18px">
+            <div class="tab-pane fade in active" id="new-order">
+                <div class="order-list">
+                    <div class="panel panel-default order">
+                        <div class="panel-heading">
+                            <p class="header">0000000000000</p>
+                            <p style="display: inline;float: right">
+                                <a class="btn btn-primary" role="button">
+                                    接单
+                                </a>
+                                <a class="btn btn-default" role="button">
+                                    拒绝
+                                </a>
+                            </p>
+                        </div>
+                        <div class="panel-body">
+                            <p class="order-inline">张三</p>
+                            <p class="order-inline" style="cursor: pointer;text-decoration: underline black ">18888888888</p>
+                            <br>
+                            <p class="order-inline">xx省xx市xx区xx街道xx号</p>
+                            <br>
+                            <p class="order-inline">备注：不要葱姜蒜，不要辣</p>
+                        </div>
+                        <table class="table">
+                            <th>商品名</th>
+                            <th>数量</th>
+                            <th>价格</th>
+                            <tr>
+                                <td>咖喱鸡排饭</td>
+                                <td>x1</td>
+                                <td>50.00</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">总价</td>
+                                <td>50</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="on-order">
+                <p>正在进行订单</p>
+            </div>
+            <div class="tab-pane fade" id="end-order">
+                <p>正常结束订单</p>
+            </div>
+            <div class="tab-pane fade" id="cancel-order">
+                <p>取消订单</p>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
 

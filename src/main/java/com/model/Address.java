@@ -18,7 +18,7 @@ public class Address {
     @Id
     private long id;
 
-    private String email;//用户ID
+    private String email;//地址持有人
 
     private String province;//省
 
@@ -27,4 +27,8 @@ public class Address {
     private String area;//区
 
     private String detail;//详细地址
+
+    private String telephone;//收货电话
+
+    private String name;//收货人
 }

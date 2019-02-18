@@ -56,14 +56,15 @@
         <input class="input-box" id="password-input" type="password" placeholder="请输入8-12位密码">
     </div>
     <div style="text-align: center">
-        <button class="btn" id="signin">登录</button>
+        <button class="btn" id="sign-in">登录</button>
         <br>
-        <a href="/userRegister" id="jump-to-register" style="margin-left: 140px;">没有账号?前往注册</a>
+        <a href="/findBackPass" id="forget-password" style="margin-left: 35px;">忘记密码</a>
+        <a href="/userRegister" id="jump-to-register" style="margin-left: 52px;">没有账号?前往注册</a>
     </div>
 </div>
 
 <script>
-    $("#signin").click(function () {
+    $("#sign-in").click(function () {
         var username = $("#username-input").val();
         var pass = $("#password-input").val();
         // var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");

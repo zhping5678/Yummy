@@ -2,9 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>商品管理</title></head>
+    <style>
+            .header{
+                font-family: 华文楷体, serif;
+                font-size: 27px;
+                display: inline;
+            }
+    </style>
+<body>
+<div>
+    <!--导航栏-->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin:0;font-size: 23px;font-family: 华文楷体, serif;">
+        <div class="container-fluid">
+            <div class="navbar-header" style="margin-right: 20px;">
+                <a class="navbar-brand" href="#" style="font-size: 30px;color: rgba(0,0,0,1)">Yummy商家版</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li><a href="/store_home">店铺信息</a></li>
+                    <li><a href="/orderManage">订单管理</a></li>
+                    <li class="active"><a href="/stockManage">商品管理</a></li>
+                    <li><a href="/financial">财务数据</a> </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a id="title-store-name" class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            店铺名
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" style="font-size: 18px;min-width: 115px;text-align: center;">
+                            <li><a href="/login">登出</a></li>
+                            <li><a href="/modifyPass">修改密码</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!--商品管理部分-->
+    <div class="container" style="margin-top: 60px;font-family: 华文楷体, serif;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="header">夏季单品</p>
+                <p style="display: inline;float: right">
+                    <a class="btn btn-primary" role="button">
+                        添加商品
+                    </a>
+                    <a class="btn btn-default" role="button">
+                        删除分类
+                    </a>
+                </p>
+            </div>
+            <div class="panel-body">
+                <div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>商品名</h4>
+                                <p>描述</p>
+                                <p>单价</p>
+                                <p>上架时间</p>
+                                <p>库存</p>
+                                <p>
+                                    <a class="btn btn-primary" role="button">
+                                        编辑
+                                    </a>
+                                    <a class="btn btn-default" role="button">
+                                        下架
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>商品名</h4>
+                                <p>描述</p>
+                                <p>单价</p>
+                                <p>上架时间</p>
+                                <p>库存</p>
+                                <p>
+                                    <a href="#" class="btn btn-primary" role="button">
+                                        按钮
+                                    </a>
+                                    <a href="#" class="btn btn-default" role="button">
+                                        按钮
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <h4>商品名</h4>
+                                <p>描述</p>
+                                <p>单价</p>
+                                <p>上架时间</p>
+                                <p>库存</p>
+                                <p>
+                                    <a href="#" class="btn btn-primary" role="button">
+                                        按钮
+                                    </a>
+                                    <a href="#" class="btn btn-default" role="button">
+                                        按钮
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="header">优惠套餐</p>
+                <p style="display: inline;float: right">
+                    <a class="btn btn-primary" role="button">
+                        添加商品
+                    </a>
+                    <a class="btn btn-default" role="button">
+                        删除分类
+                    </a>
+                </p>
+            </div>
+            <div class="panel-body">
+                面板内容
+            </div>
+        </div>
+        <div>
+            <input class="form-control" style="width: 30%">
+            <button class="btn btn-primary" style="margin-top: 10px;">添加分类</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

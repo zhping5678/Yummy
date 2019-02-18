@@ -2,6 +2,7 @@ package com.bl;
 
 import com.blservice.CustomerBLService;
 import com.dao.CustomerDao;
+import com.model.Account;
 import com.model.Customer;
 import com.util.MailUtil;
 import com.util.UserState;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.util.ResultMessage;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CustomerBL implements CustomerBLService {
@@ -30,7 +34,7 @@ public class CustomerBL implements CustomerBLService {
                 newCustomer.setActivecode(activeCode);
                 newCustomer.setLevel(0);
                 customerDao.save(newCustomer);
-                new Thread( new MailUtil(email, activeCode)).start();
+                new Thread( new MailUtil(email, activeCode,true)).start();
 //                MailUtil.sendMail(email, activeCode);
                 //发送邮件
                 return ResultMessage.SUCCESS;
@@ -38,7 +42,7 @@ public class CustomerBL implements CustomerBLService {
                 String activeCode = MailUtil.generateCode();
                 customer.setActivecode(activeCode);
                 customerDao.saveAndFlush(customer);
-                new Thread( new MailUtil(email, activeCode)).start();
+                new Thread( new MailUtil(email, activeCode,true)).start();
 //                MailUtil.sendMail(email, activeCode);
                 //再次发送邮件
                 return ResultMessage.SUCCESS;
@@ -72,9 +76,12 @@ public class CustomerBL implements CustomerBLService {
             } else {
                 customer.setName(name);
                 customer.setTelephone(tel);
-                customer.setBankAccount(bankCard);
-                customer.setBalance(getRandomBalance());
-
+                if(!(bankCard==null||bankCard.equals(""))) {
+                    Account account = new Account(bankCard, getRandomBalance());
+                    List<Account> accounts=new ArrayList<>();
+                    accounts.add(account);
+                    customer.setAccount(accounts);
+                }
                 customerDao.save(customer);
                 return ResultMessage.SUCCESS;
             }
@@ -105,7 +112,25 @@ public class CustomerBL implements CustomerBLService {
         }
     }
 
+    @Override
+    @Transactional
+    public ResultMessage findBackPass(String email) {
+        try{
+            String newPass = MailUtil.getRandomPassword();
+            if(customerDao.resetPassword(email,newPass)==1){
+                new Thread(new MailUtil(email, newPass, false)).start();
+                return ResultMessage.SUCCESS;
+            }else{
+                return ResultMessage.NotExist;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultMessage.FAIL;
+        }
+    }
+
     private int getRandomBalance(){
         return (int) (Math.random()*1000);
     }
+
 }

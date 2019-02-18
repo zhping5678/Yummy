@@ -16,4 +16,6 @@ public interface StoreBLService {
     void modifyIntroduce(String id, String introduce);
 
     ResultMessage modifyPassword(String id, String oldPass, String newPass);
+
+    ResultMessage findBackPass(String store_id);
 }

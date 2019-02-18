@@ -11,11 +11,13 @@ import java.util.UUID;
 public class MailUtil implements Runnable{
 
     private String emailTo;
-    private String activeCode;
+    private String content;
+    private boolean target;//用于注册-true；用于找回密码-false
 
-    public MailUtil(String emailTo, String activeCode){
+    public MailUtil(String emailTo, String content, boolean target){
         this.emailTo = emailTo;
-        this.activeCode = activeCode;
+        this.content = content;
+        this.target = target;
     }
 
     public void run() {
@@ -38,7 +40,20 @@ public class MailUtil implements Runnable{
 //        session.setDebug(true);                                 // 设置为debug模式, 可以查看详细的发送 log
         try {
             // 3. 创建一封邮件
-            MimeMessage message = createRegisterMessage(session, mailFrom, emailTo, activeCode);
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(mailFrom, "Yummy", "UTF-8"));
+            message.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(emailTo, emailTo, "UTF-8"));
+            String context;
+            if (target) {//注册激活邮件
+                message.setSubject("欢迎加入Yummy", "UTF-8");
+                context = createRegisterMessage(content);
+            }else {//找回密码邮件
+                message.setSubject("Yummy找回密码","UTF-8");
+                context = createFindBackPassMessage(content);
+            }
+            message.setContent(context, "text/html;charset=UTF-8");
+            message.setSentDate(new Date());
+            message.saveChanges();
 
             // 4. 根据 Session 获取邮件传输对象
             Transport transport = session.getTransport();
@@ -57,31 +72,39 @@ public class MailUtil implements Runnable{
         }
     }
 
-    private static MimeMessage createRegisterMessage(Session session, String emailFrom, String emailTo, String code) throws Exception{
-        {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(emailFrom, "Yummy", "UTF-8"));
-            message.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(emailTo, emailTo, "UTF-8"));
-            message.setSubject("欢迎加入Yummy", "UTF-8");
-            String context ="<html>\n" +
-                    "<head>\n" +
-                    "    <meta charset=\"UTF-8\">\n" +
-                    "    <title>Title</title>\n" +
-                    "</head>\n" +
-                    "<body>\n" +
-                    "<h1>欢迎注册Yummy</h1>\n" +
-                    "<p>这是一封激活邮件，请点击下方的链接激活账号，注意链接仅一次有效。</p>\n" +
-                    "<a href='http://localhost:8000/active?code="+code+"'>http://localhost:8000/active?code="+code+"</a>\n" +
-                    "</body>\n" +
-                    "</html>";
-            message.setContent(context, "text/html;charset=UTF-8");
-            message.setSentDate(new Date());
-            message.saveChanges();
-            return message;
-        }
+    private static String createRegisterMessage(String code){
+        return  "<html>\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Title</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "<h1>欢迎注册Yummy</h1>\n" +
+                "<p>这是一封激活邮件，请点击下方的链接激活账号，注意链接仅一次有效。</p>\n" +
+                "<a href='http://localhost:8000/active?code="+code+"'>http://localhost:8000/active?code="+code+"</a>\n" +
+                "</body>\n" +
+                "</html>";
+    }
+
+    private static String createFindBackPassMessage(String content){
+        return "<html>\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Title</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "<p>您的新密码为"+content+",可以点击下方链接进入登录界面</p>\n" +
+                "<a href='http://localhost:8000/login'>http://localhost:8000/login</a>\n" +
+                "</body>\n" +
+                "</html>";
     }
 
     public static String generateCode(){
         return UUID.randomUUID().toString().replace("-","");
+    }
+
+    public static String getRandomPassword(){
+        int random = (int)(Math.random()*100000000);
+        return String.valueOf(random);
     }
 }

@@ -9,5 +9,6 @@ public enum ResultMessage {
     CustomerLogin,
     StoreLogin,
     InValid,
-    ToActive
+    ToActive,
+    NoEmail
 }

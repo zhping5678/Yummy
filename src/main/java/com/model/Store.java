@@ -38,5 +38,5 @@ public class Store {
     private String detail;//具体地址
 
     @Enumerated(EnumType.STRING)
-    private UserState state;//店铺状态，审核中/已通过/已注销/信息更改中
+    private UserState state;//店铺状态，审核中/已通过/信息更改中
 }

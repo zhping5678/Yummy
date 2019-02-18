@@ -37,6 +37,14 @@ public class PageController{
     }
 
     /*
+     * 用户找回密码界面
+     */
+    @RequestMapping(value = "/findBackPass", method = RequestMethod.GET)
+    public String getFindBackPassPage(){
+        return "user/forgetPass";
+    }
+
+    /*
      * 用户激活邮箱账号后，完善信息界面
      */
     @RequestMapping(value = "/firstCompleteInfo", method = RequestMethod.GET)

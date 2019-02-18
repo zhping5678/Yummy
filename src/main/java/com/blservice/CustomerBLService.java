@@ -11,4 +11,6 @@ public interface CustomerBLService {
     ResultMessage firstCompleteInfo(String email,String pass, String name,String tel, String bankCard);
 
     ResultMessage customerLogin(String username, String password);
+
+    ResultMessage findBackPass(String email);
 }

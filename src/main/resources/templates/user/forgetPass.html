@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>忘记密码</title>
+    <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+    <style>
+        html{
+            margin: 0;
+            padding: 0;
+            background: #fffbea;
+        }
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            font-family: 华文楷体,serif;
+
+            width: 70%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 120px;
+        }
+        .page-title{
+            text-align: center;
+            font-size: 60px;
+            font-weight: bold;
+        }
+        .input-box{
+            width: 675px;
+            height: 40px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .btn{
+            outline: none;
+            font-family: 华文楷体, serif;
+            width: 150px;
+            font-size: 25px;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-title">
+        <p>Yummy找回密码</p>
+    </div>
+    <div style="text-align: center">
+        <input class="input-box" id="username-input" type="text" placeholder="请输入邮箱账号/店铺编号">
+    </div>
+    <div style="text-align: center">
+        <button class="btn" id="confirm">确认</button>
+    </div>
+</div>
+<script>
+    $("#confirm").click(function () {
+        var username = $("#username-input").val();
+        $.ajax({
+            url: "/forgetPass",
+            type: "POST",
+            cache: false,
+            async: false,
+            data: {
+                username: username
+            },
+            success: function (data) {
+                if(data === "SUCCESS"){
+                    alert("已重置密码,并发送到您的邮箱，请注意查收")
+                }else if(data === "NoEmail"){
+                    alert("由于未绑定邮箱，无法找回密码")
+                }else{
+                    alert("失败，请重试")
+                }
+            },
+            error:function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown)
+            }
+        })
+    })
+</script>
+</body>
+</html>
