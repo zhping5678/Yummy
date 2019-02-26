@@ -117,20 +117,14 @@ public class UserController {
                 province,city,area,detail_address);
     }
 
-    @RequestMapping(value = "/getStoreInfo", method = RequestMethod.POST)
-    public @ResponseBody
-    Store getStoreInfo(String store_id){
-        return storeBLService.getStoreInfo(store_id);
-    }
 
-    @RequestMapping(value = "/modifyIntroduce", method = RequestMethod.POST)
+    @RequestMapping(value = "/modifyPassword", method = RequestMethod.POST)
     public @ResponseBody
-    void modifyIntroduce(String store_id, String introduce){
-        storeBLService.modifyIntroduce(store_id, introduce);
-    }
-
-    @RequestMapping(value = "/modifyPass", method = RequestMethod.POST)
-    public @ResponseBody ResultMessage modifyPass(String store_id, String oldPass, String newPass){
-        return storeBLService.modifyPassword(store_id, oldPass, newPass);
+    ResultMessage modifyPass(String username, String oldPass, String newPass){
+        if(username.contains("@")){
+            return customerBLService.modifyPassword(username, oldPass, newPass);
+        }else {
+            return storeBLService.modifyPassword(username, oldPass, newPass);
+        }
     }
 }

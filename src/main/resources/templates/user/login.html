@@ -64,6 +64,12 @@
 </div>
 
 <script>
+    window.onload =function (ev) {
+        var usernamePre = localStorage.getItem("username");
+        if (usernamePre!== null || usernamePre!== undefined|| usernamePre!== ""){
+            $("#username-input").attr("value",usernamePre)
+        }
+    };
     $("#sign-in").click(function () {
         var username = $("#username-input").val();
         var pass = $("#password-input").val();

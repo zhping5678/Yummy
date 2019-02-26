@@ -129,6 +129,17 @@ public class CustomerBL implements CustomerBLService {
         }
     }
 
+    @Override
+    public ResultMessage modifyPassword(String username ,String oldPassword, String newPass){
+        Customer customer = customerDao.find(username);
+        if(customer.getPassword().equals(oldPassword)){
+            customer.setPassword(newPass);
+            customerDao.saveAndFlush(customer);
+            return ResultMessage.SUCCESS;
+        }else{
+            return ResultMessage.PassError;
+        }
+    }
     private int getRandomBalance(){
         return (int) (Math.random()*1000);
     }

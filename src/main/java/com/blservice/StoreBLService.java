@@ -3,6 +3,9 @@ package com.blservice;
 import com.model.Store;
 import com.util.ResultMessage;
 import com.util.StoreType;
+import com.vo.StoreInfo;
+
+import java.util.List;
 
 public interface StoreBLService {
 
@@ -18,4 +21,6 @@ public interface StoreBLService {
     ResultMessage modifyPassword(String id, String oldPass, String newPass);
 
     ResultMessage findBackPass(String store_id);
+
+    List<StoreInfo> getStoreListInSameCity(String cityName);
 }

@@ -13,4 +13,6 @@ public interface CustomerBLService {
     ResultMessage customerLogin(String username, String password);
 
     ResultMessage findBackPass(String email);
+
+    ResultMessage modifyPassword(String username, String oldPass, String newPass);
 }

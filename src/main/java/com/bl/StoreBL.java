@@ -7,10 +7,13 @@ import com.util.MailUtil;
 import com.util.ResultMessage;
 import com.util.StoreType;
 import com.util.UserState;
+import com.vo.StoreInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class StoreBL implements StoreBLService {
@@ -24,7 +27,7 @@ public class StoreBL implements StoreBLService {
         try {
 
             Store newStore = new Store(store_id, store_name, store_boss, store_pass, store_email, "", store_type,
-                    province, city, area, detail_address, UserState.ToCheck);
+                    "",province, city, area, detail_address, UserState.ToCheck,null);
             storeDao.saveAndFlush(newStore);
 
             //更新counter.txt(店铺编号)
@@ -93,6 +96,20 @@ public class StoreBL implements StoreBLService {
             new Thread(new MailUtil(email, newPass, false)).start();
             storeDao.saveAndFlush(store);
             return ResultMessage.SUCCESS;
+        }
+    }
+
+    @Override
+    public List<StoreInfo> getStoreListInSameCity(String cityName){
+        List<Store> stores = storeDao.findValidStoreInSameCity(cityName);
+        if(stores!=null){
+            List<StoreInfo> storeInfos = new ArrayList<>();
+            for(Store s: stores){
+                storeInfos.add(new StoreInfo(s.getId(),s.getName(),s.getIntroduce()));
+            }
+            return storeInfos;
+        }else {
+            return null;
         }
     }
 

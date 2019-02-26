@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <!--<script src="../../static/js/jquery-3.2.1.min.js"></script>-->
+    <!--<script src="../../static/js/jquery-3.2.1.js"></script>-->
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S05BbP0B9UL0fjYlbuWTAbnRBES8jndB"></script>
     <style>
         #category{
             line-height: 26px;
@@ -24,14 +27,9 @@
             color: #666;
         }
         .class-item:hover{
-            /*line-height: 36px;*/
             background-color: #f6f6f6;
             text-underline: none;
             cursor: pointer;
-            /*border-radius: 0;*/
-            /*margin: 0;*/
-            /*padding: 0 16px;*/
-            /*height: 38px;*/
         }
         .thumbnail{
             border: none;
@@ -41,7 +39,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="loadStoreInfo()">
 <div>
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin:0;font-size: 23px;font-family: 华文楷体, serif;">
         <div class="container-fluid">
@@ -56,7 +54,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a id="title-store-name" class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <a id="title-username" class="dropdown-toggle" data-toggle="dropdown" href="#">
                             用户名
                             <span class="caret"></span>
                         </a>
@@ -71,6 +69,11 @@
     </nav>
 
     <div class="container" style="margin-top: 60px;width: 95%;margin-left: auto;margin-right: auto;">
+        <div id="map"></div>
+        <div style="margin-left: 25px">
+            <a id="city" href="#">城市定位</a>
+            <button class="btn btn-success btn-sm">选择地址</button>
+        </div>
         <div id="category">
             <span style="position: absolute;left: 10px;top: 13px; color: #999;">商家分类：</span>
             <p class="class-item">全部分类</p>
@@ -80,69 +83,184 @@
             <p class="class-item">果蔬生鲜</p>
             <p class="class-item">商店超市</p>
         </div>
-        <div class="stores">
-            <div class="col-sm-6 col-md-2">
-                <div class="thumbnail">
-                    <img src="../../static/images/test.jpg">
-                    <div class="caption">
-                        <h4 style="display: inline">第一家店</h4>
-                        <br>
-                        <p style="display: inline">描述</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-2">
-                <div class="thumbnail">
-                    <img src="../../static/images/test2.jpg">
-                    <div class="caption">
-                        <h4 style="display: inline">第一家店</h4>
-                        <br>
-                        <p style="display: inline">描述</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-2">
-                <div class="thumbnail">
-                    <img src="../../static/images/test2.jpg">
-                    <div class="caption">
-                        <h4 style="display: inline">第一家店</h4>
-                        <br>
-                        <p style="display: inline">描述</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-2">
-                <div class="thumbnail">
-                    <img src="../../static/images/test2.jpg">
-                    <div class="caption">
-                        <h4 style="display: inline">第一家店</h4>
-                        <br>
-                        <p style="display: inline">描述</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-2">
-                <div class="thumbnail">
-                    <img src="../../static/images/test2.jpg">
-                    <div class="caption">
-                        <h4 style="display: inline">第一家店</h4>
-                        <br>
-                        <p style="display: inline">描述</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-2">
-                <div class="thumbnail">
-                    <img src="../../static/images/test.jpg">
-                    <div class="caption">
-                        <h4 style="display: inline">第一家店</h4>
-                        <br>
-                        <p style="display: inline">描述</p>
-                    </div>
-                </div>
-            </div>
+        <div class="stores" id="storeList" style="display: block;margin-left: 15px;margin-right: 15px">
+            <!--显示查找到的店铺信息，包括店铺名称和店铺简介-->
+            <!--<div class="row">-->
+                <!--<div class="col-sm-6 col-md-2" id="">-->
+                    <!--<div class="thumbnail">-->
+                        <!--<img src="../../static/images/test.jpg">-->
+                        <!--<div class="caption">-->
+                            <!--<h4 style="display: inline;">店铺名字</h4>-->
+                            <!--<br>-->
+                            <!--<p style="display: inline;">描述</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div id="location-error" style="display: none;text-align: center;font-size: 25px;font-family: 华文楷体, serif;margin-top: 60px;">
+            <p id="prompt">定位失败，请选择地址后查看店铺</p>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    function loadStoreInfo() {
+        $("#title-username").text(localStorage.getItem("username"));
+        locationCity();
+    }
+    function locationCity() {
+        //百度地图定位API
+        var map = new BMap.Map("map");
+        var point = new BMap.Point(116.331398, 39.897445);
+        map.centerAndZoom(point, 12);
+        var city = document.getElementById("city");
+        function myFun(result) {
+            var cityName = result.name;
+            map.setCenter(cityName);
+            city.innerText=cityName;
+            loadPage(city.innerText);
+        }
+        var myCity = new BMap.LocalCity();
+        myCity.get(myFun);
+    }
+    function loadPage(address) {
+        if(address === '城市定位'){//定位失败
+            showNoStores();
+        }else {//定位成功,显示同城市的店铺
+            showStoresInSameCity(address);
+        }
+    }
+    function showStoresInSameCity(cityName) {
+        var storeList=[];
+        $.ajax({
+            url: "/getStoreInfoList",
+            type: "POST",
+            cache: false,
+            async: false,
+            data:{
+                cityName: cityName
+            },
+            success:function (data) {
+                storeList = data;
+                console.log("返回值："+JSON.stringify(data));
+            },
+            error:function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log("错误状态码："+XMLHttpRequest.status+" 错误信息："+textStatus+" "+errorThrown);
+            }
+        });
+        /*storeList=[
+            {
+                storeID:"store1",
+                storeName:"name1",
+                description:"description1"
+            },
+            {
+                storeID:"store2",
+                storeName:"name2",
+                description:"description2"
+            },
+            {
+                storeID:"store3",
+                storeName:"name3",
+                description:"description3"
+            },
+            {
+                storeID:"store4",
+                storeName:"name4",
+                description:"description1"
+            },
+            {
+                storeID:"store5",
+                storeName:"name5",
+                description:"description2"
+            },{
+                storeID:"store6",
+                storeName:"name6",
+                description:"description3"
+            },
+            {
+                storeID:"store7",
+                storeName:"name7",
+                description:"description2"
+            },{
+                storeID:"store8",
+                storeName:"name8",
+                description:"description3"
+            },
+            {
+                storeID:"store7",
+                storeName:"name7",
+                description:"description2"
+            },{
+                storeID:"store8",
+                storeName:"name8",
+                description:"description3"
+            },
+            {
+                storeID:"store7",
+                storeName:"name7",
+                description:"description2"
+            },{
+                storeID:"store8",
+                storeName:"name8",
+                description:"description3"
+            }
+        ];*/
+        //每6个店铺生成一个div--row
+        if(storeList ===undefined||storeList ===null||storeList.length ===0 ){
+            $("#storeList").css("display","none");
+            $("#prompt").text("附近未查找到店铺");
+            $("#location-error").css("display","block");
+        }else {
+            var storeNum = storeList.length;
+            for(var i=0;i<(storeNum/6);i++){
+                var row = document.createElement("div");
+                row.className="row";
+                for(var j=0;j<6;j++){
+                    if(6*i+j>=storeNum){
+                        break;
+                    }
+                    var one_store = document.createElement("div");
+                    one_store.className="col-sm-6 col-md-2";
+                    one_store.id=storeList[6*i+j].storeID;
+                    one_store.onclick=function () {
+                        window.location.href='/login'
+                    };
+                    var thumbnail = document.createElement("div");
+                    thumbnail.className="thumbnail";
+                    var img=document.createElement("img");
+                    img.src="images/image.jpg";
+                    var caption = document.createElement("div");
+                    caption.className="caption";
+                    var h4 = document.createElement("h4");
+                    h4.style.display="inline";
+                    h4.innerText=storeList[6*i+j].storeName;
+                    var lineS = document.createElement("br");
+                    var p= document.createElement("p");
+                    p.style.display="inline";
+                    p.innerText=storeList[6*i+j].description;
+
+                    caption.append(h4);
+                    caption.append(lineS);
+                    caption.append(p);
+
+                    thumbnail.append(img);
+                    thumbnail.append(caption);
+                    one_store.append(thumbnail);
+                    row.append(one_store);
+                }
+                $("#storeList").append(row)
+            }
+        }
+
+    }
+    function showNoStores() {
+        var stores = document.getElementById("storeList");
+        var location_error = document.getElementById("location-error");
+        stores.style.display = "none";
+        location_error.style.display = "block";
+    }
+</script>
 </body>
 </html>

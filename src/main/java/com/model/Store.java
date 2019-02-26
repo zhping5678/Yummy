@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "store")
@@ -31,6 +32,8 @@ public class Store {
     @Enumerated(EnumType.STRING)
     private StoreType type;//店铺类型
 
+    private String food_types;//食物种类
+
     //地址
     private String province;//省
     private String city;//市
@@ -39,4 +42,7 @@ public class Store {
 
     @Enumerated(EnumType.STRING)
     private UserState state;//店铺状态，审核中/已通过/信息更改中
+
+    @OneToMany(targetEntity = Discount.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Discount> discounts;//满减优惠
 }

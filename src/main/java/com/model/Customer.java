@@ -31,6 +31,10 @@ public class Customer{
 
     private String activecode;//激活码
 
+    @OneToMany(targetEntity = Account.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Account> account;
+
+    @OneToMany(targetEntity = Address.class,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Address> addresses;//地址列表
 
 }
