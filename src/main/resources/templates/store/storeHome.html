@@ -113,12 +113,12 @@
                 </tr>
             </tbody>
         </table>
-        <button class="btn btn-success" style="outline: none">确认更改</button>
+        <button id="modify-info" class="btn btn-success" style="outline: none">确认更改</button>
         <h3 class="page-title">店铺简介</h3>
         <div class="form-group">
             <textarea id="introduce" class="form-control" rows="3" placeholder="100字以内"></textarea>
         </div>
-        <button class="btn btn-success" style="outline: none;margin-bottom: 30px;" onclick="modifyIntroduce(this.text)">保存</button>
+        <button id="modify-introduce" class="btn btn-success" style="outline: none;margin-bottom: 30px;">保存更改</button>
     </div>
 </div>
 <script>
@@ -160,14 +160,59 @@
 
         $("#introduce").val(storeInfo.introduce);
     };
-    function modifyIntroduce(newIntroduce) {
+    $("#modify-info").click(function () {
+        var store_id=$("#store-id").val();
+        var store_name=$("#name").val();
+        var store_type=$("#type-select").val();
+        var boss = $("#boss").val();
+        var contact = $("#contact").val();
+        var province =$("#province").val();
+        var city = $("#city").val();
+        var area = $("#area").val();
+        var detail_add = $("#detail-address").val();
+
+        if(store_type === "all"){
+            alert("请选择店铺类型")
+        }else {
+            $.ajax({
+                url: "/modifyInfo",
+                type: "POST",
+                cache: false,
+                async: false,
+                data: {
+                    store_id: store_id,
+                    store_name: store_name,
+                    store_type: store_type,
+                    store_boss: boss,
+                    contact: contact,
+                    province: province,
+                    city: city,
+                    area: area,
+                    detail_address: detail_add
+                },
+                success: function (data) {
+                    if(data === "SUCCESS"){
+                        alert("信息更改成功，等待后台审核");
+                        $("#store-state").text("信息更改审核中");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("服务器出现错误，稍后重试");
+                    console.log("错误状态码：" + XMLHttpRequest.status + ", 错误信息：" + textStatus + ", " + errorThrown);
+                }
+            })
+        }
+    });
+    $("#modify-introduce").click(function () {
+        var newIntroduce = $("#introduce").val();
+        alert(newIntroduce);
         if(newIntroduce.length > 100){
             alert("店铺简介过长")
         }else {
             var store_id = localStorage.getItem("username");
-            console.log("newInroduce: "+newIntroduce);
+            console.log("newIntroduce: "+newIntroduce);
             $.ajax({
-                url: modifyIntroduce,
+                url: "/modifyIntroduce",
                 type: "POST",
                 cache: false,
                 async: false,
@@ -183,7 +228,7 @@
                 }
             })
         }
-    }
+    });
     function changeTypeToChinese(type) {
         switch (type) {
             case 'HotFood':

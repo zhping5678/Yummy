@@ -45,4 +45,7 @@ public class Store {
 
     @OneToMany(targetEntity = Discount.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Discount> discounts;//满减优惠
+
+    @OneToMany(targetEntity = Good.class,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Good> goods;//商品
 }

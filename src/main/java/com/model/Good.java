@@ -16,7 +16,8 @@ import java.util.Date;
 public class Good {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     private String name;
 
@@ -26,8 +27,7 @@ public class Good {
 
     private int amount;
 
-    @Enumerated(EnumType.STRING)
-    private FoodType type;
+    private String type;
 
     private Date start_time;
 

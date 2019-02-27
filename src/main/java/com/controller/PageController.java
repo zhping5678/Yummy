@@ -45,6 +45,14 @@ public class PageController{
     }
 
     /*
+     * 重置密码界面
+     */
+    @RequestMapping(value = "/modifyPass", method = RequestMethod.GET)
+    public String modifyPassword(){
+        return "user/modifyPassword";
+    }
+
+    /*
      * 用户激活邮箱账号后，完善信息界面
      */
     @RequestMapping(value = "/firstCompleteInfo", method = RequestMethod.GET)
@@ -59,6 +67,15 @@ public class PageController{
     public String getCustomerHome(){
         return "customer/customerHome";
     }
+
+    /*
+     * 显示普通用户查看店铺商品界面
+     */
+    @RequestMapping(value = "/stockList", method = RequestMethod.GET)
+    public String getStockListPage(){
+        return "customer/storeDetail";
+    }
+
 
     /*
      * 显示商户登录进入后的页面
