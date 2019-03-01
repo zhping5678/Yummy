@@ -9,11 +9,21 @@
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <title>商品管理</title></head>
     <style>
-            .header{
-                font-family: 华文楷体, serif;
-                font-size: 27px;
-                display: inline;
-            }
+        p{
+            font-size: 18px;
+        }
+        .header{
+            font-family: 华文楷体, serif;
+            font-size: 27px;
+            display: inline;
+        }
+        .btn-other{
+            margin-right: 5px;
+        }
+        .pro{
+            padding: 10px;
+            margin: 5px 30px 0;
+        }
     </style>
 <body>
 <div>
@@ -37,7 +47,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" style="font-size: 18px;min-width: 115px;text-align: center;">
-                            <li><a href="/login">登出</a></li>
+                            <li style="cursor: pointer" onclick="logout()"><a>登出</a></li>
                             <li><a href="/modifyPass">修改密码</a></li>
                         </ul>
                     </li>
@@ -46,21 +56,20 @@
         </div>
     </nav>
     <!--商品管理部分-->
-    <div class="container" style="margin-top: 60px;font-family: 华文楷体, serif;">
-        <div class="panel panel-default">
+    <div id="all-stock" class="container" style="margin-top: 60px;font-family: 华文楷体, serif;">
+        <!--<div class="panel panel-default">
             <div class="panel-heading">
                 <p class="header">夏季单品</p>
                 <p style="display: inline;float: right">
-                    <a class="btn btn-primary" role="button">
+                    <a class="btn btn-primary">
                         添加商品
                     </a>
-                    <a class="btn btn-default" role="button">
+                    <a class="btn btn-default">
                         删除分类
                     </a>
                 </p>
             </div>
             <div class="panel-body">
-                <div>
                     <div class="col-sm-6 col-md-3">
                         <div class="thumbnail">
                             <div class="caption">
@@ -70,82 +79,580 @@
                                 <p>上架时间</p>
                                 <p>库存</p>
                                 <p>
-                                    <a class="btn btn-primary" role="button">
+                                    <a class="btn btn-primary">
                                         编辑
                                     </a>
-                                    <a class="btn btn-default" role="button">
+                                    <a class="btn btn-default">
                                         下架
                                     </a>
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-3">
-                        <div class="thumbnail">
-                            <div class="caption">
-                                <h4>商品名</h4>
-                                <p>描述</p>
-                                <p>单价</p>
-                                <p>上架时间</p>
-                                <p>库存</p>
-                                <p>
-                                    <a href="#" class="btn btn-primary" role="button">
-                                        按钮
-                                    </a>
-                                    <a href="#" class="btn btn-default" role="button">
-                                        按钮
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <div class="thumbnail">
-                            <div class="caption">
-                                <h4>商品名</h4>
-                                <p>描述</p>
-                                <p>单价</p>
-                                <p>上架时间</p>
-                                <p>库存</p>
-                                <p>
-                                    <a href="#" class="btn btn-primary" role="button">
-                                        按钮
-                                    </a>
-                                    <a href="#" class="btn btn-default" role="button">
-                                        按钮
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>-->
+        <div>
+            <input id="new-type-input" class="form-control" style="width: 30%">
+            <button id="add-type-btn" class="btn btn-primary" style="margin-top: 10px;margin-bottom: 10px;">添加分类</button>
+        </div>
+    </div>
+    <!--添加商品时跳出弹框-->
+    <div id="new-good-box" style="width: 50%;left: 25%;top: 110px;z-index: 1;position: absolute;background: #E7E7E6;
+    border-radius: 10px;display: none">
+        <div class="alert alert-warning pro" id="prompt1" style="display: none">
+            <a href="#" class="close" data-dismiss="alert">
+                &times;
+            </a>
+            <strong>请将商品信息填写完整!</strong>。
+        </div>
+        <div class="alert alert-warning pro" id="prompt2" style="display: none">
+            <a href="#" class="close" data-dismiss="alert">
+                &times;
+            </a>
+            <strong>请正确填写时间!</strong>
+        </div>
+        <div class="form" role="form" style="margin: 15px 30px 10px 30px;font-family: 华文楷体, serif;font-size: 18px">
+            <div class="form-group">
+                <label>商品名</label>
+                <div>
+                    <input class="form-control" id="new-good-name" type="text" value="">
+                </div>
+                <label>描述</label>
+                <div>
+                    <input class="form-control" id="new-good-des" type="text" value="">
+                </div>
+                <label>单价</label>
+                <div>
+                    <input class="form-control" id="new-good-price" type="text" value="">
+                </div>
+                <label>库存</label>
+                <div>
+                    <input class="form-control" id="new-good-amount" type="text" value="">
+                </div>
+                <label>起始时间</label>
+                <div>
+                    <input class="form-control" id="new-good-start" type="date" value="">
+                </div>
+                <label>结束时间</label>
+                <div>
+                    <input class="form-control" id="new-good-end" type="date" value="">
+                </div>
+                <div style="text-align: center;margin-top: 10px;">
+                    <button id="confirm-add-good" class="btn btn-success" onclick="confirmAddGood()">确定</button>
+                    <button id="cancel-add-good" class="btn btn-default" onclick="cancelAddGood()">取消</button>
                 </div>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <p class="header">优惠套餐</p>
-                <p style="display: inline;float: right">
-                    <a class="btn btn-primary" role="button">
-                        添加商品
-                    </a>
-                    <a class="btn btn-default" role="button">
-                        删除分类
-                    </a>
-                </p>
-            </div>
-            <div class="panel-body">
-                面板内容
-            </div>
-        </div>
-        <div>
-            <input class="form-control" style="width: 30%">
-            <button class="btn btn-primary" style="margin-top: 10px;">添加分类</button>
-        </div>
+    </div>
+    <!--商品为空时-->
+    <div id="no-good" style="display: none;text-align: center;font-size: 25px;font-family: 华文楷体, serif;margin-top: 60px;">
+        <p id="prompt">没有商品</p>
     </div>
 </div>
 <script type="text/javascript">
     window.onload=function (ev) {
-        // var goods
+        var store_id = localStorage.getItem("username");
+        // if(store_id == undefined){
+        //     window.location.href="/login"
+        // }
+        // alert("windows onload");
+        var  store_name = localStorage.getItem("store_name");
+        $("#title-store-name").text(store_name);
+        var goods = new Map();
+
+        var data = {
+            "夏季单品": [
+                {
+                    "id": 6,
+                    "name": "清凉饮品",
+                    "description": "冰冰凉凉",
+                    "price": 10,
+                    "amount": 100,
+                    "type": "夏季单品",
+                    "start_time": "2019-01-30 00:00:00",
+                    "end_time": "2019-02-22 00:00:00",
+                    "valid": true
+                },
+                {
+                    "id": 1,
+                    "name": "咖喱鸡排饭",
+                    "description": "香浓咖喱搭配香脆鸡排",
+                    "price": 18,
+                    "amount": 200,
+                    "type": "夏季单品",
+                    "start_time": "2019-02-28 00:00:00",
+                    "end_time": "2019-07-31 00:00:00",
+                    "valid": true
+                },
+                {
+                    "id": 7,
+                    "name": "甜品",
+                    "description": "糯米糍",
+                    "price": 5,
+                    "amount": 60,
+                    "type": "夏季单品",
+                    "start_time": "2019-02-20 00:00:00",
+                    "end_time": "2019-02-27 00:00:00",
+                    "valid": true
+                }
+            ],
+            "超值套餐": [
+                {
+                    "id": 4,
+                    "name": "超值单人套餐",
+                    "description": "咖喱鸡排+冰红茶+烤肠",
+                    "price": 20,
+                    "amount": 200,
+                    "type": "超值套餐",
+                    "start_time": "2019-02-28 00:00:00",
+                    "end_time": "2019-03-03 00:00:00",
+                    "valid": true
+                },
+                {
+                    "id": 5,
+                    "name": "超值双人套餐",
+                    "description": "两份鸡排饭",
+                    "price": 35,
+                    "amount": 50,
+                    "type": "超值套餐",
+                    "start_time": "2019-02-22 00:00:00",
+                    "end_time": "2019-02-28 00:00:00",
+                    "valid": true
+                }
+            ],
+            "已下架商品": [
+                {
+                    "id": 2,
+                    "name": "超值套餐一号",
+                    "description": "咖喱鸡排+冰红茶+烤肠",
+                    "price": 20,
+                    "amount": 200,
+                    "type": "超值套餐",
+                    "start_time": "2019-02-28 00:00:00",
+                    "end_time": "2019-03-02 00:00:00",
+                    "valid": false
+                },
+                {
+                    "id": 3,
+                    "name": "咖喱猪排饭",
+                    "description": "香浓猪排搭配香脆火腿",
+                    "price": 20,
+                    "amount": 300,
+                    "type": "夏季单品",
+                    "start_time": "2019-02-28 00:00:00",
+                    "end_time": "2019-02-28 00:00:00",
+                    "valid": false
+                }
+            ]
+        };
+        for (var key in data){
+            // alert("key:"+key);
+            // alert("content:"+JSON.stringify(goods[key]));
+            goods.set(key,data[key]);
+        }
+        showStoreFood(goods);
+        /*$.ajax({
+            url: "/getStoreGood",
+            type: "POST",
+            cache: false,
+            async: false,
+            data: {
+                store_id: localStorage.getItem("username")
+            },
+            success: function (data) {
+                if(data == []){
+                    $("#no-good").css("display","block")
+                }else {
+                    for (var key in data){
+                        goods.set(key,data[key]);
+                    }
+                    showStoreFood(goods);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
+            }
+        });*/
+    };
+    function logout(){
+        localStorage.clear();
+        window.location.href='/login';
+    }
+    function showStoreFood(goods) {
+        goods.forEach(function (value, key, map) {
+            showStockByType(key, value);
+        })
+    }
+    $("#add-type-btn").click(function () {
+        var newType = $("#new-type-input").val();
+        if(newType === ""){
+            alert("请填写要新增的商品分类")
+        }else{
+            $.ajax({
+                url: "/addNewGoodType",
+                type: "POST",
+                cache: false,
+                async: false,
+                data: {
+                    store_id : localStorage.getItem("username"),
+                    newType : newType
+                },
+                success: function (data) {
+                    if(data === 'SUCCESS'){
+                        location.reload();
+                        // showStockByType(newType,[]);
+                    }else if(data === 'EXIST'){
+                        alert("分类已存在")
+                    }
+                }
+            })
+        }
+    });
+    function deleteType(type) {
+        //参数为商品类型
+        var con;
+        con=confirm("确定要删除该商品分类吗?删除后该分类商品将全部失效");
+        if(con===true){
+            $.ajax({
+                url: "/deleteGoodType",
+                type: "POST",
+                cache: false,
+                async: false,
+                data: {
+                    store_id: localStorage.getItem("username"),
+                    toDelete: type
+                },
+                success: function (data) {
+                    var parent = document.getElementById("all-stock");
+                    var toDeleteChild = document.getElementById("panel-"+type);
+                    parent.removeChild(toDeleteChild);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
+                }
+            })
+        }
+    }
+    function addNewGood(type) {
+        //参数为商品类型
+        localStorage.setItem("new_good_type",type);
+        localStorage.setItem("box-usage","add");
+        $("#new-good-box").css("display","block");
+    }
+    function confirmAddGood(){
+        var new_name=$("#new-good-name").val();
+        var new_desc=$("#new-good-des").val();
+        var new_price=$("#new-good-price").val();
+        var new_amount=$("#new-good-amount").val();
+        var start_time=$("#new-good-start").val();
+        var end_time=$("#new-good-end").val();
+        var new_type=localStorage.getItem("new_good_type");
+
+        var today = new Date();
+        var start = new Date(Date.parse(start_time.replace(/-/g,"/")));
+        var end = new Date(Date.parse(end_time.replace(/-/g,"/")));
+
+        var right = true;
+        if(new_name===""||new_desc===""||new_price===""||new_amount===""||start_time===""||end_time===""){
+            $("#prompt1").css("display","block");
+            right = false;
+        }
+        if(start >end || end<today){
+            $("#prompt2").css("display","block");
+            right = false;
+        }
+        if(right) {
+            var usage = localStorage.getItem("box-usage");
+            if(usage === 'add') {
+                $.ajax({
+                    url: "/addNewGood",
+                    type: "POST",
+                    cache: false,
+                    async: false,
+                    data: {
+                        store_id: localStorage.getItem("username"),
+                        name: new_name,
+                        description: new_desc,
+                        price: new_price,
+                        amount: new_amount,
+                        type: new_type,
+                        start_time: start,
+                        end_time: end
+                    },
+                    success: function (data) {
+                        $("#new-good-box").css("display", "none");
+                        var panel_body = document.getElementById("body-" + new_type);
+                        var one_good = GenerateGoodDiv(new_type, data);
+                        panel_body.append(one_good);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.log("错误状态码：" + XMLHttpRequest.status + "\n错误信息：" + textStatus + "\n" + errorThrown);
+                    }
+                })
+            }else if(usage === 'modify'){
+                $.ajax({
+                    url: "/modifyGoodInfo",
+                    type: "POST",
+                    cache: false,
+                    async: false,
+                    data: {
+                        good_id: localStorage.getItem("modify-good-id"),
+                        name: new_name,
+                        description: new_desc,
+                        price: new_price,
+                        amount: new_amount,
+                        start_time: start,
+                        end_time: end
+                    },
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.log("错误状态码：" + XMLHttpRequest.status + "\n错误信息：" + textStatus + "\n" + errorThrown);
+                    }
+                })
+            }
+        }
+    }
+    function cancelAddGood() {
+        $("#new-good-box").css("display","none");
+    }
+    function showStockByType(key, value) {
+        if(key === "已下架商品"){
+            if(value!='') {
+                $("#all-stock").append("<div class='panel panel-default' id='panel-" + key + "'>" +
+                    "<div class='panel-heading'>" +
+                    "<p class='header'>" + key + "</p>" +
+                    "</div>" +
+                    "<div class='panel-body' id='body-" + key + "'>" +
+                    "</div>" +
+                    "</div>");
+                var panel_body2 = document.getElementById("body-" + key);
+                for (var j = 0; j < value.length; j++) {
+                    var invalid_good = GenerateWithDrawGoodDiv(key, value[j]);
+                    panel_body2.append(invalid_good);
+                }
+            }
+        }else {
+            $("#all-stock").append("<div class='panel panel-default' id='panel-" + key + "'>" +
+                                        "<div class='panel-heading'>" +
+                                            "<p class='header'>" + key + "</p>" +
+                                            "<p style='display: inline;float: right'>" +
+                                                "<a id='" + key + "' class='btn btn-primary btn-other' onclick='addNewGood(this.id)'>" +
+                                                    "添加商品" +
+                                                "</a>" +
+                                                "<a id='" + key + "' class='btn btn-default' onclick='deleteType(this.id)'>" +
+                                                    "删除分类" +
+                                                "</a>" +
+                                            "</p>" +
+                                        "</div>" +
+                                        "<div class='panel-body' id='body-" + key + "'>" +
+                                        "</div>" +
+                                        "</div>");
+            var panel_body = document.getElementById("body-"+key);
+            for (var i = 0; i < value.length; i++) {
+                var one_good = GenerateGoodDiv(key, value[i]);
+                panel_body.append(one_good);
+            }
+        }
+    }
+    function GenerateGoodDiv(type, goodInfo){
+        console.log("goodInfo:"+JSON.stringify(goodInfo));
+        // alert("生成新的商品模块");
+        //每个商品模块内容如下
+        /*<div class="col-sm-6 col-md-3">
+            <div class="thumbnail">
+                <div class="caption">
+                    <h4>商品名</h4>
+                    <p>描述</p>
+                    <p>单价</p>
+                    <p>上架时间</p>
+                    <p>库存</p>
+                    <p>
+                        <a class="btn btn-primary"> 编辑 </a>
+                        <a class="btn btn-default"> 下架 </a>
+                    </p>
+                </div>
+            </div>
+        </div>*/
+        var one_good = document.createElement("div");
+        one_good.className="col-sm-6 col-md-3";
+        one_good.id="good-"+goodInfo.id;
+        var thumbnail = document.createElement("div");
+        thumbnail.className="thumbnail";
+        var caption = document.createElement("div");
+        caption.className="caption";
+        var h4 = document.createElement("h3");
+        h4.innerText="商品名:"+goodInfo.name;
+        var state = document.createElement("p");
+        state.innerText="("+changeStateToChinese(goodInfo.state)+")";
+        state.style.color="cornflowerblue";
+        var description= document.createElement("p");
+        var des=goodInfo.description;
+        if(des.length>9){
+            des=des.substr(0,8)+'...';
+        }
+        description.innerText="描述:"+des;
+        var price= document.createElement("p");
+        price.innerText="单价:"+goodInfo.price;
+        var time= document.createElement("p");
+        time.innerText="有效时间:"+formatDate(goodInfo.start_time)+"~"+formatDate(goodInfo.end_time);
+        var amount = document.createElement("p");
+        amount.innerText="库存:"+goodInfo.amount;
+        var btns = document.createElement("p");
+        var a1 = document.createElement("a");
+        a1.className="btn btn-primary btn-other";
+        a1.innerText="编辑";
+        a1.id=goodInfo.id;
+        a1.onclick=function () {
+            modifyGoodInfo(this.id)
+        };
+        var a2 = document.createElement("a");
+        a2.className="btn btn-default btn-other";
+        a2.innerText="下架";
+        a2.id=goodInfo.id;
+        a2.onclick=function () {
+            withDrawGood(this.id)
+        };
+
+        btns.append(a1);
+        btns.append(a2);
+
+        caption.append(h4);
+        caption.append(state);
+        caption.append(description);
+        caption.append(price);
+        caption.append(time);
+        caption.append(amount);
+        caption.append(btns);
+
+        thumbnail.append(caption);
+        one_good.append(thumbnail);
+
+        return one_good;
+    }
+    function GenerateWithDrawGoodDiv(type, goodInfo){
+        //每个商品模块内容如下
+        /*<div class="col-sm-6 col-md-3">
+            <div class="thumbnail">
+                <div class="caption">
+                    <h4>商品名</h4>
+                    <p>描述</p>
+                    <p>单价</p>
+                    <p>商品分类</p>
+                    <p>下架时间</p>
+                </div>
+            </div>
+        </div>*/
+        var one_good = document.createElement("div");
+        one_good.className="col-sm-6 col-md-3";
+        one_good.id="good-"+goodInfo.id;
+        var thumbnail = document.createElement("div");
+        thumbnail.className="thumbnail";
+        var caption = document.createElement("div");
+        caption.className="caption";
+        var h4 = document.createElement("h3");
+        h4.innerText="商品名:"+goodInfo.name;
+        var description= document.createElement("p");
+        var des=goodInfo.description;
+        if(des.length>9){
+            des=des.substr(0,8)+'...';
+        }
+        description.innerText="描述:"+des;
+        var price= document.createElement("p");
+        price.innerText="单价:"+goodInfo.price;
+        var amount = document.createElement("p");
+        amount.innerText="商品分类:"+goodInfo.type;
+        var time= document.createElement("p");
+        time.innerText="下架时间:"+goodInfo.end_time;
+
+        caption.append(h4);
+        caption.append(description);
+        caption.append(price);
+        caption.append(time);
+        caption.append(amount);
+
+        thumbnail.append(caption);
+        one_good.append(thumbnail);
+
+        return one_good;
+    }
+    function formatDate(str) {
+        var date =new Date(Date.parse(str));
+        var year = date.getFullYear();
+        var month =(date.getMonth() + 1).toString();
+        var day = (date.getDate()).toString();
+        if (month.length === 1) {
+            month = "0" + month;
+        }
+        if (day.length === 1) {
+            day = "0" + day;
+        }
+        return year + "-" + month + "-" + day;
+    }
+    function modifyGoodInfo(good_id) {
+        alert("修改商品信息："+good_id);
+        localStorage.setItem("box-usage","modify");
+        localStorage.setItem("modify-good-id",good_id);
+        $("#new-good-box").css("display","block");
+        var goodInfo;
+        $.ajax({
+            url: "/getGoodInfo",
+            type: "POST",
+            cache: false,
+            async: false,
+            data:{
+                good_id: good_id
+            },
+            success: function (data) {
+                goodInfo=data;
+                $("#new-good-name").attr("value",goodInfo.name);
+                $("#new-good-des").attr("value",goodInfo.description);
+                $("#new-good-price").attr("value",goodInfo.price);
+                $("#new-good-amount").attr("value",goodInfo.amount);
+                $("#new-good-start").attr("value",formatDate(goodInfo.start_time));
+                $("#new-good-end").attr("value",formatDate(goodInfo.end_time));
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("服务器出错，请重试");
+                console.log("错误状态码：" + XMLHttpRequest.status + "\n错误信息：" + textStatus + "\n" + errorThrown);
+            }
+        })
+    }
+    function withDrawGood(good_id) {
+        var con;
+        con=confirm("确定要下架该商品吗?");
+        if(con===true) {
+            $.ajax({
+                url: "/withdrawGood",
+                type: "POST",
+                cache: false,
+                async: false,
+                data: {
+                    store_id: localStorage.getItem("username"),
+                    good_id: good_id
+                },
+                success: function (data) {
+                    var parent = document.getElementById("body-" + data);
+                    var child = document.getElementById("good-" + good_id);
+                    parent.removeChild(child);
+                    location.reload();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("服务器出错，请重试");
+                    console.log("错误状态码：" + XMLHttpRequest.status + "\n错误信息：" + textStatus + "\n" + errorThrown);
+                }
+            })
+        }
+    }
+    function changeStateToChinese(state) {
+        switch (state) {
+            case 'Valid':
+                return "售卖中";
+            case 'Wait':
+                return "等待上架";
+        }
     }
 </script>
 </body>

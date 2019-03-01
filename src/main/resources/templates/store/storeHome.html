@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -26,7 +25,30 @@
             background: none;
         }
         .page-title{
-            text-align: left;
+            text-align: center;
+            font-family: 华文楷体, serif;
+
+        }
+        .standard{
+            display: inline;
+            font-size: 23px;
+            font-family: 华文楷体, serif;
+        }
+        .num-input,.num-input:focus{
+            text-align: center;
+            width: 70px;
+            margin: 0;
+            display: inline;
+            border: none;
+            outline: none;
+            border-bottom: solid 1px rgba(0,0,0,0.4);
+        }
+        .num-input:focus{
+            border-bottom: solid 2px red;
+        }
+        .split{
+            width: 100%;
+            border-bottom: solid 1px black;
         }
     </style>
 </head>
@@ -52,7 +74,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" style="font-size: 18px;min-width: 115px;text-align: center;">
-                            <li><a href="/login">登出</a></li>
+                            <li style="cursor: pointer" onclick="logout()"><a>登出</a></li>
                             <li><a href="/modifyPass">修改密码</a></li>
                         </ul>
                     </li>
@@ -62,7 +84,8 @@
     </nav>
     <!--页面内容-->
     <div style="width: 70%;margin-top: 60px;margin-left: auto;margin-right: auto; text-align: center">
-        <h3 class="page-title">认证信息 <small id="store-state" style="color: cornflowerblue;">信息审核状态</small></h3>
+        <!--店铺基本信息，更改需审核-->
+        <h2 class="page-title">认证信息 <small id="store-state" style="color: cornflowerblue;">信息审核状态</small></h2>
         <table class="table table-hover" style="">
             <tbody>
                 <tr>
@@ -113,10 +136,49 @@
                 </tr>
             </tbody>
         </table>
-        <button id="modify-info" class="btn btn-success" style="outline: none">确认更改</button>
-        <h3 class="page-title">店铺简介</h3>
+        <button id="modify-info" class="btn btn-success" style="outline: none;margin-bottom: 20px">确认更改</button>
+        <div class="split"></div>
+        <!--店铺满减优惠政策，更改不需审核-->
+        <h2 class="page-title">满减策略<small style="color: cornflowerblue;">(至多5个)</small></h2>
+        <div style="text-align: center">
+            <div>
+                <p class="standard">满</p>
+                <input id="s0" class="num-input" value="" type="number" min="0">
+                <p class="standard">减</p>
+                <input id="r0" class="num-input" value="" type="number" min="0">
+            </div>
+            <div>
+                <p class="standard">满</p>
+                <input id="s1" class="num-input" value="" type="number" min="0">
+                <p class="standard">减</p>
+                <input id="r1" class="num-input" value="" type="number" min="0">
+            </div>
+            <div>
+                <p class="standard">满</p>
+                <input id="s2" class="num-input" value="" type="number" min="0">
+                <p class="standard">减</p>
+                <input id="r2" class="num-input" value="" type="number" min="0">
+            </div>
+            <div>
+                <p class="standard">满</p>
+                <input id="s3" class="num-input" value="" type="number" min="0">
+                <p class="standard">减</p>
+                <input id="r3" class="num-input" value="" type="number" min="0">
+            </div>
+            <div>
+                <p class="standard">满</p>
+                <input id="s4" class="num-input" value="" type="number" min="0">
+                <p class="standard">减</p>
+                <input id="r4" class="num-input" value="" type="number" min="0">
+            </div>
+            <button id="modify-strategy" class="btn-success btn" style="outline: none;margin-top:15px;margin-bottom: 20px">确认更改</button>
+        </div>
+
+        <div class="split"></div>
+        <!--店铺简介，更改不需审核-->
+        <h2 class="page-title">店铺简介</h2>
         <div class="form-group">
-            <textarea id="introduce" class="form-control" rows="3" placeholder="100字以内"></textarea>
+            <textarea id="introduce" class="form-control" rows="3" placeholder="100字以内" style="resize: none"></textarea>
         </div>
         <button id="modify-introduce" class="btn btn-success" style="outline: none;margin-bottom: 30px;">保存更改</button>
     </div>
@@ -124,7 +186,10 @@
 <script>
     window.onload=function (ev) {
         var store_id = localStorage.getItem("username");
-        var storeInfo;
+        // if(store_id == undefined){
+        //     window.location.href="/login"
+        // }
+        var storeInfo={};
         $.ajax({
             url: "/getStoreInfo",
             type: "POST",
@@ -135,12 +200,14 @@
             },
             success:function (data) {
                 storeInfo = data;
-                console.log("查找到的店铺信息："+storeInfo.name+", "+storeInfo.boss+", "+storeInfo.email+", "+storeInfo.type)
+                console.log("查找到的店铺信息："+JSON.stringify(storeInfo));
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 console.log("错误状态码："+XMLHttpRequest.status+" 错误信息："+textStatus+" "+errorThrown);
             }
         });
+
+        localStorage.setItem("store_name",storeInfo.name);
 
         $("#title-store-name").text(storeInfo.name);
         $("#store-state").text(changeStateToChinese(storeInfo.state));
@@ -159,7 +226,100 @@
         $("#detail-address").attr("value",storeInfo.detail);
 
         $("#introduce").val(storeInfo.introduce);
+
+        var discounts=storeInfo.discounts;
+        console.log("策略数量："+discounts.length);
+        console.log("策略数量："+discounts.size);
+        var count=0;
+        for (var key in discounts){
+            var s=document.getElementById("s"+count);
+            var r=document.getElementById("r"+count);
+            s.value=key;
+            r.value=discounts[key];
+            // if(count===0){
+            //     $("#s0").attr("value",key);
+            //     $("#r0").attr("value",discounts[key])
+            // }
+            // if(count===1){
+            //     $("#s1").attr("value",key);
+            //     $("#r1").attr("value",discounts[key])
+            // }
+            // if(count===2){
+            //     $("#s2").attr("value",key);
+            //     $("#r2").attr("value",discounts[key])
+            // }
+            // if(count===3){
+            //     $("#s3").attr("value",key);
+            //     $("#r3").attr("value",discounts[key])
+            // }
+            // if(count===4){
+            //     $("#s4").attr("value",key);
+            //     $("#r4").attr("value",discounts[key])
+            // }
+            count=count+1;
+        }
     };
+    function logout(){
+        localStorage.clear();
+        window.location.href='/login';
+    }
+    $("#modify-strategy").click(function () {
+        var s0=$("#s0").val(),s1=$("#s1").val(),s2=$("#s2").val(),s3=$("#s3").val(),s4=$("#s4").val();
+        var r0=$("#r0").val(),r1=$("#r1").val(),r2=$("#r2").val(),r3=$("#r3").val(),r4=$("#r4").val();
+        var discounts = {};
+        // alert(s0+" "+s1+" "+s2+" "+s3+" "+s4);
+        // alert(r0+" "+r1+" "+r2+" "+r3+" "+r4);
+        // alert((s0!=='') && (r0!=='') && (parseInt(s0)> parseInt(r0)));
+        if((s0!=='') && (r0!=='') &&(parseInt(s0)> parseInt(r0))){
+            // alert("put 1");
+            discounts[s0]=r0;
+        }
+        // alert((s1!=='') +" "+(r1!=='') +" "+ (parseInt(s1)> parseInt(r1)));
+        if((s1!=='') && (r1!=='') && (parseInt(s1)> parseInt(r1))){
+            // alert("put 2");
+            discounts[s1]=r1;
+            // alert(JSON.stringify(discounts))
+
+        }
+
+        // alert((s2!=='') +" "+ (r2!=='') +" "+ (s2>r2));
+        if((s2!=='') && (r2!=='') && (parseInt(s2)> parseInt(r2))){
+            // alert("put 3");
+            discounts[s2]=r2;
+            // alert(JSON.stringify(discounts))
+
+        }
+        if((s3!=='') && (r3!=='') && (parseInt(s3)> parseInt(r3))){
+            // alert("put 4");
+            discounts[s3]=r3;
+            // alert(JSON.stringify(discounts))
+
+        }
+        if((s4!=='') &&(r4!=='') && (parseInt(s4)> parseInt(r4))){
+            // alert("put 5");
+            discounts[s4]=r4;
+            // alert(JSON.stringify(discounts))
+
+        }
+        discounts["store_id"]=localStorage.getItem("username");
+        // alert("map:\n"+JSON.stringify(discounts));
+        $.ajax({
+            url:"/modifyStrategy",
+            type:"POST",
+            contentType:"application/json",
+            dataType:"json",
+            cache:false,
+            async:false,
+            data:JSON.stringify(discounts),
+            success:function (data) {
+                location.reload();
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("服务器连接错误,请重试");
+                console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
+            }
+        })
+    });
     $("#modify-info").click(function () {
         var store_id=$("#store-id").val();
         var store_name=$("#name").val();
@@ -205,7 +365,6 @@
     });
     $("#modify-introduce").click(function () {
         var newIntroduce = $("#introduce").val();
-        alert(newIntroduce);
         if(newIntroduce.length > 100){
             alert("店铺简介过长")
         }else {

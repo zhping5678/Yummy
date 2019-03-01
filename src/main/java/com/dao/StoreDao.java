@@ -22,10 +22,4 @@ public interface StoreDao extends JpaRepository<Store, String> {
     @Query(value = "select s from Store s where s.city=:city and s.state='Valid'")
     List<Store> findValidStoreInSameCity(@Param("city")String cityName);
 
-    @Query(value = "select s.food_types from Store s where s.id=:id")
-    String getStoreFoodType(@Param("id")String store_id);
-
-    @Modifying
-    @Query(value = "update Store s set s.food_types=:newType where s.id=:id")
-    void updateStoreFoodType(@Param("id")String store_id,@Param("newType")String newGoodType);
 }

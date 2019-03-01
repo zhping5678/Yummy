@@ -1,6 +1,7 @@
 package com.model;
 
-import com.util.FoodType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.util.GoodState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,14 @@ public class Good {
 
     private String type;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     private Date start_time;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     private Date end_time;
+
+    @Enumerated(EnumType.STRING)
+    private GoodState state;
 }

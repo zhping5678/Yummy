@@ -69,9 +69,9 @@ public class PageController{
     }
 
     /*
-     * 显示普通用户查看店铺商品界面
+     * 显示普通用户查看店铺详细商品界面
      */
-    @RequestMapping(value = "/stockList", method = RequestMethod.GET)
+    @RequestMapping(value = "/storeDetail", method = RequestMethod.GET)
     public String getStockListPage(){
         return "customer/storeDetail";
     }

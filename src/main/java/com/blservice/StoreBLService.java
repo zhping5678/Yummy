@@ -23,6 +23,8 @@ public interface StoreBLService {
 
     ResultMessage modifyPassword(String id, String oldPass, String newPass);
 
+    ResultMessage modifyStrategy(Map<String,String> strategies);
+
     ResultMessage findBackPass(String store_id);
 
     List<StoreInfo> getStoreListInSameCity(String cityName);
@@ -32,8 +34,19 @@ public interface StoreBLService {
 
     Map<String,List<Good>> getStoreGoods(String store_id);
 
+    Map<Integer,Integer> getStoreStrategies(String store_id);
+
     ResultMessage addNewGoodType(String store_id, String newType);
 
-    ResultMessage addNewGood(String store_id, String name, String description, double price, int amount,
+    Good addNewGood(String store_id, String name, String description, double price, int amount,
                              String type, Date start_time, Date end_time);
+
+    void deleteGoodType(String store_id, String toDelete);
+
+    String withdrawGood(String store_id, String good_id);
+
+    Good findGoodInfoById(long good_id);
+
+    void modifyGoodInfo(long good_id, String name, String description, double price, int amount,
+                        Date start_time, Date end_time);
 }

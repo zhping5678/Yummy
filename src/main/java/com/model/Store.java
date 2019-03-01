@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "store")
@@ -32,7 +33,8 @@ public class Store {
     @Enumerated(EnumType.STRING)
     private StoreType type;//店铺类型
 
-    private String food_types;//食物种类
+    @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
+    private List<String> food_types;//食物种类
 
     //地址
     private String province;//省
@@ -43,8 +45,9 @@ public class Store {
     @Enumerated(EnumType.STRING)
     private UserState state;//店铺状态，审核中/已通过/信息更改中
 
-    @OneToMany(targetEntity = Discount.class,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Discount> discounts;//满减优惠
+    @ElementCollection(targetClass = Integer.class)
+    @MapKeyColumn(name = "standard")
+    private Map<Integer,Integer> discounts;//满减优惠
 
     @OneToMany(targetEntity = Good.class,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Good> goods;//商品
