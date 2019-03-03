@@ -7,6 +7,7 @@ import com.model.Good;
 import com.model.Store;
 import com.util.*;
 import com.vo.StoreInfo;
+import com.vo.StoreVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -273,6 +274,33 @@ public class StoreBL implements StoreBLService {
             good.setState(GoodState.Wait);
         }
         goodDao.saveAndFlush(good);
+    }
+
+    @Override
+    public StoreVO getStoreVO(String store_id){
+        Store store = storeDao.find(store_id);
+        StoreVO storeVO=new StoreVO(store.getId(),store.getName(),store.getBoss(),store.getEmail(),store.getIntroduce(),
+                store.getType().toString(),store.getFood_types(),store.getProvince(),store.getCity(),store.getArea(),store.getDetail());
+        Map<Integer,Integer> discounts = store.getDiscounts();
+        StringBuilder discount= new StringBuilder();
+        for(Map.Entry<Integer,Integer> entry:discounts.entrySet()){
+            discount.append("满").append(entry.getKey()).append("减").append(entry.getValue()).append(" ");
+        }
+        storeVO.setDiscounts(discount.toString());
+        //将正在售卖的商品按商品分类返回
+        Map<String,List<Good>> goods = new HashMap<>();
+        for(String type: store.getFood_types()){
+            goods.put(type,new ArrayList<>());
+        }
+        String type;
+        for(Good good:store.getGoods()){
+            if(good.getState()==GoodState.Valid){
+                type=good.getType();
+                goods.get(type).add(good);
+            }
+        }
+        storeVO.setGoods(goods);
+        return storeVO;
     }
 
 }

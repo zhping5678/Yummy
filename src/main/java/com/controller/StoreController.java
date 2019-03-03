@@ -7,6 +7,7 @@ import com.util.ResultMessage;
 import com.util.StoreType;
 import com.vo.StoreInfo;
 
+import com.vo.StoreVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -102,5 +103,11 @@ public class StoreController {
     public @ResponseBody
     Good getGoodInfoById(long good_id){
         return storeBLService.findGoodInfoById(good_id);
+    }
+
+    @RequestMapping(value = "/getStoreVo", method = RequestMethod.POST)
+    public @ResponseBody
+    StoreVO getStoreVO(String store_id){
+        return storeBLService.getStoreVO(store_id);
     }
 }

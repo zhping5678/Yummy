@@ -5,6 +5,7 @@ import com.model.Store;
 import com.util.ResultMessage;
 import com.util.StoreType;
 import com.vo.StoreInfo;
+import com.vo.StoreVO;
 
 import java.util.Date;
 import java.util.List;
@@ -49,4 +50,6 @@ public interface StoreBLService {
 
     void modifyGoodInfo(long good_id, String name, String description, double price, int amount,
                         Date start_time, Date end_time);
+
+    StoreVO getStoreVO(String store_id);
 }

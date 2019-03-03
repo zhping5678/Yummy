@@ -151,7 +151,7 @@
 </div>
 <script type="text/javascript">
     window.onload=function (ev) {
-        var store_id = localStorage.getItem("username");
+        // var store_id = localStorage.getItem("username");
         // if(store_id == undefined){
         //     window.location.href="/login"
         // }
@@ -160,7 +160,7 @@
         $("#title-store-name").text(store_name);
         var goods = new Map();
 
-        var data = {
+        /*var data = {
             "夏季单品": [
                 {
                     "id": 6,
@@ -250,8 +250,8 @@
             // alert("content:"+JSON.stringify(goods[key]));
             goods.set(key,data[key]);
         }
-        showStoreFood(goods);
-        /*$.ajax({
+        showStoreFood(goods);*/
+        $.ajax({
             url: "/getStoreGood",
             type: "POST",
             cache: false,
@@ -272,7 +272,7 @@
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
             }
-        });*/
+        });
     };
     function logout(){
         localStorage.clear();

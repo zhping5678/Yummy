@@ -50,12 +50,15 @@
             width: 100%;
             border-bottom: solid 1px black;
         }
+        .nav-other{
+            margin: 0;font-size: 23px;font-family: 华文楷体, serif;
+        }
     </style>
 </head>
 <body>
 <div>
     <!--导航栏-->
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin: 0;font-size: 23px;font-family: 华文楷体, serif;">
+    <nav class="navbar navbar-default navbar-fixed-top nav-other" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header" style="margin-right: 20px;">
                 <a class="navbar-brand" href="#" style="font-size: 30px;color: rgba(0,0,0,1)">Yummy商家版</a>
@@ -236,26 +239,6 @@
             var r=document.getElementById("r"+count);
             s.value=key;
             r.value=discounts[key];
-            // if(count===0){
-            //     $("#s0").attr("value",key);
-            //     $("#r0").attr("value",discounts[key])
-            // }
-            // if(count===1){
-            //     $("#s1").attr("value",key);
-            //     $("#r1").attr("value",discounts[key])
-            // }
-            // if(count===2){
-            //     $("#s2").attr("value",key);
-            //     $("#r2").attr("value",discounts[key])
-            // }
-            // if(count===3){
-            //     $("#s3").attr("value",key);
-            //     $("#r3").attr("value",discounts[key])
-            // }
-            // if(count===4){
-            //     $("#s4").attr("value",key);
-            //     $("#r4").attr("value",discounts[key])
-            // }
             count=count+1;
         }
     };
@@ -267,42 +250,22 @@
         var s0=$("#s0").val(),s1=$("#s1").val(),s2=$("#s2").val(),s3=$("#s3").val(),s4=$("#s4").val();
         var r0=$("#r0").val(),r1=$("#r1").val(),r2=$("#r2").val(),r3=$("#r3").val(),r4=$("#r4").val();
         var discounts = {};
-        // alert(s0+" "+s1+" "+s2+" "+s3+" "+s4);
-        // alert(r0+" "+r1+" "+r2+" "+r3+" "+r4);
-        // alert((s0!=='') && (r0!=='') && (parseInt(s0)> parseInt(r0)));
         if((s0!=='') && (r0!=='') &&(parseInt(s0)> parseInt(r0))){
-            // alert("put 1");
             discounts[s0]=r0;
         }
-        // alert((s1!=='') +" "+(r1!=='') +" "+ (parseInt(s1)> parseInt(r1)));
         if((s1!=='') && (r1!=='') && (parseInt(s1)> parseInt(r1))){
-            // alert("put 2");
             discounts[s1]=r1;
-            // alert(JSON.stringify(discounts))
-
         }
-
-        // alert((s2!=='') +" "+ (r2!=='') +" "+ (s2>r2));
         if((s2!=='') && (r2!=='') && (parseInt(s2)> parseInt(r2))){
-            // alert("put 3");
             discounts[s2]=r2;
-            // alert(JSON.stringify(discounts))
-
         }
         if((s3!=='') && (r3!=='') && (parseInt(s3)> parseInt(r3))){
-            // alert("put 4");
             discounts[s3]=r3;
-            // alert(JSON.stringify(discounts))
-
         }
         if((s4!=='') &&(r4!=='') && (parseInt(s4)> parseInt(r4))){
-            // alert("put 5");
             discounts[s4]=r4;
-            // alert(JSON.stringify(discounts))
-
         }
         discounts["store_id"]=localStorage.getItem("username");
-        // alert("map:\n"+JSON.stringify(discounts));
         $.ajax({
             url:"/modifyStrategy",
             type:"POST",
