@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <!--<script src="../../static/js/jquery-3.2.1.min.js"></script>-->
-    <!--<script src="../../static/js/jquery-3.2.1.js"></script>-->
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S05BbP0B9UL0fjYlbuWTAbnRBES8jndB"></script>
+    <link href="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.js"></script>
     <style>
         #category{
             line-height: 26px;
@@ -72,7 +72,7 @@
         <div id="map"></div>
         <div style="margin-left: 25px">
             <a id="city" href="#">城市定位</a>
-            <button class="btn btn-success btn-sm">选择地址</button>
+            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTable">选择地址</button>
         </div>
         <div id="category">
             <span style="position: absolute;left: 10px;top: 13px; color: #999;">商家分类：</span>
@@ -102,9 +102,26 @@
             <p id="prompt">定位失败，请选择地址后查看店铺</p>
         </div>
     </div>
+    <div id="modalTable" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <table id="address-table">
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">新增地址</button>
+                    <button type="button" class="btn btn-success">选择地址</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<table id="test"></table>-->
 </div>
 
 <script type="text/javascript">
+
+
     // 跳转到具体店铺页面时，设置localStorage.setItem("store_id",store_id)
     function loadStoreInfo() {
         $("#title-username").text(localStorage.getItem("username"));

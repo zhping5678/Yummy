@@ -3,9 +3,11 @@ package com.bl;
 import com.blservice.CustomerBLService;
 import com.dao.CustomerDao;
 import com.model.Account;
+import com.model.Address;
 import com.model.Customer;
 import com.util.MailUtil;
 import com.util.UserState;
+import com.vo.CustomerVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.util.ResultMessage;
@@ -60,6 +62,15 @@ public class CustomerBL implements CustomerBLService {
     @Transactional
     public ResultMessage activeUser(String code) {
         if(customerDao.activeUser(code)==1){
+            return ResultMessage.SUCCESS;
+        }
+        return ResultMessage.FAIL;
+    }
+
+    @Override
+    @Transactional
+    public ResultMessage closeAccount(String username){
+        if(customerDao.closeAccount(username)==1){
             return ResultMessage.SUCCESS;
         }
         return ResultMessage.FAIL;
@@ -140,8 +151,82 @@ public class CustomerBL implements CustomerBLService {
             return ResultMessage.PassError;
         }
     }
+
+    @Override
+    @Transactional
+    public void modifyName(String username, String newName) {
+        customerDao.resetName(username, newName);
+    }
+
+    @Override
+    @Transactional
+    public void modifyTel(String username, String newTel) {
+        customerDao.resetTel(username, newTel);
+    }
+
+    @Override
+    public int getCustomerLevel(String username) {
+        return customerDao.find(username).getLevel();
+    }
+
+    @Override
+    public CustomerVO getCustomerInfo(String username){
+        Customer customer=customerDao.find(username);
+        return new CustomerVO(customer.getEmail(),customer.getName(),customer.getTelephone(),customer.getLevel(),customer.getAccount());
+    }
+    @Override
+    public List<Address> getAddressList(String username) {
+        return customerDao.find(username).getAddresses();
+    }
+
+    @Override
+    public void addNewAddress(String username, String province, String city, String area, String detail, String tel, String name) {
+        Customer customer=customerDao.find(username);
+        Address newAdd=new Address(0,province,city,area,detail,tel,name);
+        customer.getAddresses().add(newAdd);
+        customerDao.saveAndFlush(customer);
+    }
+
+    @Override
+    public void deleteAddress(String username, long address_id) {
+        Customer customer=customerDao.find(username);
+        for(Address address:customer.getAddresses()){
+            if(address.getId()==address_id){
+                customer.getAddresses().remove(address);
+                break;
+            }
+        }
+        customerDao.saveAndFlush(customer);
+    }
+
+    @Override
+    public List<Account> getAccountList(String username) {
+        return customerDao.find(username).getAccount();
+    }
+
+    @Override
+    public void addNewAccount(String username, String account) {
+        Customer customer=customerDao.find(username);
+        customer.getAccount().add(new Account(account,this.getRandomBalance()));
+        customerDao.saveAndFlush(customer);
+    }
+
+    @Override
+    public void deleteAccount(String username, String account) {
+        Customer customer=customerDao.find(username);
+        for(Account a:customer.getAccount()){
+            if(a.getAccount().equals(account)){
+                customer.getAccount().remove(a);
+                break;
+            }
+        }
+        customerDao.saveAndFlush(customer);
+    }
+
     private int getRandomBalance(){
         return (int) (Math.random()*1000);
     }
+
+
 
 }

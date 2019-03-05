@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,43 @@ public class StoreController {
 
     @Autowired
     private StoreBLService storeBLService;
+
+    @RequestMapping(value = "/getNextStoreId", method = RequestMethod.POST)
+    public @ResponseBody String getNextStoreId(){
+        try{
+            File file = new File("counter.txt");
+            if(file.exists()){
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+//            String line = reader.readLine();
+                int count = Integer.valueOf(reader.readLine());
+//                System.out.println("controller 中读取数值: "+count);
+                StringBuilder nextId = new StringBuilder(String.valueOf(count + 1));
+                while (nextId.length()<7){
+                    nextId.insert(0, "0");
+                }
+                reader.close();
+                return nextId.toString();
+            }else{
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+                bufferedWriter.write(0);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                return "0000001";
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return "-1";
+        }
+    }
+
+    @RequestMapping(value = "/applyStore", method = RequestMethod.POST)
+    public @ResponseBody
+    ResultMessage applyNewStore(String store_id, String store_name, String store_boss, String store_email, String store_pass,
+                                StoreType store_type, String province, String city, String area, String detail_address){
+        return storeBLService.applyNewStore(store_id, store_name,store_boss, store_email,store_pass,store_type,
+                province,city,area,detail_address);
+    }
+
 
     @RequestMapping(value = "/getStoreInfo", method = RequestMethod.POST)
     public @ResponseBody

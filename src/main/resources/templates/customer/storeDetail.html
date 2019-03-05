@@ -95,7 +95,7 @@
             bottom: 0;
             right: 0;
             width: 120px;
-            height: 55px;
+            height: 54px;
             border: none;
             font-size: 24px;
         }
@@ -197,20 +197,20 @@
             <!--具体商品列表-->
             <div id="good-list" class="" style="display: block;">
                 <!--一个分类-->
-                <!--<div class="good">-->
-                    <!--<h3 class="type-head"><a name="type1"></a>商品分类1</h3>-->
-                    <!--<div class="row row2">-->
-                        <!--<div id="good1-1" class="good-block col-sm-6">-->
-                            <!--<img src="../../static/images/image.jpg" class="food-img">-->
-                            <!--<div class="good-info">-->
-                                <!--<h3 class="good-name">商品名</h3>-->
-                                <!--<p class="good-desc">商品描述</p>-->
-                                <!--<h4 class="good-price">商品价格</h4>-->
-                                <!--<button class="btn btn-primary add-to-cart">加入购物车</button>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
+                <!--<div class="good">
+                    <h3 class="type-head"><a name="type1"></a>商品分类1</h3>
+                    <div class="row row2">
+                        <div id="good1-1" class="good-block col-sm-6">
+                            <img src="../../static/images/image.jpg" class="food-img">
+                            <div class="good-info">
+                                <h3 class="good-name">商品名</h3>
+                                <p class="good-desc">商品描述</p>
+                                <h4 class="good-price">商品价格</h4>
+                                <button class="btn btn-primary add-to-cart">加入购物车</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
             </div>
         </div>
 
@@ -220,43 +220,28 @@
                 <h3 style="margin-top: 5px;display: inline;">购物车</h3>
                 <p id="clear-cart" style="display: inline;color: #337ab7;font-size: 18px;cursor:pointer;">[清空]</p>
             </div>
-
+            <div id="cart" style="margin-bottom: 54px;"></div>
             <!--一条购物车记录-->
-            <div class="cart-list">
-                <div class="name" style="">海参捞饭</div>
-                <!--数字加减器-->
-                <div id="1" class="input-group" style="width: 60px;padding-top:8px">
-                    <span  class="input-group-addon input-group-addon-remove quantity-remove btn">
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </span>
-                    <input id="1inp" type="text" value="1" min="1" class="form-control cart-num-input" placeholder="1" style="" readonly>
-                    <span class="input-group-addon input-group-addon-remove quantity-add btn">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </span>
-                </div>
-                <div class="price-and-amount">￥50</div>
-            </div>
-
-            <div class="cart-list" style="height: 40px;width: 100%;display: table;table-layout: fixed;font-family: 华文楷体, serif">
-                <div class="name" style="width: 55%;font-size: 19px;display: table-cell;vertical-align: middle">海参捞饭</div>
-                <!--数字加减器-->
-                <div id="2" class="input-group" style="width: 60px;padding-top:8px">
-                    <span  class="input-group-addon input-group-addon-remove quantity-remove btn" style="padding: 0;">
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </span>
-                    <input id="2inp" type="text" value="1" min="1" class="form-control cart-num-input" placeholder="1" style="" readonly>
-                    <span class="input-group-addon input-group-addon-remove quantity-add btn" style="padding: 0;">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </span>
-                </div>
-                <div class="price-and-amount" style="vertical-align: middle;display: table-cell;font-size: 17px;">￥50</div>
-            </div>
+            <!--<div class="cart-list">-->
+                <!--<div class="name" style="">海参捞饭</div>-->
+                <!--&lt;!&ndash;数字加减器&ndash;&gt;-->
+                <!--<div id="1" class="input-group" style="width: 60px;padding-top:8px">-->
+                    <!--<span  class="input-group-addon input-group-addon-remove quantity-remove btn">-->
+                        <!--<span class="glyphicon glyphicon-minus"></span>-->
+                    <!--</span>-->
+                    <!--<input id="1inp" type="text" value="1" min="1" class="form-control cart-num-input" placeholder="1" style="" readonly>-->
+                    <!--<span class="input-group-addon input-group-addon-remove quantity-add btn">-->
+                        <!--<span class="glyphicon glyphicon-plus"></span>-->
+                    <!--</span>-->
+                <!--</div>-->
+                <!--<div class="price-and-amount">￥50</div>-->
+            <!--</div>-->
 
             <div style="font-family: 华文楷体, serif;">
-                <div id="total" style="display: inline-block;background: #337ab7;color: #ffffff;">
-                    <p>￥ 0.00</p>
+                <div id="total" style="position: fixed;display: inline-block;background: #337ab7;color: #ffffff;">
+                    <p id="total-price">￥ 0.00</p>
                 </div>
-                <button id="pay" style="display: inline-block">结算</button>
+                <button id="pay" style="display: inline-block" onclick="pay()">结算</button>
             </div>
         </div>
     </div>
@@ -265,6 +250,9 @@
 <script>
     window.onload=function () {
         var store;
+        if(localStorage.getItem('cart-list')==undefined){
+            localStorage.setItem('cart-list',JSON.stringify({}));
+        }
         store={
             "id": "0000002",
             "name": "武汉热干面",
@@ -379,12 +367,13 @@
                 ]
             }
         };
-        localStorage.setItem("store",store);
+        localStorage.setItem("store",JSON.stringify(store));
         localStorage.setItem("store_id",store.id);
+
         loadHeader(store);
         loadGoods(store.goods);
         loadCart(store.id);
-        /*$.ajax({
+        $.ajax({
             url: "getStoreInfo",
             type: "/POST",
             cache: false,
@@ -402,7 +391,7 @@
                 alert("服务器连接错误,请重试");
                 console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
             }
-        })*/
+        })
     };
     function loadHeader(store){
         $("#store-name").html(store.name);
@@ -437,60 +426,115 @@
                 "                        </div>")
         }
     }
+    /*
+    localstorage中的cart-list存的是string，读取时要parse成对象
+    {
+        '0000001':[ {good_id:4,good_name:'name4',num:3,good_price:8.8},
+                    {good_id:5,good_name:'name5',num:2,good_price:9.9}],
+        '0000002':[ {good_id:6,good_name:'name6',num:1,good_price:10.0},
+                    {good_id:7,good_name:'name7',num:4,good_price:11.0}]
+    }
+    */
     function loadCart(store_id) {
-        var cart_list = localStorage.getItem("cart-list").store_id;
-        //cart-list是一个数组,里面对象结构
-        // {
-        //  good_id:"",
-        //  good_name:"",
-        //  good_price:"",
-        //  num:"",
-        // }
-
-        for(var i=0;i<cart_list.length;i++){
-
+        var cart_list=JSON.parse(localStorage.getItem('cart-list'));
+        var this_store_cart_list=cart_list[store_id];
+        // alert(JSON.stringify(this_store_cart_list));
+        var total=0;
+        $("#cart").empty();
+        if(this_store_cart_list!=undefined && (this_store_cart_list.length!==0)) {
+            for (var j=0;j<this_store_cart_list.length;j++){
+                var one_cart_item=this_store_cart_list[j];
+                var item_total=one_cart_item.num * one_cart_item.good_price;
+                total=total+item_total;
+                $("#cart").append("<div class='cart-list'>" +
+                    "                <div class='name'>"+one_cart_item.good_name+"</div>" +
+                    "                <div class='input-group' style='width: 60px;padding-top:8px'>" +
+                    "                    <span id='quantity-remove-"+one_cart_item.good_id+"' class='input-group-addon input-group-addon-remove quantity-remove btn' onclick='remove(this.id)'>" +
+                    "                        <span class='glyphicon glyphicon-minus'></span>" +
+                    "                    </span>" +
+                    "                    <input id='pd-"+one_cart_item.good_id+"' type='text' value='"+one_cart_item.num+"' min='1' class='form-control cart-num-input' placeholder='1' readonly>" +
+                    "                    <span id='quantity-add-"+one_cart_item.good_id+"' class='input-group-addon input-group-addon-remove quantity-add btn' onclick='add(this.id)'>" +
+                    "                        <span class='glyphicon glyphicon-plus'></span>" +
+                    "                    </span>" +
+                    "                </div>" +
+                    "                <div class='price-and-amount'>￥ "+item_total+"</div>" +
+                    "            </div>")
+            }
+            // alert(total);
+            $('#total-price').html('￥ '+total);
+        }else{
+            console.log("之前没有购物车");
+            cart_list[store_id]=[];
+            localStorage.setItem('cart-list',JSON.stringify(cart_list));
         }
-
     }
     function addToCart(good_id){
-        var store_id = localStorage.getItem("store_id");
-        var good_name=$("#name-"+good_id).html();
-        var good_price=$("#price-"+good_id).html();
-        var cart_list=localStorage.getItem("cart-list").store_id;
-        var new_cart_item={
-            good_id:good_id,good_name:good_name,good_price:good_price,num:1
-        };
-        cart_list.add(new_cart_item);
+        var store_id=localStorage.getItem('store_id');
+        // alert('good_id: '+good_id);
+        var cart=JSON.parse(localStorage.getItem('cart-list'));
+        var  this_store_cart_list=cart[store_id];
+        var exist=false;
+        var len=this_store_cart_list.length;
+        for(var s=0;s<len;s++){
+            var c=this_store_cart_list[s];
+            if(c.good_id===good_id){//购物车中已存在该商品
+                exist=true;
+                c.num=c.num+1;
+            }
+        }
+        if(!exist){
+            var good_name=$("#name-"+good_id).html();
+            var good_price=$("#price-"+good_id).html().substr(1);
+            var new_cart_item={good_id:good_id,good_name:good_name,good_price:good_price,num:1};
+            this_store_cart_list[len]=new_cart_item;
+            cart[store_id]=this_store_cart_list;
+        }
+        cart[store_id]=this_store_cart_list;
+        localStorage.setItem('cart-list',JSON.stringify(cart));
+        loadCart(store_id)
     }
-    $(document).ready(function(){
-        //Add
-        $(".quantity-add").click(function(e){
-            //Vars
-            var count = 1;
-            var newcount = 0;
-            //Wert holen + Rechnen
-            var elemID = $(this).parent().attr("id");
-            var countField = $("#"+elemID+'inp');
-            var count = $("#"+elemID+'inp').val();
-            var newcount = parseInt(count) + 1;
-            //Neuen Wert setzen
-            $("#"+elemID+'inp').val(newcount);
-        });
+    function removeFromCart(good_id) {
+        var store_id=localStorage.getItem('store_id');
+        // alert('要删除的商品id：'+good_id);
+        var cart=JSON.parse(localStorage.getItem('cart-list'));
+        var this_store_cart=cart[store_id];
+        var index;
+        for(index=0;index<this_store_cart.length;index++){
+            var c=this_store_cart[index];
+            if(c.good_id===good_id){
+                if(c.num===1){//购物车中只有一个该商品，remove后删除
+                    this_store_cart.splice(index,1);
+                }else{
+                    c.num=c.num-1;
+                }
+            }
+        }
+        cart[store_id]=this_store_cart;
+        localStorage.setItem('cart-list',JSON.stringify(cart));
+        loadCart(store_id)
+    }
+    function remove(remove_btn_id){
+        //id形式为quantity-remove-xxxxx
+        // alert(remove_btn_id);
+        var id=remove_btn_id.substr(16);
+        removeFromCart(id)
+        // alert(id)
+    }
+    function add(add_btn_id){
+        //id形式为quantity-add-xxxxx
+        var id=add_btn_id.substr(13);
+        addToCart(id);
 
-        //Remove
-        $(".quantity-remove").click(function(e){
-            //Vars
-            var count = 1;
-            var newcount = 0;
-            //Wert holen + Rechnen
-            var elemID = $(this).parent().attr("id");
-            var countField = $("#"+elemID+'inp');
-            var count = $("#"+elemID+'inp').val();
-            var newcount = parseInt(count) - 1;
-            //Neuen Wert setzen
-            $("#"+elemID+'inp').val(newcount);
-        });
-    });
+    }
+    function pay() {
+        var store_id=localStorage.getItem('store_id');
+        var good_list=JSON.parse(localStorage.getItem('cart-list'))[store_id];
+        var order_info={
+            store_id:store_id,
+            username:localStorage.getItem('username'),
+            list:good_list
+        };
+    }
     function logout(){
         localStorage.clear();
         window.location.href='/login';
