@@ -21,6 +21,23 @@
             outline: none;
             width: -webkit-fill-available
         }
+        #new-account-block,#new-address-block{
+            position: absolute;
+            font-size: 20px;
+            top: 45px;
+            left: 147px;
+            width: 60%;
+            background: #eeeeee;
+            padding: 20px 70px;
+            border-radius: 10px;
+            display: none;
+        }
+        .btn{
+            font-size: 18px;
+        }
+        #new-address-block>input[type='text']{
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -32,9 +49,10 @@
             </div>
             <div>
                 <ul class="nav navbar-nav">
-                    <li><a href="/store_home">商品主页</a></li>
-                    <li><a href="/orderManage">我的订单</a></li>
-                    <li class="active"><a href="/stockManage">个人中心</a></li>
+                    <li><a href="/user_home">商品主页</a></li>
+                    <li><a href="/myOrder">我的订单</a></li>
+                    <li class="active"><a href="/personal">个人中心</a></li>
+                    <li><a href="/myStatistics">数据统计</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -43,7 +61,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" style="font-size: 18px;min-width: 115px;text-align: center;">
-                            <li><a href="/login">登出</a></li>
+                            <li style="cursor: pointer" onclick="logout()"><a>登出</a></li>
                             <li><a href="/modifyPass">修改密码</a></li>
                         </ul>
                     </li>
@@ -56,9 +74,9 @@
         <div class="row">
             <div class="col-md-2">
                 <ul class="nav nav-tabs nav-stacked" style="font-size: 22px;font-family: 华文楷体, serif;text-align: center">
-                    <li class="active"><a href="#basic" data-toggle="tab">我的资料</a></li>
+                    <li class="active"><a href="#basic" data-toggle="tab">基本资料</a></li>
                     <li onclick="loadAddressTable()"><a href="#addressManage" data-toggle="tab">地址管理</a></li>
-                    <li><a href="#statistics" data-toggle="tab">消费统计</a></li>
+                    <li onclick="loadAccountTable()"><a href="#accountManage" data-toggle="tab">支付管理</a></li>
                 </ul>
             </div>
             <div class="col-md-10 tab-content">
@@ -69,52 +87,72 @@
                             <table class="table" style="font-size: 20px;margin-top: 3px;margin-left: 10px;;">
                                 <tr>
                                     <td>邮箱</td>
-                                    <td colspan="2"><input type="text" placeholder="" value="2946062189@qq.com" readonly style="background: none;outline: none;border: none"></td>
+                                    <td colspan="2"><input id="email" type="text" placeholder="" value="" readonly style="background: none;outline: none;border: none"></td>
                                 </tr>
                                 <tr>
                                     <td>用户名</td>
-                                    <td><input class="basic-info" type="text" placeholder="" value="张……"></td>
-                                    <td><button class="btn btn-primary">保存</button></td>
+                                    <td><input id="nickname" class="basic-info" type="text" placeholder="设置用户名" value=""></td>
+                                    <td><button id="modify-nickname" class="btn btn-primary">保存</button></td>
                                 <tr>
                                     <td>联系电话</td>
-                                    <td><input class="basic-info" type="text" placeholder="" value="18851830717"></td>
-                                    <td><button class="btn btn-primary">保存</button></td>
+                                    <td><input id="tel" class="basic-info" type="text" placeholder="设置联系电话" value=""></td>
+                                    <td><button id="modify-tel" class="btn btn-primary">保存</button></td>
                                 </tr>
                             </table>
                         </div>
                         <div>
                             <h2>我的等级</h2>
-                            <p style="font-size: 25px;margin-left: 10px;">3</p>
-                        </div>
-                        <div style="font-size: 18px;">
-                            <h2>我的银行卡</h2>
-                            <table id="account-table" class="table"></table>
-                            <div style="margin-left: 20px;margin-top: 20px;">
-                                <div class="btn btn-success">选择</div>
-                                <div class="btn btn-danger" style="float: right">解绑</div>
-                                <div class="btn btn-primary" style="float: right;margin-right: 5px;">新增</div>
-
-                            </div>
+                            <p id="level" style="font-size: 25px;margin-left: 10px;">3</p>
                         </div>
                         <div>
                             <h2>注销账户<small>(账户一旦注销不能恢复)</small></h2>
-                            <button class="btn btn-danger" style="margin-left: 10px">我要注销</button>
+                            <button id="close-account" class="btn btn-danger" style="margin-left: 10px">我要注销</button>
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="addressManage" style="font-family: 华文楷体, serif">
-                    <div style="margin-top: 15px;width: 80%;font-size: 17px;">
+                    <div style="margin-top: 15px;width: 80%;font-size: 18px;">
                         <table id="address-table" class="table"></table>
                         <div style="margin-top: 30px;margin-left: 10px;">
-                            <div class="btn btn-success">选择</div>
-                            <div class="btn btn-danger" style="float: right">删除</div>
-                            <div class="btn btn-primary" style="float: right;margin-right: 5px;">新增</div>
-
+                            <div id="remove-address" class="btn btn-danger" style="float: right">删除</div>
+                            <div id="add-new-address" class="btn btn-primary" style="float: right;margin-right: 5px;">新增</div>
+                        </div>
+                        <div id="new-address-block" class="form-group">
+                            <label for="new-name">收货人</label>
+                            <input class="form-control" id="new-name" type="text" placeholder="收货人……" value="">
+                            <label for="new-tel">收货人</label>
+                            <input class="form-control" id="new-tel" type="text" placeholder="收货电话……" value="">
+                            <label for="new-province">省</label>
+                            <input class="form-control" id="new-province" type="text" placeholder="省……" value="">
+                            <label for="new-city">市</label>
+                            <input class="form-control" id="new-city" type="text" placeholder="市……" value="">
+                            <label for="new-area">区</label>
+                            <input class="form-control" id="new-area" type="text" placeholder="区……" value="">
+                            <label for="new-detail">具体街道</label>
+                            <input class="form-control" id="new-detail" type="text" placeholder="具体街道……" value="">
+                            <div class="btns" style="text-align: center;margin-top: 10px;">
+                                <button id="add-address-cancel" class="btn btn-dark" style="margin-right: 5px;">取消</button>
+                                <button id="add-address-sure" class="btn btn-success">确定</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="statistics">
-                    <h1>这是消费统计</h1>
+                <div class="tab-pane fade" id="accountManage" style="font-family: 华文楷体, serif">
+                    <div style="font-size: 18px;margin-top: 15px;width: 80%">
+                        <table id="account-table" class="table"></table>
+                        <div style="margin-left: 10px;margin-top: 20px;">
+                            <div id="remove-account" class="btn btn-danger" style="float: right">解绑</div>
+                            <div id="add-new-account" class="btn btn-primary" style="float: right;margin-right: 5px;">新增</div>
+                        </div>
+                        <div id="new-account-block" class="form-group">
+                            <label for="newAccount">绑定新的银行卡</label>
+                            <input class="form-control" id="newAccount" type="text" placeholder="输入新的银行卡号……" value="" style="font-size: 18px">
+                            <div class="btns" style="text-align: center;margin-top: 10px;">
+                                <button id="add-account-cancel" class="btn btn-dark" style="margin-right: 5px;">取消</button>
+                                <button id="add-account-sure" class="btn btn-success">确定</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -122,15 +160,51 @@
 </div>
 <script>
     window.onload=function (ev) {
-        loadAccountTable();
+        $('#title-username').text(localStorage.getItem('username'));
+        var customer;
+        $.ajax({
+            url: "/getCustomerInfo",
+            type:"POST",
+            cache: false,
+            async: false,
+            data:{
+                username:localStorage.getItem('username')
+            },
+            success: function (data) {
+                customer=data;
+                initBasicInfoAndLevel(customer);
+            },
+            error:function (XMLHttpRequest, status, error) {
+                console.log(XMLHttpRequest.status+" "+status+" "+error)
+            }
+        });
     };
+    function initBasicInfoAndLevel(data) {
+        $('#email').val(data.email);
+        $('#nickname').val(data.name);
+        $('#tel').val(data.tel);
+        $('#level').html(data.level);
+    }
     function loadAccountTable() {
         var $table=$('#account-table');
-        var data=[{account:'378273242843948357849'},{account:'48357549786758695789'}];
+        var accounts=[];
+        $.ajax({
+            url:"/getAccountList",
+            type:"POST",
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username')
+            },
+            success:function (data) {
+                accounts=data;
+            },
+            error:function (XMLHttpRequest, status, error) {
+                console.log(XMLHttpRequest.status+" "+status+" "+error)
+            }
+        });
         $table.bootstrapTable({
             clickToSelect:true,
-            singleSelect:true,
-            checkboxHeader:false,
             showColumns:false,
             columns:[
                 {
@@ -141,27 +215,31 @@
                     title:'银行卡账号'
                 }
             ],
-            data:data
+            data:accounts
         })
     }
     function loadAddressTable() {
         var $table=$('#address-table');
-        var data=[{
-            id: 1,
-            name: '张女士',
-            tel:'18822228888',
-            address:'南京大学鼓楼校区22号南京大学鼓楼校区22号南京大学鼓楼校区22号'
-        },{
-            id: 2,
-            name: '李女士',
-            tel:'12233338888',
-            address:'南京大学仙林校区163号'
-        }];
+        var addresses=[];
+        $.ajax({
+            url:"/getAddressList",
+            type:"POST",
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username')
+            },
+            success:function (data) {
+                addresses=data;
+            },
+            error:function (XMLHttpRequest, status, error) {
+                console.log(XMLHttpRequest.status+" "+status+" "+error)
+            }
+        });
         $table.bootstrapTable({
             clickToSelect:true,
-            singleSelect:true,
-            checkboxHeader:false,
             showColumns:false,
+            sidePagination: 'server',
             columns: [
                 {
                     checkbox:true
@@ -177,18 +255,255 @@
                     visible: true
                 },
                 {
-                    field:'tel',
+                    field:'telephone',
                     title:'收货电话',
                     visible:true
                 },
                 {
-                    field:'address',
+                    field:'province',
+                    title:'省',
+                    visible:false
+                },
+                {
+                    field:'city',
+                    title:'市',
+                    visible:false
+                },
+                {
+                    field:'area',
+                    title:'区',
+                    visible:true
+                },
+                {
+                    field:'detail',
                     title:'地址',
                     visible:true
-                }],
-            data:data
+                }
+            ],
+            data:addresses
         });
     }
+    function logout(){
+        localStorage.clear();
+        window.location.href='/login';
+    }
+
+    //基本信息界面
+    $('#modify-nickname').click(function () {
+        $.ajax({
+            url:'/modifyName',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username'),
+                newName:$('#nickname').val()
+            },
+            success:function(data){
+                //不需要返回值
+            },
+            error:function (XMLHttpRequest, status, error) {
+                console.log(XMLHttpRequest.status+" "+status+" "+error)
+            }
+        })
+    });
+    $('#modify-tel').click(function () {
+        $.ajax({
+            url:'/modifyTel',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username'),
+                newTel:$('#tel').val()
+            },
+            success:function(data){
+                //不需要返回值
+            },
+            error:function (XMLHttpRequest, status, error) {
+                console.log(XMLHttpRequest.status+" "+status+" "+error)
+            }
+        })
+    });
+    $('#close-account').click(function () {
+        var con;
+        con=confirm('确认注销账户?一旦注销，无法恢复!!!');
+        if(con){
+            $.ajax({
+                url:'/closeAccount',
+                type:'POST',
+                cache:false,
+                async:false,
+                data:{
+                    username:localStorage.getItem('username')
+                },
+                success:function (data) {
+                    if(data==='SUCCESS'){
+                        alert("注销成功");
+                        localStorage.clear();
+                        window.location.href='/login';
+                    }
+                },
+                error:function (XMLHttpRequest, status, error) {
+                    console.log(XMLHttpRequest.status+" "+status+" "+error);
+                    alert("服务器连接失败，请重试")
+                }
+            })
+        }
+    });
+    //地址管理部分
+    $("#add-new-address").click(function () {
+        $("#new-address-block").css("display","block")
+    });
+    $("#add-address-cancel").click(function () {
+        $("#new-address-block").css("display","none")
+    });
+    $("#add-address-sure").click(function () {
+        var username=localStorage.getItem("username");
+        var province=$("#new-province").val();
+        var city=$("#new-city").val();
+        var area=$("#new-area").val();
+        var detail=$("#new-detail").val();
+        var tel=$("#new-tel").val();
+        var name=$("#new-name").val();
+        if(username===''||province===''||city===''||area===''||detail===''||tel===''||name===''){
+            alert("请将信息填写完整")
+        }else{
+            $.ajax({
+                url:"/addNewAddress",
+                type:"POST",
+                cache:false,
+                async:false,
+                data:{
+                    username:username,
+                    province:province,
+                    city:city,
+                    area:area,
+                    detail:detail,
+                    tel:tel,
+                    name:name
+                },
+                success:function (data) {
+                    $("#new-address-block").css("display","none");
+                    $("#address-table").bootstrapTable("destroy");
+                    loadAddressTable();
+                },
+                error:function (XMLHttpRequest, status, error) {
+                    console.log(XMLHttpRequest.status+" "+status+" "+error);
+                    alert("服务器连接失败，请重试")
+                }
+            })
+        }
+    });
+    $("#remove-address").click(function () {
+        var $table=$("#address-table");
+        var chosen=$.map($table.bootstrapTable('getSelections'),function (row) {
+            return row.id;
+        });
+        alert(JSON.stringify(chosen));
+        if(chosen.length===0){
+            alert("选择为空")
+        }else{
+            var con;
+            con=confirm("确认要删除这些地址吗?");
+            if(con){
+                var data={
+                    username:localStorage.getItem("username"),
+                    lists:chosen
+                };
+                $.ajax({
+                    url:'/deleteAddress',
+                    type:"POST",
+                    contentType:"application/json",
+                    dataType:"json",
+                    cache:false,
+                    async:false,
+                    data: JSON.stringify(data),
+                    success:function () {
+                        $("#address-table").bootstrapTable("destroy");
+                        loadAddressTable();
+                    },
+                    error:function (XMLHttpRequest, status, error) {
+                        console.log(XMLHttpRequest.status+" "+status+" "+error);
+                        alert("服务器连接失败，请重试")
+                    }
+                })
+            }
+        }
+    });
+    //银行账户管理
+    //添加
+    $("#add-new-account").click(function () {
+        $('#new-account-block').css('display','block')
+    });
+    $("#add-account-cancel").click(function () {
+       $('#new-account-block').css('display','none')
+    });
+    $("#add-account-sure").click(function () {
+        var newAccount=$("#newAccount").val();
+        var reg= new RegExp("^[0-9]+$");
+        if(newAccount===''){
+            alert("填写为空")
+        }else if(!reg.test(newAccount)){
+            alert("填写的新账户包含非法字符，请检查")
+        }else{
+            $.ajax({
+                url:"/addNewAccount",
+                type:"POST",
+                cache:false,
+                async:false,
+                data:{
+                    username:localStorage.getItem("username"),
+                    account:newAccount
+                },
+                success:function () {
+                    $("#new-account-block").css("display","none");
+                    $("#account-table").bootstrapTable("destroy");
+                    loadAccountTable();
+                },
+                error:function (XMLHttpRequest, status, error) {
+                    console.log(XMLHttpRequest+" "+status+" "+error);
+                    alert("添加失败，请重试")
+                }
+            })
+        }
+    });
+    //删除
+    $("#remove-account").click(function () {
+        var $table=$("#account-table");
+        var chosen=$.map($table.bootstrapTable('getSelections'),function (row) {
+            return row.account;
+        });
+        if(chosen.length===0){
+            alert("选择为空")
+        }else{
+            var con;
+            con=confirm("确认解绑?解绑后将不用用次账户付款");
+            if(con){
+                var data={
+                    username:localStorage.getItem("username"),
+                    lists:chosen
+                };
+                $.ajax({
+                    url:'/deleteAccount',
+                    type:"POST",
+                    contentType:"application/json",
+                    dataType:"json",
+                    cache:false,
+                    async:false,
+                    data: JSON.stringify(data),
+                    success:function () {
+                        $("#account-table").bootstrapTable("destroy");
+                        loadAccountTable();
+                    },
+                    error:function (XMLHttpRequest, status, error) {
+                        console.log(XMLHttpRequest.status+" "+status+" "+error);
+                        alert("服务器连接失败，请重试")
+                    }
+                })
+            }
+        }
+    });
 </script>
 </body>
 </html>

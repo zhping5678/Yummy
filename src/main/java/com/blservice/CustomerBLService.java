@@ -33,13 +33,13 @@ public interface CustomerBLService {
 
     List<Address> getAddressList(String username);
 
-    void addNewAddress(String username,String province,String city,String area,String detail,String tel,String name);
+    ResultMessage addNewAddress(String username,String province,String city,String area,String detail,String tel,String name);
 
-    void deleteAddress(String username,long address_id);
+    ResultMessage deleteAddress(String username,List<String> address_id);
 
     List<Account> getAccountList(String username);
 
-    void addNewAccount(String username,String account);
+    ResultMessage addNewAccount(String username,String account);
 
-    void deleteAccount(String username,String account);
+    ResultMessage deleteAccount(String username,List<String> account);
 }

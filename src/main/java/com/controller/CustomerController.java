@@ -5,8 +5,10 @@ import com.model.Account;
 import com.model.Address;
 import com.util.ResultMessage;
 import com.vo.CustomerVO;
+import com.vo.StringVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -100,14 +102,14 @@ public class CustomerController {
 
     @RequestMapping(value = "/addNewAddress", method = RequestMethod.POST)
     public @ResponseBody
-    void addNewAddress(String username,String province,String city,String area,String detail,String tel,String name){
-        customerBLService.addNewAddress(username,province,city,area,detail,tel,name);
+    ResultMessage addNewAddress(String username,String province,String city,String area,String detail,String tel,String name){
+        return customerBLService.addNewAddress(username,province,city,area,detail,tel,name);
     }
 
     @RequestMapping(value = "/deleteAddress",method = RequestMethod.POST)
     public @ResponseBody
-    void deleteAddress(String username, long address_id){
-        customerBLService.deleteAddress(username,address_id);
+    ResultMessage deleteAddress(@RequestBody StringVO list){
+        return customerBLService.deleteAddress(list.getUsername(),list.getLists());
     }
 
     @RequestMapping(value = "/getAccountList", method = RequestMethod.POST)
@@ -118,13 +120,14 @@ public class CustomerController {
 
     @RequestMapping(value = "/addNewAccount", method = RequestMethod.POST)
     public @ResponseBody
-    void addNewAccount(String username,String account){
-        customerBLService.addNewAccount(username,account);
+    ResultMessage addNewAccount(String username,String account){
+        return customerBLService.addNewAccount(username,account);
     }
 
-    @RequestMapping(value = "/deleteAddress",method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteAccount",method = RequestMethod.POST)
     public @ResponseBody
-    void deleteAccount(String username, String account){
-        customerBLService.deleteAccount(username,account);
+    ResultMessage deleteAccount(@RequestBody StringVO list){
+        System.out.println(list.toString());
+        return customerBLService.deleteAccount(list.getUsername(),list.getLists());
     }
 }

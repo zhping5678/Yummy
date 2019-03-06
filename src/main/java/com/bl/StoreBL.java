@@ -154,6 +154,7 @@ public class StoreBL implements StoreBLService {
     @Override
     public Map<String,List<Good>> getStoreGoods(String store_id){
         Store store = storeDao.find(store_id);
+        System.out.println(store.toString());
         if(store.getFood_types().size()==0 &&( store.getGoods()==null||store.getGoods().size()==0)){
             return null;
         }

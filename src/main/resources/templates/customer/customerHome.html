@@ -48,9 +48,10 @@
             </div>
             <div>
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/store_home">商品主页</a></li>
-                    <li><a href="/orderManage">我的订单</a></li>
-                    <li><a href="/stockManage">个人中心</a></li>
+                    <li class="active"><a href="/user_home">商品主页</a></li>
+                    <li><a href="/myOrder">我的订单</a></li>
+                    <li><a href="/personal">个人中心</a></li>
+                    <li><a href="/myStatistics">消费统计</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -59,7 +60,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" style="font-size: 18px;min-width: 115px;text-align: center;">
-                            <li><a href="/login">登出</a></li>
+                            <li style="cursor: pointer" onclick="logout()"><a>登出</a></li>
                             <li><a href="/modifyPass">修改密码</a></li>
                         </ul>
                     </li>
@@ -243,12 +244,13 @@
                     one_store.className="col-sm-6 col-md-2";
                     one_store.id=storeList[6*i+j].storeID;
                     one_store.onclick=function () {
-                        window.location.href='/login'
+                        localStorage.setItem("store_id",this.id);
+                        window.location.href='/storeDetail';
                     };
                     var thumbnail = document.createElement("div");
                     thumbnail.className="thumbnail";
                     var img=document.createElement("img");
-                    img.src="../../static/images/test.jpg";
+                    img.src="/images/test.jpg";
                     var caption = document.createElement("div");
                     caption.className="caption";
                     var h4 = document.createElement("h4");
@@ -278,6 +280,10 @@
         var location_error = document.getElementById("location-error");
         stores.style.display = "none";
         location_error.style.display = "block";
+    }
+    function logout(){
+        localStorage.clear();
+        window.location.href='/login';
     }
 </script>
 </body>

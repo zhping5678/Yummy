@@ -1,7 +1,6 @@
 package com.vo;
 
 import com.model.Good;
-import com.util.StoreType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

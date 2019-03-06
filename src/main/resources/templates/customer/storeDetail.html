@@ -18,7 +18,7 @@
             margin-right: 15px;
         }
         #header-info{
-            background: url("../../static/images/ele-bg.jpg") no-repeat;
+            background: url("/images/ele-bg.jpg") no-repeat;
             background-size: cover;
         }
         #store-name:hover{
@@ -150,9 +150,10 @@
             </div>
             <div>
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/store_home">商品主页</a></li>
-                    <li><a href="/orderManage">我的订单</a></li>
-                    <li><a href="/stockManage">个人中心</a></li>
+                    <li class="active"><a href="/user_home">商品主页</a></li>
+                    <li><a href="/myOrder">我的订单</a></li>
+                    <li><a href="/personal">个人中心</a></li>
+                    <li><a href="/myStatistics">消费统计</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -173,7 +174,7 @@
     <div id="header-info">
         <div class="container" style="color: white;margin-top: 51px;display: table;height: 140px;font-family: 华文楷体, serif;z-index: 1">
             <div id="main-info" style="display: table-cell;width: 70%;vertical-align: middle;">
-                <img class="head-img" src="../../static/images/image.jpg" >
+                <img class="head-img" src="/images/image.jpg" >
                 <div id="name-intro" style="display: inline-block;vertical-align: middle;">
                     <h2 id="store-name" style="cursor: pointer"></h2>
                     <h4 id="store-address"></h4>
@@ -250,10 +251,11 @@
 <script>
     window.onload=function () {
         var store;
+        $('#title-username').text(localStorage.getItem('username'));
         if(localStorage.getItem('cart-list')==undefined){
             localStorage.setItem('cart-list',JSON.stringify({}));
         }
-        store={
+        /*store={
             "id": "0000002",
             "name": "武汉热干面",
             "boss": "张老板",
@@ -372,10 +374,10 @@
 
         loadHeader(store);
         loadGoods(store.goods);
-        loadCart(store.id);
+        loadCart(store.id);*/
         $.ajax({
-            url: "getStoreInfo",
-            type: "/POST",
+            url: "/getStoreVo",
+            type: "POST",
             cache: false,
             async: false,
             data: {
@@ -383,6 +385,8 @@
             },
             success: function (data) {
                 store=data;
+                localStorage.setItem("store",JSON.stringify(store));
+                localStorage.setItem("store_id",store.id);
                 loadHeader(store);
                 loadGoods(store.goods);
                 loadCart(store.id);
@@ -416,7 +420,7 @@
         for(var i=0;i<value.length;i++){
             var good=value[i];
             $("#"+"one-type-"+key).append("<div class='good-block col-sm-6'>" +
-                "                            <img src='../../static/images/image.jpg' class='food-img'>" +
+                "                            <img src='/images/image.jpg' class='food-img'>" +
                 "                            <div class='good-info'>" +
                 "                                <h3 id='name-"+good.id+"' class='good-name'>"+good.name+"</h3>" +
                 "                                <p class='good-desc'>"+good.description+"</p>" +

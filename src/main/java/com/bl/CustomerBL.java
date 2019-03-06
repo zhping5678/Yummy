@@ -180,23 +180,25 @@ public class CustomerBL implements CustomerBLService {
     }
 
     @Override
-    public void addNewAddress(String username, String province, String city, String area, String detail, String tel, String name) {
+    public ResultMessage addNewAddress(String username, String province, String city, String area, String detail, String tel, String name) {
         Customer customer=customerDao.find(username);
         Address newAdd=new Address(0,province,city,area,detail,tel,name);
         customer.getAddresses().add(newAdd);
         customerDao.saveAndFlush(customer);
+        return ResultMessage.SUCCESS;
     }
 
     @Override
-    public void deleteAddress(String username, long address_id) {
+    public ResultMessage deleteAddress(String username, List<String> address_ids) {
         Customer customer=customerDao.find(username);
         for(Address address:customer.getAddresses()){
-            if(address.getId()==address_id){
+            if(address_ids.contains(String.valueOf(address.getId()))){
                 customer.getAddresses().remove(address);
                 break;
             }
         }
         customerDao.saveAndFlush(customer);
+        return ResultMessage.SUCCESS;
     }
 
     @Override
@@ -205,22 +207,24 @@ public class CustomerBL implements CustomerBLService {
     }
 
     @Override
-    public void addNewAccount(String username, String account) {
+    public ResultMessage addNewAccount(String username, String account) {
         Customer customer=customerDao.find(username);
         customer.getAccount().add(new Account(account,this.getRandomBalance()));
         customerDao.saveAndFlush(customer);
+        return ResultMessage.SUCCESS;
     }
 
     @Override
-    public void deleteAccount(String username, String account) {
+    public ResultMessage deleteAccount(String username, List<String> account) {
         Customer customer=customerDao.find(username);
         for(Account a:customer.getAccount()){
-            if(a.getAccount().equals(account)){
+            if(account.contains(a.getAccount())){
                 customer.getAccount().remove(a);
                 break;
             }
         }
         customerDao.saveAndFlush(customer);
+        return ResultMessage.SUCCESS;
     }
 
     private int getRandomBalance(){

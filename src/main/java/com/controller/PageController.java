@@ -76,7 +76,29 @@ public class PageController{
         return "customer/storeDetail";
     }
 
+    /*
+     * 显示普通用户个人中心界面
+     */
+    @RequestMapping(value = "/personal",method = RequestMethod.GET)
+    public String getPersonalPage(){
+        return "customer/personalPage";
+    }
 
+    /*
+     * 显示普通用户订单列表页面
+     */
+    @RequestMapping(value = "/myOrder",method = RequestMethod.GET)
+    public String getMyOrder(){
+        return "customer/myOrderPage";
+    }
+
+    /*
+     * 显示普通用户的消费统计数据
+     */
+    @RequestMapping(value = "/myStatistics",method = RequestMethod.GET)
+    public String getMyStatistics(){
+        return "customer/statistics";
+    }
     /*
      * 显示商户登录进入后的页面
      */

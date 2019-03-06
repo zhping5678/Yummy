@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S05BbP0B9UL0fjYlbuWTAbnRBES8jndB"></script>
+    <link href="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin:0;font-size: 23px;font-family: 华文楷体, serif;">
+    <div class="container-fluid">
+        <div class="navbar-header" style="margin-right: 20px;">
+            <a class="navbar-brand" href="#" style="font-size: 30px;color: rgba(0,0,0,1)">Yummy</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li><a href="/user_home">商品主页</a></li>
+                <li class="active"><a href="/myOrder">我的订单</a></li>
+                <li><a href="/personal">个人中心</a></li>
+                <li><a href="/myStatistics">消费统计</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a id="title-username" class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        用户名
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" style="font-size: 18px;min-width: 115px;text-align: center;">
+                        <li style="cursor: pointer" onclick="logout()"><a>登出</a></li>
+                        <li><a href="/modifyPass">修改密码</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
