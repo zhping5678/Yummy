@@ -9,6 +9,7 @@ import com.util.*;
 import com.vo.StoreInfo;
 import com.vo.StoreVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -282,12 +283,12 @@ public class StoreBL implements StoreBLService {
         Store store = storeDao.find(store_id);
         StoreVO storeVO=new StoreVO(store.getId(),store.getName(),store.getBoss(),store.getEmail(),store.getIntroduce(),
                 store.getType().toString(),store.getFood_types(),store.getProvince(),store.getCity(),store.getArea(),store.getDetail());
-        Map<Integer,Integer> discounts = store.getDiscounts();
-        StringBuilder discount= new StringBuilder();
-        for(Map.Entry<Integer,Integer> entry:discounts.entrySet()){
-            discount.append("满").append(entry.getKey()).append("减").append(entry.getValue()).append(" ");
-        }
-        storeVO.setDiscounts(discount.toString());
+//        Map<Integer,Integer> discounts = store.getDiscounts();
+//        StringBuilder discount= new StringBuilder();
+//        for(Map.Entry<Integer,Integer> entry:discounts.entrySet()){
+//            discount.append("满").append(entry.getKey()).append("减").append(entry.getValue()).append(" ");
+//        }
+        storeVO.setDiscounts(store.getDiscounts());
         //将正在售卖的商品按商品分类返回
         Map<String,List<Good>> goods = new HashMap<>();
         for(String type: store.getFood_types()){
@@ -304,4 +305,16 @@ public class StoreBL implements StoreBLService {
         return storeVO;
     }
 
+    /*
+     * 每天零点检查食物是否上架
+     */
+    @Scheduled(cron = "0 5 0 * * ?")
+//    @Scheduled(fixedDelay = 60000)
+    @Transactional
+    public void updateGoodState(){
+        System.out.println("检查食物是否上架，是否到期下架");
+        int num1=goodDao.updateWaitGood(new Date());
+        int num2=goodDao.updateValidGood(new Date());
+        System.out.println("更新数量："+num1+" "+num2);
+    }
 }

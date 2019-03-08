@@ -31,7 +31,7 @@ public class StoreVO {
     private String area;//区
     private String detail;//具体地址
 
-    private String discounts;//满减优惠
+    private Map<Integer,Integer> discounts;//满减优惠
 
     private Map<String,List<Good>> goods;//商品
 

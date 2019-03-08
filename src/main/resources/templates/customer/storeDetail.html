@@ -222,27 +222,53 @@
                 <p id="clear-cart" style="display: inline;color: #337ab7;font-size: 18px;cursor:pointer;">[清空]</p>
             </div>
             <div id="cart" style="margin-bottom: 54px;"></div>
-            <!--一条购物车记录-->
-            <!--<div class="cart-list">-->
-                <!--<div class="name" style="">海参捞饭</div>-->
-                <!--&lt;!&ndash;数字加减器&ndash;&gt;-->
-                <!--<div id="1" class="input-group" style="width: 60px;padding-top:8px">-->
-                    <!--<span  class="input-group-addon input-group-addon-remove quantity-remove btn">-->
-                        <!--<span class="glyphicon glyphicon-minus"></span>-->
-                    <!--</span>-->
-                    <!--<input id="1inp" type="text" value="1" min="1" class="form-control cart-num-input" placeholder="1" style="" readonly>-->
-                    <!--<span class="input-group-addon input-group-addon-remove quantity-add btn">-->
-                        <!--<span class="glyphicon glyphicon-plus"></span>-->
-                    <!--</span>-->
-                <!--</div>-->
-                <!--<div class="price-and-amount">￥50</div>-->
-            <!--</div>-->
+            <!--一条购物车记录>
+            <div class="cart-list">
+                <div class="name" style="">海参捞饭</div>
+
+                <div id="1" class="input-group" style="width: 60px;padding-top:8px">
+                    <span  class="input-group-addon input-group-addon-remove quantity-remove btn">
+                        <span class="glyphicon glyphicon-minus"></span>
+                    </span>
+                    <input id="1inp" type="text" value="1" min="1" class="form-control cart-num-input" placeholder="1" style="" readonly>
+                    <span class="input-group-addon input-group-addon-remove quantity-add btn">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </span>
+                </div>
+                <div class="price-and-amount">￥50</div>
+            </div>-->
 
             <div style="font-family: 华文楷体, serif;">
                 <div id="total" style="position: fixed;display: inline-block;background: #337ab7;color: #ffffff;">
                     <p id="total-price">￥ 0.00</p>
                 </div>
-                <button id="pay" style="display: inline-block" onclick="pay()">结算</button>
+                <button type="button" id="pay" style="display: inline-block" data-toggle="modal" data-target="#pre-order">结算</button>
+            </div>
+        </div>
+    </div>
+    <div id="pre-order" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>订单预览</h3>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <p>张萍 1888328989</p>
+                        <p>玄武区南京大学仙林校区</p>
+                        <button id="change-add" class="btn btn-success" type="button">更换地址</button>
+                    </div>
+                    <table id="order">
+                    </table>
+                    <div>
+                        <p>473540932039284948329482048028402348</p>
+                        <button id="change-account" class="btn btn-success" type="button">更换账户</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-submit" class="btn btn-dark">取消</button>
+                    <button id="sure-submit" class="btn btn-success">下单</button>
+                </div>
             </div>
         </div>
     </div>
@@ -255,7 +281,7 @@
         if(localStorage.getItem('cart-list')==undefined){
             localStorage.setItem('cart-list',JSON.stringify({}));
         }
-        /*store={
+        store={
             "id": "0000002",
             "name": "武汉热干面",
             "boss": "张老板",
@@ -263,41 +289,23 @@
             "introduce": "正宗武汉热干面",
             "type": "HotFood",
             "food_types": [
-                "招牌热干面",
                 "热干面套餐",
-                "常规热干面"
+                "招牌热干面",
+                "羊肉汤"
             ],
             "province": "江苏省",
             "city": "南京市",
             "area": "玄武区",
             "detail": "xx街道xx号",
-            "discounts": "满33减4 满22减3 满44减5 ",
+            "discounts": {
+                "22": 3,
+                "33": 4,
+                "44": 5
+            },
             "goods": {
                 "热干面套餐": [
                     {
                         "id": 4,
-                        "name": "原味热干面+鸡蛋+饮料",
-                        "description": "价低量大",
-                        "price": 30,
-                        "amount": 100,
-                        "type": "热干面套餐",
-                        "start_time": "2019-02-28 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
-                        "state": "Valid"
-                    },
-                    {
-                        "id": 6,
-                        "name": "原味热干面+鸡蛋+饮料",
-                        "description": "价低量大",
-                        "price": 30,
-                        "amount": 100,
-                        "type": "热干面套餐",
-                        "start_time": "2019-02-28 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
-                        "state": "Valid"
-                    },
-                    {
-                        "id": 7,
                         "name": "原味热干面+鸡蛋+饮料",
                         "description": "价低量大",
                         "price": 30,
@@ -317,56 +325,22 @@
                         "amount": 400,
                         "type": "招牌热干面",
                         "start_time": "2019-02-27 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
+                        "end_time": "2019-03-15 00:00:00",
                         "state": "Valid"
                     },
                     {
-                        "id": 8,
-                        "name": "原味热干面",
-                        "description": "无",
-                        "price": 18,
-                        "amount": 400,
+                        "id": 5,
+                        "name": "全家福热干面",
+                        "description": "充足配料",
+                        "price": 25,
+                        "amount": 200,
                         "type": "招牌热干面",
-                        "start_time": "2019-02-27 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
-                        "state": "Valid"
-                    },
-                    {
-                        "id": 9,
-                        "name": "原味热干面",
-                        "description": "无",
-                        "price": 18,
-                        "amount": 400,
-                        "type": "招牌热干面",
-                        "start_time": "2019-02-27 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
-                        "state": "Valid"
-                    },
-                    {
-                        "id": 10,
-                        "name": "原味热干面",
-                        "description": "无",
-                        "price": 18,
-                        "amount": 400,
-                        "type": "招牌热干面",
-                        "start_time": "2019-02-27 00:00:00",
+                        "start_time": "2019-03-02 00:00:00",
                         "end_time": "2019-03-31 00:00:00",
                         "state": "Valid"
                     }
                 ],
-                "常规热干面": [
-                    {
-                        "id": 5,
-                        "name": "常规热干面",
-                        "description": "无",
-                        "price": 18,
-                        "amount": 400,
-                        "type": "常规热干面",
-                        "start_time": "2019-02-27 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
-                        "state": "Valid"
-                    }
-                ]
+                "羊肉汤": []
             }
         };
         localStorage.setItem("store",JSON.stringify(store));
@@ -374,8 +348,8 @@
 
         loadHeader(store);
         loadGoods(store.goods);
-        loadCart(store.id);*/
-        $.ajax({
+        loadCart(store.id);
+        /*$.ajax({
             url: "/getStoreVo",
             type: "POST",
             cache: false,
@@ -395,13 +369,15 @@
                 alert("服务器连接错误,请重试");
                 console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
             }
-        })
+        })*/
     };
     function loadHeader(store){
         $("#store-name").html(store.name);
         $("#store-address").html(store.area+store.detail);
-        $("#store-strategy").html(store.discounts);
-        $("#store-intro").html(store.introduce)
+        var discounts=store.discounts;
+        $("#store-strategy").html(formatDiscountMapToString(discounts));
+        $("#store-intro").html(store.introduce);
+        localStorage.setItem("discounts",JSON.stringify(discounts));
     }
     function loadGoods(goods){//参数为map类型,key值为商品类型,value为该类型商品列表
         for(var key in goods){
@@ -465,7 +441,8 @@
                     "            </div>")
             }
             // alert(total);
-            $('#total-price').html('￥ '+total);
+            var youhui=caculateTotal(total);
+            $('#total-price').html('￥ '+(total-youhui)+'<small>(已减'+youhui+')</small>');
         }else{
             console.log("之前没有购物车");
             cart_list[store_id]=[];
@@ -530,18 +507,75 @@
         addToCart(id);
 
     }
-    function pay() {
-        var store_id=localStorage.getItem('store_id');
-        var good_list=JSON.parse(localStorage.getItem('cart-list'))[store_id];
-        var order_info={
-            store_id:store_id,
-            username:localStorage.getItem('username'),
-            list:good_list
-        };
-    }
+    $("#pay").click(function () {
+        $("#pre-order").on('shown.bs.modal',function () {
+            var store_id=localStorage.getItem('store_id');
+            var good_list=JSON.parse(localStorage.getItem('cart-list'))[store_id];
+            // var order_info={
+            //     store_id:store_id,
+            //     username:localStorage.getItem('username'),
+            //     list:good_list
+            // };
+            // alert(JSON.stringify(order_info));
+            // $.ajax({
+            //
+            // })
+            alert(JSON.stringify(good_list));
+            $("#order").bootstrapTable({
+                showColumns:false,
+                sidePagination:'server',
+                columns:[
+                    {
+                        field:'good_id',
+                        title:'ID',
+                        visible:false
+                    },
+                    {
+                        field:'good_name',
+                        title:'商品',
+                        visible:true
+                    },
+                    {
+                        field:'num',
+                        title:'数量',
+                        visible:true
+                    },
+                    {
+                        field:'good_price',
+                        title:'小计',
+                        visible:true
+                    }
+                ],
+                data:good_list
+            });
+        });
+    });
     function logout(){
         localStorage.clear();
         window.location.href='/login';
+    }
+    function caculateTotal(total) {
+        //参数：满减前的总价，返回值：应该优惠的价格
+        var re=0;
+        var discounts=JSON.parse(localStorage.getItem("discounts"));
+        for(var key in discounts){
+            if(total>parseInt(key) && re<parseInt(discounts[key])){
+                re=discounts[key];
+            }
+        }
+        return re;
+    }
+    function formatDiscountMapToString(discounts){
+        /*"discounts": {
+            "22": 3,
+                "33": 4,
+                "44": 5
+        }*/
+        var str='';
+        for(var key in discounts){
+            str=str+"满"+key+"减"+discounts[key]+" ";
+        }
+        return str;
     }
     $(function () {
         $(window).scroll(function () {

@@ -73,7 +73,7 @@
         <div id="map"></div>
         <div style="margin-left: 25px">
             <a id="city" href="#">城市定位</a>
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTable">选择地址</button>
+            <button id="choose-address" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTable">选择地址</button>
         </div>
         <div id="category">
             <span style="position: absolute;left: 10px;top: 13px; color: #999;">商家分类：</span>
@@ -111,8 +111,9 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">新增地址</button>
-                    <button type="button" class="btn btn-success">选择地址</button>
+                    <button id="add-new-address" type="button" class="btn btn-primary" style="float: left;">新增地址</button>
+                    <button id="choose-address-from-table" type="button" class="btn btn-success" data-dismiss="modal" style="float: left;">选择地址</button>
+                    <button id="choose-cancel" type="button" class="btn btn-dark" data-dismiss="modal" style="float: right">取消</button>
                 </div>
             </div>
         </div>
@@ -121,15 +122,103 @@
 </div>
 
 <script type="text/javascript">
-
-
+    $("#choose-address-from-table").click(function () {
+        var $table=$("#address-table");
+        var chosen = $table.bootstrapTable('getSelections');
+        if(chosen.length===0){
+           alert("未选择地址");
+        }else{
+            localStorage.setItem('address',JSON.stringify(chosen[0]));
+            var city=chosen[0].city;
+            alert(city);
+            showStoresInSameCity(city)
+        }
+    });
+    $("#choose-address").click(function () {
+        $("#modalTable").on('shown.bs.modal',function () {
+            var addresses=[];
+            // var addresses=[{id:0,name:'张',telephone:'1288319291',province:'江苏省',city:'南京市',area:'玄武区',detail:'西乡街道xx号'},
+            //     {id:1,name:'张',telephone:'1288319291',province:'江苏省',city:'南京市',area:'玄武区',detail:'西乡街道xx号'}];
+            $.ajax({
+                url:"/getAddressList",
+                type:"POST",
+                cache:false,
+                async:false,
+                data:{
+                    username:localStorage.getItem('username')
+                },
+                success:function (data) {
+                    addresses=data;
+                },
+                error:function (XMLHttpRequest, status, error) {
+                    console.log(XMLHttpRequest.status+" "+status+" "+error)
+                }
+            });
+            $("#address-table").bootstrapTable({
+                checkboxHeader: false,
+                singleSelect:true,
+                clickToSelect:true,
+                showColumns:false,
+                sidePagination: 'server',
+                columns: [
+                    {
+                        checkbox:false
+                    },
+                    {
+                        field: 'id',
+                        title: '地址编号',
+                        visible: false
+                    },
+                    {
+                        field: 'name',
+                        title: '收货人',
+                        visible: true
+                    },
+                    {
+                        field:'telephone',
+                        title:'收货电话',
+                        visible:true
+                    },
+                    {
+                        field:'province',
+                        title:'省',
+                        visible:false
+                    },
+                    {
+                        field:'city',
+                        title:'市',
+                        visible:false
+                    },
+                    {
+                        field:'area',
+                        title:'区',
+                        visible:true
+                    },
+                    {
+                        field:'detail',
+                        title:'地址',
+                        visible:true
+                    }
+                ],
+                data:addresses
+            });
+        })
+    });
     // 跳转到具体店铺页面时，设置localStorage.setItem("store_id",store_id)
     function loadStoreInfo() {
         $("#title-username").text(localStorage.getItem("username"));
-        locationCity();
+        if(localStorage.getItem('address')==undefined){
+            locationCity();
+        }else{
+            var address=JSON.parse(localStorage.getItem('address'));
+            var city=address.city;
+            $("#city").text(city+address.area+address.detail);
+            showStoresInSameCity(city);
+        }
     }
     function locationCity() {
         //百度地图定位API
+        console.log("定位中");
         var map = new BMap.Map("map");
         var point = new BMap.Point(116.331398, 39.897445);
         map.centerAndZoom(point, 12);

@@ -183,7 +183,13 @@ public class CustomerBL implements CustomerBLService {
     public ResultMessage addNewAddress(String username, String province, String city, String area, String detail, String tel, String name) {
         Customer customer=customerDao.find(username);
         Address newAdd=new Address(0,province,city,area,detail,tel,name);
-        customer.getAddresses().add(newAdd);
+        if(customer.getAddresses()==null||customer.getAddresses().size()==0){
+            List<Address> addresses=new ArrayList<>();
+            addresses.add(newAdd);
+            customer.setAddresses(addresses);
+        }else{
+            customer.getAddresses().add(newAdd);
+        }
         customerDao.saveAndFlush(customer);
         return ResultMessage.SUCCESS;
     }
@@ -209,7 +215,14 @@ public class CustomerBL implements CustomerBLService {
     @Override
     public ResultMessage addNewAccount(String username, String account) {
         Customer customer=customerDao.find(username);
-        customer.getAccount().add(new Account(account,this.getRandomBalance()));
+        Account newAccount=new Account(account,this.getRandomBalance());
+        if(customer.getAccount()==null||customer.getAccount().size()==0){
+            List<Account> accounts=new ArrayList<>();
+            accounts.add(newAccount);
+            customer.setAccount(accounts);
+        }else{
+            customer.getAccount().add(newAccount);
+        }
         customerDao.saveAndFlush(customer);
         return ResultMessage.SUCCESS;
     }
