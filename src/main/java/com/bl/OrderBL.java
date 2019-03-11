@@ -91,13 +91,13 @@ public class OrderBL implements OrderBLService {
         Orders order=orderDao.getOne(order_id);
         if(order.getState()==OrderState.WaitToSendOut){
             customerBLService.accountIn(order.getAccount(),order.getMoney()*0.7);
-            order.setState(OrderState.Cancel);
+            order.setState(OrderState.CancelAfterAccept);
             order.setNote("因取消订单,扣除原订单的20%,即"+order.getMoney()*0.3);
             orderDao.saveAndFlush(order);
             storeBLService.inStock(order.getGoodLists());
             return ResultMessage.RefundSuccess;
         }else if(order.getState()==OrderState.WaitToPay||order.getState()==OrderState.WaitStoreToAccept) {
-            order.setState(OrderState.Cancel);
+            order.setState(OrderState.CancelBeforeAccept);
             orderDao.saveAndFlush(order);
             return ResultMessage.SUCCESS;
         }else {
@@ -118,5 +118,60 @@ public class OrderBL implements OrderBLService {
     @Override
     public List<Orders> getHistoryOrders(String username){
         return orderDao.getHistoryOrders(username);
+    }
+
+    @Override
+    public List<Orders> getStoreNewOrders(String store_id) {
+        return orderDao.getStoreNewOrders(store_id);
+    }
+
+    @Override
+    public List<Orders> getStorePreparingOrders(String store_id) {
+        return orderDao.getStorePreparingOrders(store_id);
+    }
+
+    @Override
+    public List<Orders> getStoreSendOrders(String store_id) {
+        return orderDao.getStoreSendOrders(store_id);
+    }
+
+    @Override
+    public List<Orders> getStoreCompleteOrders(String store_id) {
+        return orderDao.getStoreCompleteOrders(store_id);
+    }
+
+    @Override
+    public List<Orders> getStoreCancelOrders(String store_id) {
+        return orderDao.getStoreCancelOrders(store_id);
+    }
+
+    @Override
+    @Transactional
+    public ResultMessage acceptOrder(String order_id) {
+        if(orderDao.acceptOrder(order_id)==1){
+            return ResultMessage.SUCCESS;
+        }else{
+            return ResultMessage.Cancel;
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResultMessage sendOutOrder(String order_id) {
+        if(orderDao.sendOutOrder(order_id)==1){
+            return ResultMessage.SUCCESS;
+        }else{
+            return ResultMessage.Cancel;
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResultMessage refuseOrder(String order_id) {
+        if(orderDao.refuseOrder(order_id)==1){
+            return ResultMessage.SUCCESS;
+        }else{
+            return ResultMessage.FAIL;
+        }
     }
 }

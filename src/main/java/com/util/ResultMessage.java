@@ -13,5 +13,6 @@ public enum ResultMessage {
     NoEmail,
     StockNotEnough,
     BalanceNotEnough,
-    RefundSuccess//退款
+    RefundSuccess,//退款
+    Cancel,//订单已取消
 }

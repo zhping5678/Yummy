@@ -20,6 +20,9 @@ public class OrderController {
     @Autowired
     private OrderBLService orderBLService;
 
+    /*
+     * 用户提交新订单
+     */
     @RequestMapping(value = "/submitNewOrder", method = RequestMethod.POST)
     public @ResponseBody String submitNewOrder(@RequestBody OrderInfo orderInfo){
 //        System.out.println("提交新订单的内容为："+orderInfo.toString());
@@ -67,5 +70,67 @@ public class OrderController {
     @RequestMapping(value = "/getHistoryOrders", method = RequestMethod.POST)
     public @ResponseBody List<Orders> getHistoryOrders(String username){
         return orderBLService.getHistoryOrders(username);
+    }
+
+
+    /*
+     * 商家得到新订单
+     */
+    @RequestMapping(value = "/getNewOrders",method = RequestMethod.POST)
+    public @ResponseBody List<Orders> getNewOrders(String store_id){
+        return orderBLService.getStoreNewOrders(store_id);
+    }
+    /*
+     * 商家得到备货中的订单
+     */
+    @RequestMapping(value = "/getPrepareOrders",method = RequestMethod.POST)
+    public @ResponseBody List<Orders> getPreparingOrders(String store_id){
+        return orderBLService.getStorePreparingOrders(store_id);
+    }
+    /*
+     * 商家得到已送出的订单
+     */
+    @RequestMapping(value = "/getSendOrders",method = RequestMethod.POST)
+    public @ResponseBody List<Orders> getSendOrders(String store_id){
+        return orderBLService.getStoreSendOrders(store_id);
+    }
+    /*
+     * 商家得到以完成的订单
+     */
+    @RequestMapping(value = "/getCompleteOrders",method = RequestMethod.POST)
+    public @ResponseBody List<Orders> getCompleteOrders(String store_id){
+        return orderBLService.getStoreCompleteOrders(store_id);
+    }
+
+    /*
+     * 商家得到被取消的订单
+     */
+    @RequestMapping(value = "/getCancelOrders",method = RequestMethod.POST)
+    public @ResponseBody List<Orders> getCancelOrders(String store_id){
+        return orderBLService.getStoreCancelOrders(store_id);
+    }
+
+    /*
+     * 商家接单
+     */
+    @RequestMapping(value = "/acceptOrder",method = RequestMethod.POST)
+    public @ResponseBody ResultMessage accept(String order_id){
+        return orderBLService.acceptOrder(order_id);
+    }
+
+    /*
+     * 商家送出商品
+     */
+    @RequestMapping(value = "/sendOutOrder",method = RequestMethod.POST)
+    public @ResponseBody ResultMessage sendOut(String order_id){
+        return orderBLService.sendOutOrder(order_id);
+    }
+
+    /*
+     * 商家拒单
+     */
+    @RequestMapping(value = "/acceptOrder",method = RequestMethod.POST)
+    public @ResponseBody ResultMessage refuse(String order_id){
+        return orderBLService.refuseOrder(order_id);
     }
 }

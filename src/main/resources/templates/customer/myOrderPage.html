@@ -564,8 +564,12 @@
                 return '商品已送出';
             case 'Over':
                 return '已完成';
-            case 'Cancel':
-                return '已取消';
+            case 'CancelBeforeAccept':
+                return '无条件取消';
+            case 'CancelAfterAccept':
+                return '扣款30%';
+            case 'Refuse':
+                return '商家拒绝接单';
         }
     }
     function logout(){
