@@ -1,7 +1,9 @@
 package com.blservice;
 
 import com.model.Good;
+import com.model.GoodList;
 import com.model.Store;
+import com.util.GoodState;
 import com.util.ResultMessage;
 import com.util.StoreType;
 import com.vo.StoreInfo;
@@ -52,4 +54,13 @@ public interface StoreBLService {
                         Date start_time, Date end_time);
 
     StoreVO getStoreVO(String store_id);
+
+    /*
+     * 得到库存信息
+     */
+    int getStockNum(long good_id);
+
+    ResultMessage outStock(List<GoodList> lists);
+
+    ResultMessage inStock(List<GoodList> lists);
 }

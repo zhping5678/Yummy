@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.js"></script>
     <style>
         body{
             background: #f7f7f7;
@@ -134,9 +136,30 @@
             display: table-cell;
             vertical-align: middle
         }
-        .quantity-add,.quantity-remove{
+        .quantity-add,.quantity-remove {
             padding: 0;
             cursor: pointer;
+        }
+        .part{
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 16px;
+        }
+        .part-header{
+            font-weight: 700;
+        }
+        .total-line{
+            position: relative;
+            height: 25px;
+        }
+        .con1{
+            display: inline;
+            position: absolute;
+            left: 5px;
+        }
+        .con2{
+            display: inline;
+            position: absolute;
+            right: 5px;
         }
     </style>
 </head>
@@ -184,6 +207,7 @@
             <div id="other-info" style="display: table-cell;width: 30%;vertical-align: middle">
                 <p style="font-size: 19px;margin-bottom: 0;">简介：</p>
                 <p id="store-intro" class="" style="font-size: 18px;"></p>
+                <p id="arrive-time" style="font-size: 19px;margin-bottom: 0;">平局送达时间：40分钟</p>
             </div>
         </div>
     </div>
@@ -253,21 +277,68 @@
                     <h3>订单预览</h3>
                 </div>
                 <div class="modal-body">
-                    <div>
-                        <p>张萍 1888328989</p>
-                        <p>玄武区南京大学仙林校区</p>
-                        <button id="change-add" class="btn btn-success" type="button">更换地址</button>
+                    <div class="part">
+                        <h4 class="part-header">收货地址</h4>
+                        <p id="name-and-tel" style="display: inline"></p>
+                        <br>
+                        <p id="detail-address" style="display: inline;"></p>
+                        <button id="change-address" class="btn btn-success btn-sm" data-toggle="modal" data-target="#address-table" type="button" style="display: inline-block;margin-bottom: 5px">选择地址</button>
+                        <p id="time">预计送达时间：-</p>
                     </div>
-                    <table id="order">
-                    </table>
-                    <div>
-                        <p>473540932039284948329482048028402348</p>
-                        <button id="change-account" class="btn btn-success" type="button">更换账户</button>
+                    <div class="part">
+                        <h4 id="modal-store-name" class="part-header">店铺名</h4>
+                        <table id="order-table" class="table table-hover" style="border-bottom: none;">
+                        </table>
+                        <div class="total-line">
+                            <p class="con1">优惠</p>
+                            <p id="youhui-value" class="con2">￥ -</p>
+                        </div>
+                        <div class="total-line">
+                            <p class="con1">总额</p>
+                            <p id="final-total" class="con2">￥ -</p>
+                        </div>
+                    </div>
+                    <div style="font-size: 16px;">
+                        <h4 class="part-header">付款账户</h4>
+                        <p id="pay-account" style="display: inline-block"></p>
+                        <button id="change-account" class="btn btn-success btn-sm" data-toggle="modal" data-target="#account-table" type="button" style="display: inline-block">选择账户</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="note">备注</label>
+                        <input id="note" type="text" placeholder="" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="cancel-submit" class="btn btn-dark">取消</button>
-                    <button id="sure-submit" class="btn btn-success">下单</button>
+                    <button id="cancel-submit" class="btn btn-dark" data-dismiss="modal">取消</button>
+                    <button id="sure-submit" class="btn btn-success" data-dismiss="modal">下单</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="address-table" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">选择地址</div>
+                <div class="modal-body">
+                    <table id="modal-add-table"></table>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-choose-address" class="btn btn-dark" data-dismiss="modal">取消</button>
+                    <button id="sure-choose-address" class="btn btn-success" data-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="account-table" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">选择付款账户</div>
+                <div class="modal-body">
+                    <table id="modal-account-table"></table>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-choose-account" class="btn btn-dark" data-dismiss="modal">取消</button>
+                    <button id="sure-choose-account" class="btn btn-success" data-dismiss="modal">确定</button>
                 </div>
             </div>
         </div>
@@ -281,75 +352,7 @@
         if(localStorage.getItem('cart-list')==undefined){
             localStorage.setItem('cart-list',JSON.stringify({}));
         }
-        store={
-            "id": "0000002",
-            "name": "武汉热干面",
-            "boss": "张老板",
-            "email": "2946062178@qq.com",
-            "introduce": "正宗武汉热干面",
-            "type": "HotFood",
-            "food_types": [
-                "热干面套餐",
-                "招牌热干面",
-                "羊肉汤"
-            ],
-            "province": "江苏省",
-            "city": "南京市",
-            "area": "玄武区",
-            "detail": "xx街道xx号",
-            "discounts": {
-                "22": 3,
-                "33": 4,
-                "44": 5
-            },
-            "goods": {
-                "热干面套餐": [
-                    {
-                        "id": 4,
-                        "name": "原味热干面+鸡蛋+饮料",
-                        "description": "价低量大",
-                        "price": 30,
-                        "amount": 100,
-                        "type": "热干面套餐",
-                        "start_time": "2019-02-28 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
-                        "state": "Valid"
-                    }
-                ],
-                "招牌热干面": [
-                    {
-                        "id": 3,
-                        "name": "原味热干面",
-                        "description": "无",
-                        "price": 18,
-                        "amount": 400,
-                        "type": "招牌热干面",
-                        "start_time": "2019-02-27 00:00:00",
-                        "end_time": "2019-03-15 00:00:00",
-                        "state": "Valid"
-                    },
-                    {
-                        "id": 5,
-                        "name": "全家福热干面",
-                        "description": "充足配料",
-                        "price": 25,
-                        "amount": 200,
-                        "type": "招牌热干面",
-                        "start_time": "2019-03-02 00:00:00",
-                        "end_time": "2019-03-31 00:00:00",
-                        "state": "Valid"
-                    }
-                ],
-                "羊肉汤": []
-            }
-        };
-        localStorage.setItem("store",JSON.stringify(store));
-        localStorage.setItem("store_id",store.id);
-
-        loadHeader(store);
-        loadGoods(store.goods);
-        loadCart(store.id);
-        /*$.ajax({
+        $.ajax({
             url: "/getStoreVo",
             type: "POST",
             cache: false,
@@ -369,7 +372,7 @@
                 alert("服务器连接错误,请重试");
                 console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
             }
-        })*/
+        })
     };
     function loadHeader(store){
         $("#store-name").html(store.name);
@@ -378,6 +381,22 @@
         $("#store-strategy").html(formatDiscountMapToString(discounts));
         $("#store-intro").html(store.introduce);
         localStorage.setItem("discounts",JSON.stringify(discounts));
+        localStorage.setItem('store_name',store.name);
+        localStorage.setItem('store_address_city',store.city);
+        localStorage.setItem('store_address_area',store.area);
+        if(localStorage.getItem('address')==undefined){
+            $("#arrive-time").html('平均送达时间：'+"未选择地址无法判断");
+        }else{
+            var loc1=JSON.parse(localStorage.getItem('address')).area;
+            var loc2=store.area;
+            if(loc1===loc2){
+                $('#arrive-time').html('平均送达时间：40分钟');
+                localStorage.setItem('arrive-time','40分钟');
+            }else{
+                $('#arrive-time').html('平均送达时间：60分钟');
+                localStorage.setItem('arrive-time','60分钟');
+            }
+        }
     }
     function loadGoods(goods){//参数为map类型,key值为商品类型,value为该类型商品列表
         for(var key in goods){
@@ -406,15 +425,14 @@
                 "                        </div>")
         }
     }
-    /*
-    localstorage中的cart-list存的是string，读取时要parse成对象
-    {
-        '0000001':[ {good_id:4,good_name:'name4',num:3,good_price:8.8},
-                    {good_id:5,good_name:'name5',num:2,good_price:9.9}],
-        '0000002':[ {good_id:6,good_name:'name6',num:1,good_price:10.0},
-                    {good_id:7,good_name:'name7',num:4,good_price:11.0}]
-    }
-    */
+    $('#clear-cart').click(function () {
+        var cart_list=JSON.parse(localStorage.getItem('cart-list'));
+        $("#cart").empty();
+        var store_id=localStorage.getItem('store_id');
+        cart_list[store_id]=[];
+        localStorage.setItem('cart-list',JSON.stringify(cart_list));
+        $('#total-price').html('￥ 0.00')
+    });
     function loadCart(store_id) {
         var cart_list=JSON.parse(localStorage.getItem('cart-list'));
         var this_store_cart_list=cart_list[store_id];
@@ -443,12 +461,156 @@
             // alert(total);
             var youhui=caculateTotal(total);
             $('#total-price').html('￥ '+(total-youhui)+'<small>(已减'+youhui+')</small>');
+            localStorage.setItem('youhui',youhui);
+            localStorage.setItem('total-price',(total-youhui));
         }else{
             console.log("之前没有购物车");
             cart_list[store_id]=[];
             localStorage.setItem('cart-list',JSON.stringify(cart_list));
+            $('#total-price').html('￥ 0.00')
         }
     }
+    $("#sure-choose-address").click(function () {
+        var $table=$("#modal-add-table");
+        var chosen = $table.bootstrapTable('getSelections');
+        if(chosen.length===0){
+            alert("未选择地址");
+        }else{
+            var now_add=chosen[0];
+            var city=now_add.city;
+            if(localStorage.getItem('store_address_city')!==city){
+                alert('选择地址超出配送范围');
+            }else{
+                localStorage.setItem('address',JSON.stringify(chosen[0]));
+                $("#name-and-tel").html(now_add.name+" "+now_add.telephone);
+                $("#detail-address").html(now_add.area+now_add.detail);
+                var time;
+                if(localStorage.getItem('store_address_area')===now_add.area){
+                    time=40;
+                }else{
+                    time=60;
+                }
+                $("#time").html("预计送达时间："+time+"分钟");
+            }
+        }
+    });
+    $("#change-address").click(function () {
+        $("#address-table").on('shown.bs.modal',function () {
+            var addresses=[];
+            // var addresses=[{id:0,name:'张',telephone:'1288319291',province:'江苏省',city:'南京市',area:'玄武区',detail:'西乡街道xx号'},
+            //     {id:1,name:'张',telephone:'1288319291',province:'江苏省',city:'无锡市',area:'玄武区',detail:'西乡街道xx号'}];
+            $.ajax({
+                url:"/getAddressList",
+                type:"POST",
+                cache:false,
+                async:false,
+                data:{
+                    username:localStorage.getItem('username')
+                },
+                success:function (data) {
+                    addresses=data;
+                },
+                error:function (XMLHttpRequest, status, error) {
+                    console.log(XMLHttpRequest.status+" "+status+" "+error)
+                }
+            });
+            $("#modal-add-table").bootstrapTable({
+                checkboxHeader: false,
+                singleSelect:true,
+                clickToSelect:true,
+                showColumns:false,
+                sidePagination: 'server',
+                columns: [
+                    {
+                        checkbox:true
+                    },
+                    {
+                        field: 'id',
+                        title: '地址编号',
+                        visible: false
+                    },
+                    {
+                        field: 'name',
+                        title: '收货人',
+                        visible: true
+                    },
+                    {
+                        field:'telephone',
+                        title:'收货电话',
+                        visible:true
+                    },
+                    {
+                        field:'province',
+                        title:'省',
+                        visible:false
+                    },
+                    {
+                        field:'city',
+                        title:'市',
+                        visible:false
+                    },
+                    {
+                        field:'area',
+                        title:'区',
+                        visible:true
+                    },
+                    {
+                        field:'detail',
+                        title:'地址',
+                        visible:true
+                    }
+                ],
+                data:addresses
+            });
+        })
+    });
+    $('#sure-choose-account').click(function () {
+        var $table=$("#modal-account-table");
+        var chosen=$.map($table.bootstrapTable('getSelections'),function (row) {
+            return row.account;
+        });
+        if(chosen.length===0){
+            alert("未选择账户");
+        }else{
+            localStorage.setItem('pay-account',chosen[0]);
+            $('#pay-account').html(chosen[0])
+        }
+    });
+    $("#change-account").click(function () {
+        var $table=$('#modal-account-table');
+        var accounts=[];
+        $.ajax({
+            url:"/getAccountList",
+            type:"POST",
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username')
+            },
+            success:function (data) {
+                accounts=data;
+            },
+            error:function (XMLHttpRequest, status, error) {
+                console.log(XMLHttpRequest.status+" "+status+" "+error)
+            }
+        });
+        $table.bootstrapTable({
+            checkboxHeader: false,
+            singleSelect:true,
+            clickToSelect:true,
+            showColumns:false,
+            columns:[
+                {
+                    checkbox:true
+                },
+                {
+                    field:'account',
+                    title:'银行卡账号'
+                }
+            ],
+            data:accounts
+        })
+    });
     function addToCart(good_id){
         var store_id=localStorage.getItem('store_id');
         // alert('good_id: '+good_id);
@@ -508,47 +670,62 @@
 
     }
     $("#pay").click(function () {
-        $("#pre-order").on('shown.bs.modal',function () {
-            var store_id=localStorage.getItem('store_id');
-            var good_list=JSON.parse(localStorage.getItem('cart-list'))[store_id];
-            // var order_info={
-            //     store_id:store_id,
-            //     username:localStorage.getItem('username'),
-            //     list:good_list
-            // };
-            // alert(JSON.stringify(order_info));
-            // $.ajax({
-            //
-            // })
-            alert(JSON.stringify(good_list));
-            $("#order").bootstrapTable({
-                showColumns:false,
-                sidePagination:'server',
-                columns:[
-                    {
-                        field:'good_id',
-                        title:'ID',
-                        visible:false
-                    },
-                    {
-                        field:'good_name',
-                        title:'商品',
-                        visible:true
-                    },
-                    {
-                        field:'num',
-                        title:'数量',
-                        visible:true
-                    },
-                    {
-                        field:'good_price',
-                        title:'小计',
-                        visible:true
-                    }
-                ],
-                data:good_list
+        var store_id=localStorage.getItem('store_id');
+        var good_list=JSON.parse(localStorage.getItem('cart-list'))[store_id];
+        if(good_list==undefined||good_list.length===0){
+            alert('未选择任何商品');
+            return;
+        }else{
+            $("#pre-order").on('shown.bs.modal',function () {
+
+                var store_name=localStorage.getItem('store_name');
+                var address = localStorage.getItem("address");
+                if(address!=undefined){//如果已经选择过地址
+                    var temp=JSON.parse(address);
+                    $("#name-and-tel").html(temp.name+" "+temp.telephone);
+                    $("#detail-address").html(temp.area+temp.detail);
+                    $("#time").html("预计送达时间："+localStorage.getItem('arrive-time'));
+                }
+                $('#modal-store-name').html(store_name);
+                $("#order-table").bootstrapTable('destroy');
+                $("#order-table").bootstrapTable({
+                    borderless:true,
+                    showColumns:false,
+                    columns:[
+                        {
+                            field:'good_id',
+                            title:'ID',
+                            visible:false
+                        },
+                        {
+                            field:'good_name',
+                            title:'商品',
+                            visible:true
+                        },
+                        {
+                            field:'num',
+                            title:'数量',
+                            visible:true
+                        },
+                        {
+                            field:'good_price',
+                            title:'小计',
+                            visible:true,
+                            formatter:function (value, row, index) {
+                                return row.good_price * row.num;
+                            }
+                        }
+                    ],
+                    data:good_list
+                });
+                $('#youhui-value').html('￥ '+localStorage.getItem('youhui'));
+                $('#final-total').html('￥ '+localStorage.getItem('total-price'))
+                if(localStorage.getItem('pay-account')!=undefined){
+                    $("#pay-account").html(localStorage.getItem('pay-account'))
+                }
             });
-        });
+        }
+
     });
     function logout(){
         localStorage.clear();
@@ -587,7 +764,92 @@
                 $("#good-type-list").css({"position":"relative","width":"100%","top":"0"})
             }
         })
-    })
+    });
+    $("#sure-submit").click(function () {
+
+        // private int minute;//预计送达时间
+        var store_id=localStorage.getItem('store_id');
+        var account=localStorage.getItem('pay-account');
+        var address=localStorage.getItem('address');
+        var list=JSON.parse(localStorage.getItem('cart-list'))[store_id];
+        if(account==undefined||address==undefined||list.length===0){
+            alert('请填写完整再提交');
+        }else{
+            var t=JSON.parse(address);
+            var data={
+                store_id:store_id,
+                store_name:localStorage.getItem('store_name'),
+                username:localStorage.getItem('username'),
+                name:t.name,
+                tel:t.telephone,
+                address:t.city+t.area+t.detail,
+                list:list,
+                account:account,
+                money:localStorage.getItem('total-price'),
+                discount:localStorage.getItem('youhui'),
+                minute:$('#time').html().substr(7,2),
+                note:$('#note').val()
+            };
+            // console.log(JSON.stringify(data));
+            $.ajax({
+                url:'submitNewOrder',
+                type:'POST',
+                contentType:'application/json',
+                dataType:'json',
+                cache:false,
+                async:false,
+                data:JSON.stringify(data),
+                success:function (data) {
+                    if(JSON.stringify(data).substr(0,14)==='StockNotEnough'){
+                        alert(data.substr(14)+"库存不足,请重新选择")
+                    }else if (data==='BalanceNotEnough') {
+                        alert("账户余额不足,请重新选择")
+                    }else{
+                        //下单成功返回值为order对象字符串
+                        console.log("下单成功");
+                        var con;
+                        con=confirm("现在付款?");
+                        if(con){
+                            // alert(JSON.stringify(data));
+                            var order_id=data.id;
+                            // alert(order_id);
+                            $.ajax({
+                                url:'/pay',
+                                type:'POST',
+                                cache:false,
+                                async:false,
+                                data:{
+                                    order_id:order_id
+                                },
+                                success:function (data2) {
+                                    if(data2==='BalanceNotEnough'){
+                                        alert("账户余额不足")
+                                    }else if (data2==='StockNotEnough') {
+                                        alert("库存发生变化,请重新选择商品")
+                                    }else if(data2==='SUCCESS'){
+                                        alert("付款成功,即将跳转");
+                                        window.location.href='/myOrder';
+                                    }else{
+                                        alert("付款失败，请重试")
+                                    }
+                                },
+                                error:function (XMLHttpReuqest, status, error) {
+                                    console.log(XMLHttpReuqest.status+" "+status+" "+error);
+                                    alert("服务器连接失败")
+                                }
+                            })
+                        }
+                        window.location.href='/myOrder';
+                    }
+                },
+                error:function (XMLHttpRequest, status, error) {
+                    console.log(XMLHttpRequest.status+" "+status+" "+error);
+                    alert("服务器连接失败")
+                }
+            })
+        }
+
+    });
 </script>
 </body>
 </html>

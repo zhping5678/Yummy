@@ -10,6 +10,26 @@
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S05BbP0B9UL0fjYlbuWTAbnRBES8jndB"></script>
     <link href="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.css" rel="stylesheet">
     <script src="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.js"></script>
+    <style>
+        .store-name{
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .order>label{
+            font-size: 20px;
+        }
+        .order>p{
+            font-size: 17px;
+        }
+        .order{
+            width: 70%;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-top: 3px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin:0;font-size: 23px;font-family: 华文楷体, serif;">
@@ -39,5 +59,518 @@
         </div>
     </div>
 </nav>
+<div class="container-fluid" style="margin-top: 60px">
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="nav nav-tabs nav-stacked" style="font-size: 22px;font-family: 华文楷体, serif;text-align: center">
+                <li class="active"><a href="#on-order" data-toggle="tab">进行中</a></li>
+                <li onclick="loadHistoryOrder()"><a href="#history-order" data-toggle="tab">历史订单</a></li>
+            </ul>
+        </div>
+        <div class="col-md-10 tab-content">
+            <div class="tab-pane fade in active" id="on-order" style="font-family: 华文楷体, serif">
+                <div id="no-on-order" style="font-size: 30px;display: none">没有正在进行的订单</div>
+            </div>
+            <div class="tab-pane fade" id="history-order" style="font-family: 华文楷体, serif;padding-right: 100px">
+                <table id="history-order-table"
+                       data-detail-view="true"
+                       data-detail-formatter="detailFormatter"
+                       data-search="true"
+                       data-trim-on-search="true"
+                       data-locale="zh-CN"
+                       data-pagination="true"
+                       data-show-refresh="true"
+                       data-show-pagination-switch="true"
+                       data-sort-class="table-active"
+                       data-sortable="true"
+                       data-maintain-selected="true"
+                style="font-size: 16px">
+                    <thead>
+                    <tr>
+                        <th data-field="id" data-sortable="true">订单号</th>
+                        <th data-field="date" data-sortable="true">下单时间</th>
+                        <th data-field="store_name" data-sortable="true">店铺</th>
+                        <th data-field="money" data-sortable="true">金额</th>
+                        <th data-field="state" data-sortable="true" data-formatter="translate">状态</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
+<script type="text/javascript">
+
+    var maxtime;
+    function beginTimer(order_id){
+        var timer=setInterval(countDown,1000);
+        function countDown() {
+                if (maxtime >= 0) {
+                    var minutes = Math.floor(maxtime / 60);
+                    var seconds = Math.floor(maxtime % 60);
+                    var msg = "请在" + minutes + "分" + seconds + "秒内完成支付";
+                    $("#timer-"+order_id).html(msg);
+                    --maxtime;
+                } else{
+                    clearInterval(timer);
+                    cancelOrder(order_id);
+                }
+        }
+    }
+    function cancelOrder(order_id){
+        var con;
+        con=confirm("确认要取消订单吗?若商家已接单,将扣除原单30%金额");
+        if(con){
+            $.ajax({
+                url:'/cancelOrder',
+                type:'POST',
+                cache:false,
+                async:false,
+                data:{
+                    order_id:order_id
+                },
+                success:function (data) {
+                    if(data==='SUCCESS'){
+                        alert("订单已取消")
+                    }else if(data==='RefundSuccess'){
+                        alert("订单已取消,并扣除原订单30%")
+                    }else{
+                        alert("不能取消")
+                    }
+                    location.reload();
+                },
+                error:function (XMLRequest, status, error) {
+                    console.log(XMLRequest.status+" "+status+" "+error)
+                    alert("服务器连接失败")
+                }
+            })
+        }
+    }
+    function cancel2(store_id){
+        //参数为cancel-xxxxxxxx
+        var id=store_id.substr(7);
+        cancelOrder(id)
+    }
+    function confirmOrder(store_id){
+        //参数为confirm-xxxxxxx
+        var id=store_id.substr(8);
+        var con;
+        con=confirm("确认收到货物?");
+        if(con){
+            $.ajax({
+                url:'/confirmOrder',
+                type:'POST',
+                cache:false,
+                async:false,
+                data:{
+                    order_id:id
+                },
+                success:function (data) {
+                    if(data==='SUCCESS'){
+                        location.reload();
+                    }else{
+                        alert("确认失败")
+                    }
+                },
+                error:function (xmlRequestStatus, status, error) {
+                    console.log(xmlRequestStatus.status+" "+status+" "+error)
+                    alert("服务器连接失败")
+                }
+            })
+        }
+    }
+    function payOrder(order_id){
+        $("#title-username").text(localStorage.getItem("username"));
+        //参数为pay-xxxxxxxxxx
+        var con;
+        con=confirm('确认要像商家付款吗?');
+        if(con){
+            var id=order_id.substr(4);
+            $.ajax({
+                url:'/pay',
+                type:'POST',
+                cache:false,
+                async:false,
+                data:{
+                    order_id:id
+                },
+                success:function (data) {
+                    if(data==='BalanceNotEnough'){
+                        alert("账户余额不足")
+                    }else if (data==='StockNotEnough') {
+                        alert("库存发生变化,请重新选择商品")
+                    }else if(data==='SUCCESS'){
+                        location.reload();
+                    }else{
+                        alert("付款失败，请重试")
+                    }
+                },
+                error:function (requestStatus, status, error) {
+                    console.log(requestStatus+" "+status+" "+error);
+                    alert("服务器连接失败，请重试")
+                }
+            })
+        }
+
+
+    }
+    window.onload=function (ev) {
+        var on_orders=[];
+            /*[{
+            "id": "1111111111111111111111",
+            "customer": "2946062178@qq.com",
+            "store_id": "0000002",
+            "store_name": "武汉热干面",
+            "state": "WaitToPay",
+            "name": "可爱小朋友",
+            "tel": "13284281148",
+            "address": "南京市鼓楼区南京大学鼓楼校区",
+            "date": "2019-03-11 9:50",
+            "arrive": "2019-03-11 8:35",
+            "note": "不要葱姜蒜",
+            "goodLists": [
+                {
+                    "id": 1,
+                    "good_id": 4,
+                    "good_name":"原味热干面",
+                    "amount": 2,
+                    "price": 30
+                }
+            ],
+            "money": 55,
+            "discount": 5,
+            "account": "2839289483290193203920490"
+        },
+            {
+                "id": "2222222222222222222222222222",
+                "customer": "2946062178@qq.com",
+                "store_id": "0000002",
+                "store_name": "武汉热干面",
+                "state": "Sending",
+                "name": "可爱小朋友",
+                "tel": "13284281148",
+                "address": "南京市鼓楼区南京大学鼓楼校区",
+                "date": "2019-03-10 14:12",
+                "arrive": "2019-03-10 15:12",
+                "note": "不要葱姜蒜",
+                "goodLists": [
+                    {
+                        "id": 1,
+                        "good_id": 4,
+                        "good_name":"原味热干面",
+                        "amount": 2,
+                        "price": 30
+                    }
+                ],
+                "money": 55,
+                "discount": 5,
+                "account": "2839289483290193203920490"
+            },
+            {
+                "id": "333333333333333333333333",
+                "customer": "2946062178@qq.com",
+                "store_id": "0000002",
+                "store_name": "武汉热干面",
+                "state": "WaitToSendOut",
+                "name": "可爱小朋友",
+                "tel": "13284281148",
+                "address": "南京市鼓楼区南京大学鼓楼校区",
+                "date": "2019-03-10 14:12",
+                "arrive": "2019-03-10 15:12",
+                "note": "不要葱姜蒜",
+                "goodLists": [
+                    {
+                        "id": 1,
+                        "good_id": 4,
+                        "good_name":"原味热干面",
+                        "amount": 2,
+                        "price": 30
+                    }
+                ],
+                "money": 55,
+                "discount": 5,
+                "account": "2839289483290193203920490"
+            }
+        ];*/
+        //得到正在进行中的订单
+        // loadOnOrder(on_orders);
+        $.ajax({
+            url:'/getOnOrder',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username')
+            },
+            success:function (data) {
+                // on_orders=data;
+                loadOnOrder(data)
+            }
+        })
+    };
+    function loadOnOrder(orders) {
+        if (orders.length===0){
+            $("#no-on-order").css('display','block')
+        }else{
+            for (var i=0;i<orders.length;i++){
+                var order=orders[i];
+                $("#on-order").append(
+                    "<div id='"+order.id+"' class='order'>" +
+                    "   <label>订单编号</label>" +
+                    "   <h4 id='order-id' style='display: inline'>"+order.id+"</h4>" +
+                    "</div>");
+
+                if(order.state==='WaitToPay'){
+                    //等待支付的
+                    $("#"+order.id).append(
+                        "                    <button id='pay-"+order.id+"' class='btn btn-success' style='float: right;' onclick='payOrder(this.id)'>确认付款</button>" +
+                        "                    <button id='cancel-"+order.id+"' class='btn btn-dark' style='margin-right:5px;float: right' onclick='cancel2(this.id)'>取消订单</button>" +
+                        "                    <div id='timer-"+order.id+"' style='color: red;font-size: 18px'></div>"
+                    );
+                    var now=new Date();
+                    var submitTime=new Date(Date.parse(order.date));
+                    var pass=(now.getTime()-submitTime.getTime())/1000;
+                    // alert(now+"\n"+submitTime+"\n"+pass);
+                    maxtime=15*60-pass;
+                    beginTimer(order.id)
+                }else if(order.state==='Sending'){
+                    $("#"+order.id).append(
+                        "                    <button id='confirm-"+order.id+"' class='btn btn-success' style='float: right;' onclick='confirmOrder(this.id)'>确认收货</button>" +
+                        "                    <p id='state' style='color: cornflowerblue;'>"+translateOrderstate(order.state)+"</p>"
+                    );
+                }else{
+                    $("#"+order.id).append(
+                        "                    <button id='confirm-"+order.id+"' class='btn btn-success' style='float: right;' onclick='confirmOrder(this.id)'>确认收货</button>" +
+                        "                    <button id='cancel-"+order.id+"' class='btn btn-dark' style='margin-right:5px;float: right' onclick='cancel2(this.id)'>取消订单</button>" +
+                        "                    <p id='state' style='color: cornflowerblue;'>"+translateOrderstate(order.state)+"</p>"
+                    );
+                }
+                $("#"+order.id).append(
+                    "                    <table style='width: 70%;font-size: 18px;' id='order-table-"+order.id+"'>" +
+                    "                    </table>" +
+                    "                    <label >优惠</label>" +
+                    "                    <p id='youhui-value'>￥ "+order.discount+"</p>" +
+                    "                    <label>总额</label>" +
+                    "                    <p id='final-total'>￥ "+order.money+"</p>" +
+                    "                    <label>备注</label>" +
+                    "                    <p id='note'>"+order.note+"</p>" +
+                    "                    <label>收货地址</label>" +
+                    "                    <p id='name-and-tel'>"+order.name+" "+order.tel+"</p>" +
+                    "                    <p id='detail-address'>"+order.address+"</p>" +
+                    "                    <label>下单时间</label>" +
+                    "                    <p id='create-time'>"+order.date+"</p>" +
+                    "                    <label>预计送达时间</label>" +
+                    "                    <p id='arrive-time'>"+order.arrive+"</p>" +
+                    "                    <label>付款账户</label>" +
+                    "                    <p id='pay-account'>"+order.account+"</p>"
+                );
+                var $table=$("#order-table-"+order.id);
+                $table.bootstrapTable({
+                    showColumns:false,
+                    columns:[
+                        {
+                            field:'good_name',
+                            title:'商品',
+                            visible:true
+                        },
+                        {
+                            field:'amount',
+                            title:'数量',
+                            visible:true
+                        },
+                        {
+                            field:'price',
+                            title:'小计',
+                            visible:true,
+                            formatter:function (value, row, index) {
+                                return row.price * row.amount;
+                            }
+                        }
+                    ],
+                    data:order.goodLists
+                });
+            }
+        }
+    }
+    function loadHistoryOrder() {
+        /*var orders=[{
+            "id": "1111111111111111111111",
+            "customer": "2946062178@qq.com",
+            "store_id": "0000002",
+            "store_name": "武汉热干面",
+            "state": "WaitToPay",
+            "name": "可爱小朋友",
+            "tel": "13284281148",
+            "address": "南京市鼓楼区南京大学鼓楼校区",
+            "date": "2019-03-11 9:50",
+            "arrive": "2019-03-11 8:35",
+            "note": "不要葱姜蒜",
+            "goodLists": [
+                {
+                    "id": 1,
+                    "good_id": 4,
+                    "good_name":"原味热干面",
+                    "amount": 2,
+                    "price": 30
+                },
+                {"id":1,"good_id":4,"good_name":"热干","amount":2,"price":30},
+                {"id":1,"good_id":4,"good_name":"原味热","amount":2,"price":30}
+            ],
+            "money": 55,
+            "discount": 5,
+            "account": "2839289483290193203920490"
+        },
+            {
+                "id": "2222222222222222222222222222",
+                "customer": "2946062178@qq.com",
+                "store_id": "0000002",
+                "store_name": "武汉热干面",
+                "state": "Sending",
+                "name": "可爱小朋友",
+                "tel": "13284281148",
+                "address": "南京市鼓楼区南京大学鼓楼校区",
+                "date": "2019-03-10 14:12",
+                "arrive": "2019-03-10 15:12",
+                "note": "不要葱姜蒜",
+                "goodLists": [
+                    {
+                        "id": 1,
+                        "good_id": 4,
+                        "good_name":"原味热干面",
+                        "amount": 2,
+                        "price": 30
+                    }
+                ],
+                "money": 55,
+                "discount": 5,
+                "account": "2839289483290193203920490"
+            },
+            {
+                "id": "333333333333333333333333",
+                "customer": "2946062178@qq.com",
+                "store_id": "0000002",
+                "store_name": "武汉热干面",
+                "state": "WaitToSendOut",
+                "name": "可爱小朋友",
+                "tel": "13284281148",
+                "address": "南京市鼓楼区南京大学鼓楼校区",
+                "date": "2019-03-10 14:12",
+                "arrive": "2019-03-10 15:12",
+                "note": "不要葱姜蒜",
+                "goodLists": [
+                    {
+                        "id": 1,
+                        "good_id": 4,
+                        "good_name":"原味热干面",
+                        "amount": 2,
+                        "price": 30
+                    }
+                ],
+                "money": 55,
+                "discount": 5,
+                "account": "2839289483290193203920490"
+            }
+        ];
+        loadHistoryOrderTable(orders);*/
+        $.ajax({
+            url:'/getHistoryOrders',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username')
+            },
+            success:function (data) {
+                loadHistoryOrderTable(data);
+            },
+            error:function (request, status, error) {
+                console.log(request+" "+status+" "+error);
+                alert("服务器连接失败")
+            }
+        })
+    }
+    function loadHistoryOrderTable(orders) {
+        var $table=$("#history-order-table");
+        $table.bootstrapTable({
+            data:orders
+        })
+    }
+    function detailFormatter(index, row) {
+        var html = [];
+        $.each(row, function (key, value) {
+            var name=convertKey(key);
+            if(name!==''){
+                if(key==='goodLists'){
+                    html.push('<div><span><b>'+name+':</b><br>'+transGoodListToString(value)+'</span></div>')
+                }else {
+                    html.push('<div> <span><b>' + name + ':</b> ' + value + ' </span> </div> ')
+                }
+            }
+        });
+        return html.join('')
+    }
+    function transGoodListToString(value) {
+        var str="<table class='table' style='width: 70%;background: none'>" +
+            '                    <tr>' +
+            '                        <th>商品名</th>' +
+            '                        <th>数量</th>' +
+            '                        <th>小计</th>' +
+            '                    </tr>';
+        var good;
+        for(var i=0;i<value.length;i++){
+            good=value[i];
+            str=str+'<tr><td>'+good.good_name+'</td><td>'+good.amount+'</td><td>'+good.price*good.amount+'</td></tr>'
+        }
+        str=str+'</table>';
+        return str;
+    }
+    function translate(value,row) {
+        return translateOrderstate(value)
+    }
+    function convertKey(key) {
+        switch (key) {
+            case 'name':
+                return '收货人';
+            case 'tel':
+                return '收货电话';
+            case 'address':
+                return '收货地址';
+            case 'date':
+                return '下单时间';
+            case 'arrive':
+                return '送达时间';
+            case 'note':
+                return '备注';
+            case 'discount':
+                return '优惠价格';
+            case 'account':
+                return '付款账户';
+            case 'goodLists':
+                return '商品';
+            case 'money':
+                return '金额';
+            default:
+                return '';
+        }
+    }
+    function translateOrderstate(state) {
+        switch (state) {
+            case 'WaitStoreToAccept':
+                return '等待商家接单';
+            case 'WaitToSendOut':
+                return '商家正在备货';
+            case 'Sending':
+                return '商品已送出';
+            case 'Over':
+                return '已完成';
+            case 'Cancel':
+                return '已取消';
+        }
+    }
+    function logout(){
+        localStorage.clear();
+        window.location.href='/login';
+    }
+</script>
 </html>

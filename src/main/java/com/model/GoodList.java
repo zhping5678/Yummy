@@ -17,8 +17,9 @@ public class GoodList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String good_id;//该商品ID
+    private long good_id;//该商品ID
 
+    private String good_name;
     private int amount;//该商品数量
 
     private double price;//该商品单价

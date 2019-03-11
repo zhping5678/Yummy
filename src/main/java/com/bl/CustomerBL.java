@@ -1,6 +1,7 @@
 package com.bl;
 
 import com.blservice.CustomerBLService;
+import com.dao.AccountDao;
 import com.dao.CustomerDao;
 import com.model.Account;
 import com.model.Address;
@@ -21,6 +22,8 @@ public class CustomerBL implements CustomerBLService {
 
     @Autowired
     private CustomerDao customerDao;
+    @Autowired
+    private AccountDao accountDao;
 
     @Override
     public ResultMessage signUpByEmail(String email, String password) {
@@ -244,6 +247,20 @@ public class CustomerBL implements CustomerBLService {
         return (int) (Math.random()*1000);
     }
 
+    @Override
+    public double getBalance(String account_id){
+        return accountDao.getBalanceById(account_id);
+    }
 
+    @Override
+    @Transactional
+    public int accountIn(String account,double money){
+        return accountDao.add(account,money);
+    }
 
+    @Override
+    @Transactional
+    public int accountOut(String account,double money){
+        return accountDao.minus(account,money);
+    }
 }

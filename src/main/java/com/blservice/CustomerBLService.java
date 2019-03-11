@@ -42,4 +42,10 @@ public interface CustomerBLService {
     ResultMessage addNewAccount(String username,String account);
 
     ResultMessage deleteAccount(String username,List<String> account);
+
+    double getBalance(String account_id);
+
+    int accountIn(String account,double money);
+
+    int accountOut(String account,double money);
 }

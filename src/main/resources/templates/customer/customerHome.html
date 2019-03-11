@@ -129,8 +129,9 @@
            alert("未选择地址");
         }else{
             localStorage.setItem('address',JSON.stringify(chosen[0]));
+            // loadStoreInfo();
             var city=chosen[0].city;
-            alert(city);
+            $("#city").text(city+chosen[0].area+chosen[0].detail);
             showStoresInSameCity(city)
         }
     });
@@ -162,7 +163,7 @@
                 sidePagination: 'server',
                 columns: [
                     {
-                        checkbox:false
+                        checkbox:true
                     },
                     {
                         field: 'id',

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface GoodDao extends JpaRepository<Good, Long> {
@@ -23,4 +24,15 @@ public interface GoodDao extends JpaRepository<Good, Long> {
     @Query(value = "update Good g set g.state='InValid' where g.state='Valid' and g.end_time< ?1")
     int updateValidGood(Date date);
 
+    @Query(value = "select g.amount from Good g where g.id=:id")
+    int getStockAmount(@Param("id")long good_id);
+
+    @Modifying
+    @Query(value = "update Good g set g.amount=g.amount+:num where g.id=:id")
+    int inStock(@Param("id")long good_id,@Param("num")int num);
+
+
+    @Modifying
+    @Query(value = "update Good g set g.amount=g.amount-:num where g.id=:id")
+    int outStock(@Param("id")long good_id,@Param("num")int num);
 }

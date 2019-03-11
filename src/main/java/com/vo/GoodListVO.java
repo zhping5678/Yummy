@@ -11,6 +11,8 @@ public class GoodListVO {
 
     private long good_id;
 
+    private String good_name;
+
     private double good_price;
 
     private int num;

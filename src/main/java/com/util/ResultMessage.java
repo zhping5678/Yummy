@@ -10,5 +10,8 @@ public enum ResultMessage {
     StoreLogin,
     InValid,
     ToActive,
-    NoEmail
+    NoEmail,
+    StockNotEnough,
+    BalanceNotEnough,
+    RefundSuccess//退款
 }

@@ -4,6 +4,7 @@ import com.blservice.StoreBLService;
 import com.dao.GoodDao;
 import com.dao.StoreDao;
 import com.model.Good;
+import com.model.GoodList;
 import com.model.Store;
 import com.util.*;
 import com.vo.StoreInfo;
@@ -316,5 +317,28 @@ public class StoreBL implements StoreBLService {
         int num1=goodDao.updateWaitGood(new Date());
         int num2=goodDao.updateValidGood(new Date());
         System.out.println("更新数量："+num1+" "+num2);
+    }
+
+    @Override
+    public int getStockNum(long good_id){
+        return goodDao.getStockAmount(good_id);
+    }
+
+    @Override
+    @Transactional
+    public ResultMessage outStock(List<GoodList> lists) {
+        for(GoodList goodList:lists){
+            goodDao.outStock(goodList.getGood_id(),goodList.getAmount());
+        }
+        return ResultMessage.SUCCESS;
+    }
+
+    @Override
+    @Transactional
+    public ResultMessage inStock(List<GoodList> lists) {
+        for(GoodList goodList:lists){
+            goodDao.inStock(goodList.getGood_id(),goodList.getAmount());
+        }
+        return ResultMessage.SUCCESS;
     }
 }
