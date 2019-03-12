@@ -42,7 +42,8 @@ public interface OrderDao extends JpaRepository<Orders,String> {
     @Query(value = "select o from Orders o where o.store_id=:store_id and o.state='Over' order by o.date desc ")
     List<Orders> getStoreCompleteOrders(@Param("store_id")String store_id);
 
-    @Query(value = "select o from Orders o where o.store_id=:store_id and (o.state='CancelAfterAccept' or o.state='Refuse') order by o.date desc ")
+    @Query(value = "select o from Orders o where o.store_id=:store_id and (o.state='CancelAfterAccept' or o.state='Refuse' or o.state='CancelBeforeAccept') " +
+            "order by o.date desc ")
     List<Orders> getStoreCancelOrders(@Param("store_id")String store_id);
 
     //店铺方操作订单

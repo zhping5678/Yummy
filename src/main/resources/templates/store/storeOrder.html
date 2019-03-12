@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.js"></script>
     <!--<link rel="import" href="storeHome.html">-->
     <style>
         .order-inline{
@@ -24,6 +26,18 @@
             display: inline;
             text-decoration: underline black;
             cursor: pointer;
+        }
+        .prompt{
+            font-size: 30px;
+            display: none;
+        }
+        #wait-to-check{
+            top: 25%;
+            position: absolute;
+            left: 40%;
+            font-family: 华文楷体, serif;
+            font-size: 35px;
+            display: none;
         }
     </style>
 </head>
@@ -57,74 +71,472 @@
             </div>
         </div>
     </nav>
+    <div id="wait-to-check" style="margin-top: 60px;">店铺正在等待审核</div>
     <!--订单标签页-->
-    <div class="orders container" style="margin-top: 60px;font-family: 华文楷体, serif;">
+    <div id="all" class="orders container" style="margin-top: 60px;font-family: 华文楷体, serif;">
         <ul id="order-tab" class="nav nav-tabs" style="font-size: 22px">
-            <li class="active" style="background: none;">
+            <li id="new" onclick="showNewOrders()" class="active" style="background: none;">
                 <a href="#new-order" data-toggle="tab">新订单</a>
             </li>
-            <li><a href="#prepare-order" data-toggle="tab">备货中</a></li>
-            <li><a href="#send-order" data-toggle="tab">已送出</a></li>
-            <li><a href="#end-order" data-toggle="tab">已完成</a></li>
-            <li><a href="#cancel-order" data-toggle="tab">已取消</a> </li>
+            <li id="prepare" onclick="showPreparingOrders()"><a href="#prepare-order" data-toggle="tab">备货中</a></li>
+            <li id="send" onclick="showSendingOrders()"><a href="#send-order" data-toggle="tab">配送中</a></li>
+            <li id="complete" onclick="showCompleteOrders()"><a href="#end-order" data-toggle="tab">已完成</a></li>
+            <li id="cancel" onclick="showCancelOrders()"><a href="#cancel-order" data-toggle="tab">已取消</a> </li>
         </ul>
         <div id="order-content" class="tab-content" style="font-size: 18px">
             <div class="tab-pane fade in active" id="new-order">
-                <div class="order-list">
-                    <div class="panel panel-default order">
-                        <div class="panel-heading">
-                            <p class="header">0000000000000</p>
-                            <p style="display: inline;float: right">
-                                <a class="btn btn-primary" role="button">
-                                    接单
-                                </a>
-                                <a class="btn btn-default" role="button">
-                                    拒绝
-                                </a>
-                            </p>
-                        </div>
-                        <div class="panel-body">
-                            <p class="order-inline">张三</p>
-                            <p class="order-inline" style="cursor: pointer;text-decoration: underline black ">18888888888</p>
-                            <br>
-                            <p class="order-inline">xx省xx市xx区xx街道xx号</p>
-                            <br>
-                            <p class="order-inline">备注：不要葱姜蒜，不要辣</p>
-                        </div>
-                        <table class="table">
-                            <th>商品名</th>
-                            <th>数量</th>
-                            <th>价格</th>
-                            <tr>
-                                <td>咖喱鸡排饭</td>
-                                <td>x1</td>
-                                <td>50.00</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">总价</td>
-                                <td>50</td>
-                            </tr>
-                        </table>
-                    </div>
+                <div id="no-new-orders" class="prompt">目前没有新订单</div>
+                <div class="order-list" id="new-order-list">
                 </div>
             </div>
-            <div class="tab-pane fade" id="prepare-order">
-                <p>正在进行订单</p>
+            <div class="tab-pane fade " id="prepare-order">
+                <div id="no-prepare-orders" class="prompt">目前没有正在备货的订单</div>
+                <div class="order-list" id="prepare-order-list">
+                </div>
             </div>
             <div class="tab-pane fade" id="send-order">
-                <p>已送出</p>
+                <div>
+                    <table id="sending-orders-table"
+                           data-detail-view="true"
+                           data-detail-formatter="detailFormatter"
+                           data-search="true"
+                           data-trim-on-search="true"
+                           data-locale="zh-CN"
+                           data-pagination="true"
+                           data-show-refresh="true"
+                           data-show-pagination-switch="true"
+                           data-sort-class="table-active"
+                           data-sortable="true"
+                           data-maintain-selected="true"
+                           style="font-size: 16px">
+                        <thead>
+                            <tr>
+                                <th data-field="id" data-sortable="true">订单号</th>
+                                <th data-field="customer" data-sortable="true">下单用户</th>
+                                <th data-field="date" data-sortable="true">下单时间</th>
+                                <th data-field="arrive" data-sortable="true">预计送达时间</th>
+                                <th data-field="money" data-sortable="true">金额</th>
+                                <th data-field="tel" data-sortable="true">收货电话</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
             <div class="tab-pane fade" id="end-order">
-                <p>正常结束订单</p>
+                <div>
+                    <table id="complete-orders-table"
+                           data-detail-view="true"
+                           data-detail-formatter="detailFormatter"
+                           data-search="true"
+                           data-trim-on-search="true"
+                           data-locale="zh-CN"
+                           data-pagination="true"
+                           data-show-refresh="true"
+                           data-show-pagination-switch="true"
+                           data-sort-class="table-active"
+                           data-sortable="true"
+                           data-maintain-selected="true"
+                           style="font-size: 16px">
+                        <thead>
+                            <tr>
+                                <th data-field="id" data-sortable="true">订单号</th>
+                                <th data-field="customer" data-sortable="true">下单用户</th>
+                                <th data-field="date" data-sortable="true">下单时间</th>
+                                <th data-field="arrive" data-sortable="true">送达时间</th>
+                                <th data-field="money" data-sortable="true">金额</th>
+                                <th data-field="tel" data-sortable="true">收货电话</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
             <div class="tab-pane fade" id="cancel-order">
-                <p>取消订单</p>
+                <div>
+                    <table id="cancel-orders-table"
+                           data-detail-view="true"
+                           data-detail-formatter="detailFormatter"
+                           data-search="true"
+                           data-trim-on-search="true"
+                           data-locale="zh-CN"
+                           data-pagination="true"
+                           data-show-refresh="true"
+                           data-show-pagination-switch="true"
+                           data-sort-class="table-active"
+                           data-sortable="true"
+                           data-maintain-selected="true"
+                           style="font-size: 16px">
+                        <thead>
+                            <tr>
+                                <th data-field="id" data-sortable="true">订单号</th>
+                                <th data-field="customer" data-sortable="true">下单用户</th>
+                                <th data-field="date" data-sortable="true">时间</th>
+                                <th data-field="state" data-sortable="true" data-formatter="translate">状态</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <script>
+    window.onload=function (ev) {
+        if(localStorage.getItem('store_state')==='ToCheck'){
+            $("#all").css('display','none');
+            $("#wait-to-check").css('display','block');
+        }else{
+            showNewOrders();
+        }
+    };
+    function generateGoodListTable(goodList) {
+        var str='';
+        var good;
+        for(var j=0;j<goodList.length;j++){
+            good=goodList[j];
+            str=str+"<tr><td>"+good.good_name+"</td><td>x"+good.amount+"</td><td>￥ "+(good.price*good.amount)+"</td></tr>";
+        }
+        return str;
+    }
 
+    function showNewOrders() {
+       $.ajax({
+            url:'/getNewOrders',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                store_id:localStorage.getItem('username')
+            },
+            success:function (data) {
+                if(data.length===0){
+                    $("#no-new-orders").css('display','block');
+                }else {
+                    loadNewOrders(data);
+                }
+            },
+            error:function (request, status, error) {
+                console.log(request+" "+status+" "+error);
+                alert("服务器连接失败")
+            }
+        });
+    }
+    function loadNewOrders(newOrders) {
+        var newOrder;
+        $("#new-order-list").empty();
+        for(var i=0;i<newOrders.length;i++){
+            newOrder=newOrders[i];
+            $("#new-order-list").append("<div class='panel panel-default order'>" +
+                "                        <div class='panel-heading'>" +
+                "                            <p class='header'>"+newOrder.id+"</p>" +
+                "                            <p style='display: inline;float: right'>" +
+                "                                <a id='accept-"+newOrder.id+"' class='btn btn-primary' role='button' onclick='acceptOrder(this.id)'>" +
+                "                                    接单" +
+                "                                </a>" +
+                "                                <a id='refuse-"+newOrder.id+"' class='btn btn-default' role='button' onclick='refuseOrder(this.id)'>" +
+                "                                    拒绝" +
+                "                                </a>" +
+                "                            </p>" +
+                "                        </div>" +
+                "                        <div class='panel-body'>" +
+                "                            <p class='order-inline'>"+newOrder.name+"</p>" +
+                "                            <p class='order-inline' style='cursor: pointer;text-decoration: underline black '>"+newOrder.tel+"</p>" +
+                "                            <br>" +
+                "                            <p class='order-inline'>"+newOrder.address+"</p>" +
+                "                            <br>" +
+                "                            <p class='order-inline'>备注:"+newOrder.note+"</p>" +
+                "                        </div>" +
+                "                        <table class='table'>" +
+                "                            <th>商品名</th>" +
+                "                            <th>数量</th>" +
+                "                            <th>小计</th>" +generateGoodListTable(newOrder.goodLists)+
+                "                            <tr>" +
+                "                                <td colspan='2'>优惠</td>" +
+                "                                <td>"+newOrder.discount+"</td>" +
+                "                            </tr>" +
+                "                            <tr>" +
+                "                                <td colspan='2'>总价</td>" +
+                "                                <td>"+newOrder.money+"</td>" +
+                "                            </tr>" +
+                "                        </table>" +
+                "                    </div>");
+        }
+    }
+
+    function showPreparingOrders() {
+        $.ajax({
+            url:'getPrepareOrders',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                store_id:localStorage.getItem('username')
+            },
+            success:function (data) {
+                if(data.length===0){
+                    $('#no-prepare-orders').css('display','block');
+                }else {
+                    loadPrepareOrders(data);
+                }
+            },
+            error:function (x,s,e) {
+                console.log(x.status+" "+s+" "+e);
+                alert("服务器连接错误")
+            }
+        });
+    }
+    function loadPrepareOrders(prepareOrders) {
+        var order;
+        $("#prepare-order-list").empty();
+        for(var i=0;i<prepareOrders.length;i++){
+            order=prepareOrders[i];
+            $("#prepare-order-list").append("<div class='panel panel-default order'>" +
+                "                        <div class='panel-heading'>" +
+                "                            <p class='header'>"+order.id+"</p>" +
+                "                            <p style='display: inline;float: right'>" +
+                "                                <a id='send-"+order.id+"' class='btn btn-primary' role='button' onclick='sendOrder(this.id)'>" +
+                "                                    送出" +
+                "                                </a>" +
+                "                            </p>" +
+                "                        </div>" +
+                "                        <div class='panel-body'>" +
+                "                            <p class='order-inline'>"+order.name+"</p>" +
+                "                            <p class='order-inline' style='cursor: pointer;text-decoration: underline black '>"+order.tel+"</p>" +
+                "                            <br>" +
+                "                            <p class='order-inline'>"+order.address+"</p>" +
+                "                            <br>" +
+                "                            <p class='order-inline'>备注:"+order.note+"</p>" +
+                "                        </div>" +
+                "                        <table class='table'>" +
+                "                            <th>商品名</th>" +
+                "                            <th>数量</th>" +
+                "                            <th>小计</th>" +generateGoodListTable(order.goodLists)+
+                "                            <tr>" +
+                "                                <td colspan='2'>优惠</td>" +
+                "                                <td>￥ "+order.discount+"</td>" +
+                "                            </tr>" +
+                "                            <tr>" +
+                "                                <td colspan='2'>总价</td>" +
+                "                                <td>￥"+order.money+"</td>" +
+                "                            </tr>" +
+                "                        </table>" +
+                "                    </div>");
+        }
+    }
+
+    function showSendingOrders() {
+        $.ajax({
+            url:'/getSendOrders',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                store_id:localStorage.getItem('username')
+            },
+            success:function (data) {
+                loadSendingOrders(data);
+            },
+            error:function (request, status, error) {
+                console.log(request+" "+status+" "+error);
+                alert("服务器连接失败")
+            }
+        })
+    }
+    function loadSendingOrders(sendingOrders) {
+        var $table=$("#sending-orders-table");
+        $table.bootstrapTable({
+            data:sendingOrders
+        });
+    }
+
+    function showCompleteOrders() {
+        $.ajax({
+            url:'/getCompleteOrders',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                store_id:localStorage.getItem('username')
+            },
+            success:function (data) {
+                loadCompleteOrders(data);
+            },
+            error:function (request, status, error) {
+                console.log(request+" "+status+" "+error);
+                alert("服务器连接失败")
+            }
+        })
+    }
+    function loadCompleteOrders(completeOrders) {
+        $("#complete-orders-table").bootstrapTable({
+            data:completeOrders
+        })
+    }
+
+    function showCancelOrders() {
+        $.ajax({
+            url:'/getCancelOrders',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                store_id:localStorage.getItem('username')
+            },
+            success:function (data) {
+                loadCancelOrders(data);
+            },
+            error:function (request, status, error) {
+                console.log(request+" "+status+" "+error);
+                alert("服务器连接失败")
+            }
+        })
+    }
+    function loadCancelOrders(cancelOrders) {
+        $("#cancel-orders-table").bootstrapTable({
+            data:cancelOrders
+        });
+    }
+
+    function translate(value,row) {
+        switch (value) {
+            case 'WaitStoreToAccept':
+                return '等待商家接单';
+            case 'WaitToSendOut':
+                return '商家正在备货';
+            case 'Sending':
+                return '商品已送出';
+            case 'Over':
+                return '已完成';
+            case 'CancelBeforeAccept':
+                return '无条件取消';
+            case 'CancelAfterAccept':
+                return '扣款30%';
+            case 'Refuse':
+                return '商家拒绝接单';
+        }
+    }
+    function convertKey(key) {
+        switch (key) {
+            case 'name':
+                return '收货人';
+            case 'tel':
+                return '收货电话';
+            case 'address':
+                return '收货地址';
+            case 'note':
+                return '备注';
+            case 'discount':
+                return '优惠价格';
+            case 'goodLists':
+                return '商品';
+            case 'money':
+                return '金额';
+            default:
+                return '';
+        }
+    }
+    function detailFormatter(index, row) {
+        var html = [];
+        $.each(row, function (key, value) {
+            var name=convertKey(key);
+            if(name!==''){
+                if(key==='goodLists'){
+                    html.push('<div><span><b>'+name+':</b><br>'+transGoodListToString(value)+'</span></div>')
+                }else {
+                    html.push('<div> <span><b>' + name + ':</b> ' + value + ' </span> </div> ')
+                }
+            }
+        });
+        return html.join('')
+    }
+    function transGoodListToString(value) {
+        var str="<table class='table' style='width: 70%;background: none'>" +
+            '                    <tr>' +
+            '                        <th>商品名</th>' +
+            '                        <th>数量</th>' +
+            '                        <th>小计</th>' +
+            '                    </tr>';
+        var good;
+        for(var i=0;i<value.length;i++){
+            good=value[i];
+            str=str+'<tr><td>'+good.good_name+'</td><td>'+good.amount+'</td><td>'+good.price*good.amount+'</td></tr>'
+        }
+        str=str+'</table>';
+        return str;
+    }
+
+    function acceptOrder(accept_id) {
+        //参数为accept-xxxxxxxxxxx
+        var order_id=accept_id.substr(7);
+        $.ajax({
+            url:'/acceptOrder',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                order_id:order_id
+            },
+            success:function (data) {
+                if(data==='SUCCESS'){
+                    location.reload();
+                }else {
+                    alert("顾客已取消订单")
+                }
+            },
+            error:function (x ,s, e) {
+                console.log(x.status+" "+s+" "+e);
+                alert("服务器连接失败");
+            }
+        })
+    }
+    function refuseOrder(refuse_id) {
+        //参数为refuse-xxxxxx
+        var order_id=refuse_id.substr(7);
+        $.ajax({
+            url:'/refuseOrder',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                order_id:order_id
+            },
+            success:function (data) {
+                if(data==='SUCCESS'){
+                    location.reload();
+                }else {
+                    alert("顾客已取消订单")
+                }
+            },
+            error:function (x ,s, e) {
+                console.log(x.status+" "+s+" "+e);
+                alert("服务器连接失败");
+            }
+        })
+    }
+    function sendOrder(send_id) {
+        //参数为send-xxxxxxx
+        var order_id=send_id.substr(5);
+        $.ajax({
+            url:'/sendOutOrder',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                order_id:order_id
+            },
+            success:function (data) {
+                if(data==='SUCCESS'){
+                    location.reload();
+                    $("#prepare").addClass('active')
+                }else {
+                    alert("顾客已取消订单")
+                }
+            },
+            error:function (x ,s, e) {
+                console.log(x.status+" "+s+" "+e);
+                alert("服务器连接失败");
+            }
+        })
+    }
 </script>
 </body>
 </html>

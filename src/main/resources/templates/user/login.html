@@ -99,6 +99,10 @@
                             localStorage.setItem("username",username);
                             window.location.href='/store_home';
                             break;
+                        case 'AdminLogin':
+                            localStorage.setItem("username",username);
+                            window.location.href='/admin';
+                            break;
                         case 'InValid':
                             alert("账号已注销，无法登录");
                             break;

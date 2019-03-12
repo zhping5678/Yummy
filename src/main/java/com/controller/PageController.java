@@ -130,4 +130,12 @@ public class PageController{
     public String getStoreFinancialPage(){
         return "store/financial";
     }
+
+    /*
+     * 系统管理员主页
+     */
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String getAdminHome(){
+        return "admin/adminHome";
+    }
 }

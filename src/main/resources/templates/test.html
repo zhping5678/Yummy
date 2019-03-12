@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!--<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>-->
+    <!--<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">-->
+    <!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>-->
+    <!--<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>-->
+    <style>
+    </style>
+</head>
+<body>
+<div id="box" style="top:10px;margin: 20px 10px;position: absolute;"></div>
+<div style="height: 500px;">
+    <div id="A" style="display: inline-block;height: 30%;width: 30px;background: #f00"></div>
+    <div id="B" style="display: inline-block;height: 80%;width: 30px;background: #ddd;"></div>
+    <div id="C" style="display: inline-block;height: 70%;width: 30px;background: #0fd;"></div>
+    <div id="D" style="display: inline-block;height: 60%;width: 30px;background: #ff0;"></div>
+    <div id="E" style="display: inline-block;height: 90%;width: 30px;background: #234"></div>
+</div>
+</body>
+<script>
+    var object = {
+        b: { c: 4 }, d: [{ e: 5 }, { e: 6 }]
+    };
+    console.log( parse(object, 'b.c') == 4 ) //true
+    console.log( parse(object, 'd[0].e') == 5 ) //true
+    console.log( parse(object, 'd.0.e') == 5 ) //true
+    console.log( parse(object, 'd[1].e') == 6 ) //true
+    console.log( parse(object, 'd.1.e') == 6 ) //true
+    console.log( parse(object, 'f') == 'undefined' ) //true
+    function parse(obj, str) {
+        // alert();
+        var s=str.replace('[', '.').replace(']', '').split('.');
+        str.replace('[', '.').replace(']', '').split('.').map((ele) => obj = obj[ele.trim()]);
+        return obj || 'undefined';
+    }
+</script>
+</html>

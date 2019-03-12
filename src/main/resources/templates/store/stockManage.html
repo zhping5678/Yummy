@@ -24,6 +24,14 @@
             padding: 10px;
             margin: 5px 30px 0;
         }
+        #wait-to-check{
+            top: 25%;
+            position: absolute;
+            left: 40%;
+            font-family: 华文楷体, serif;
+            font-size: 35px;
+            display: none;
+        }
     </style>
 <body>
 <div>
@@ -55,6 +63,7 @@
             </div>
         </div>
     </nav>
+    <div id="wait-to-check" style="margin-top: 60px;">店铺正在等待审核</div>
     <!--商品管理部分-->
     <div id="all-stock" class="container" style="margin-top: 60px;font-family: 华文楷体, serif;">
         <!--<div class="panel panel-default">
@@ -158,121 +167,126 @@
         // alert("windows onload");
         var  store_name = localStorage.getItem("store_name");
         $("#title-store-name").text(store_name);
-        var goods = new Map();
+        if(localStorage.getItem('store_state')==='ToCheck'){
+            $("#wait-to-check").css('display','block');
+            $("#all-stock").css('display','none')
+        }else{
+            var goods = new Map();
 
-        /*var data = {
-            "夏季单品": [
-                {
-                    "id": 6,
-                    "name": "清凉饮品",
-                    "description": "冰冰凉凉",
-                    "price": 10,
-                    "amount": 100,
-                    "type": "夏季单品",
-                    "start_time": "2019-01-30 00:00:00",
-                    "end_time": "2019-02-22 00:00:00",
-                    "valid": true
-                },
-                {
-                    "id": 1,
-                    "name": "咖喱鸡排饭",
-                    "description": "香浓咖喱搭配香脆鸡排",
-                    "price": 18,
-                    "amount": 200,
-                    "type": "夏季单品",
-                    "start_time": "2019-02-28 00:00:00",
-                    "end_time": "2019-07-31 00:00:00",
-                    "valid": true
-                },
-                {
-                    "id": 7,
-                    "name": "甜品",
-                    "description": "糯米糍",
-                    "price": 5,
-                    "amount": 60,
-                    "type": "夏季单品",
-                    "start_time": "2019-02-20 00:00:00",
-                    "end_time": "2019-02-27 00:00:00",
-                    "valid": true
-                }
-            ],
-            "超值套餐": [
-                {
-                    "id": 4,
-                    "name": "超值单人套餐",
-                    "description": "咖喱鸡排+冰红茶+烤肠",
-                    "price": 20,
-                    "amount": 200,
-                    "type": "超值套餐",
-                    "start_time": "2019-02-28 00:00:00",
-                    "end_time": "2019-03-03 00:00:00",
-                    "valid": true
-                },
-                {
-                    "id": 5,
-                    "name": "超值双人套餐",
-                    "description": "两份鸡排饭",
-                    "price": 35,
-                    "amount": 50,
-                    "type": "超值套餐",
-                    "start_time": "2019-02-22 00:00:00",
-                    "end_time": "2019-02-28 00:00:00",
-                    "valid": true
-                }
-            ],
-            "已下架商品": [
-                {
-                    "id": 2,
-                    "name": "超值套餐一号",
-                    "description": "咖喱鸡排+冰红茶+烤肠",
-                    "price": 20,
-                    "amount": 200,
-                    "type": "超值套餐",
-                    "start_time": "2019-02-28 00:00:00",
-                    "end_time": "2019-03-02 00:00:00",
-                    "valid": false
-                },
-                {
-                    "id": 3,
-                    "name": "咖喱猪排饭",
-                    "description": "香浓猪排搭配香脆火腿",
-                    "price": 20,
-                    "amount": 300,
-                    "type": "夏季单品",
-                    "start_time": "2019-02-28 00:00:00",
-                    "end_time": "2019-02-28 00:00:00",
-                    "valid": false
-                }
-            ]
-        };
-        for (var key in data){
-            // alert("key:"+key);
-            // alert("content:"+JSON.stringify(goods[key]));
-            goods.set(key,data[key]);
-        }
-        showStoreFood(goods);*/
-        $.ajax({
-            url: "/getStoreGood",
-            type: "POST",
-            cache: false,
-            async: false,
-            data: {
-                store_id: localStorage.getItem("username")
-            },
-            success: function (data) {
-                if(data == []){
-                    $("#no-good").css("display","block")
-                }else {
-                    for (var key in data){
-                        goods.set(key,data[key]);
+            /*var data = {
+                "夏季单品": [
+                    {
+                        "id": 6,
+                        "name": "清凉饮品",
+                        "description": "冰冰凉凉",
+                        "price": 10,
+                        "amount": 100,
+                        "type": "夏季单品",
+                        "start_time": "2019-01-30 00:00:00",
+                        "end_time": "2019-02-22 00:00:00",
+                        "valid": true
+                    },
+                    {
+                        "id": 1,
+                        "name": "咖喱鸡排饭",
+                        "description": "香浓咖喱搭配香脆鸡排",
+                        "price": 18,
+                        "amount": 200,
+                        "type": "夏季单品",
+                        "start_time": "2019-02-28 00:00:00",
+                        "end_time": "2019-07-31 00:00:00",
+                        "valid": true
+                    },
+                    {
+                        "id": 7,
+                        "name": "甜品",
+                        "description": "糯米糍",
+                        "price": 5,
+                        "amount": 60,
+                        "type": "夏季单品",
+                        "start_time": "2019-02-20 00:00:00",
+                        "end_time": "2019-02-27 00:00:00",
+                        "valid": true
                     }
-                    showStoreFood(goods);
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
+                ],
+                "超值套餐": [
+                    {
+                        "id": 4,
+                        "name": "超值单人套餐",
+                        "description": "咖喱鸡排+冰红茶+烤肠",
+                        "price": 20,
+                        "amount": 200,
+                        "type": "超值套餐",
+                        "start_time": "2019-02-28 00:00:00",
+                        "end_time": "2019-03-03 00:00:00",
+                        "valid": true
+                    },
+                    {
+                        "id": 5,
+                        "name": "超值双人套餐",
+                        "description": "两份鸡排饭",
+                        "price": 35,
+                        "amount": 50,
+                        "type": "超值套餐",
+                        "start_time": "2019-02-22 00:00:00",
+                        "end_time": "2019-02-28 00:00:00",
+                        "valid": true
+                    }
+                ],
+                "已下架商品": [
+                    {
+                        "id": 2,
+                        "name": "超值套餐一号",
+                        "description": "咖喱鸡排+冰红茶+烤肠",
+                        "price": 20,
+                        "amount": 200,
+                        "type": "超值套餐",
+                        "start_time": "2019-02-28 00:00:00",
+                        "end_time": "2019-03-02 00:00:00",
+                        "valid": false
+                    },
+                    {
+                        "id": 3,
+                        "name": "咖喱猪排饭",
+                        "description": "香浓猪排搭配香脆火腿",
+                        "price": 20,
+                        "amount": 300,
+                        "type": "夏季单品",
+                        "start_time": "2019-02-28 00:00:00",
+                        "end_time": "2019-02-28 00:00:00",
+                        "valid": false
+                    }
+                ]
+            };
+            for (var key in data){
+                // alert("key:"+key);
+                // alert("content:"+JSON.stringify(goods[key]));
+                goods.set(key,data[key]);
             }
-        });
+            showStoreFood(goods);*/
+            $.ajax({
+                url: "/getStoreGood",
+                type: "POST",
+                cache: false,
+                async: false,
+                data: {
+                    store_id: localStorage.getItem("username")
+                },
+                success: function (data) {
+                    if(data == []){
+                        $("#no-good").css("display","block")
+                    }else {
+                        for (var key in data){
+                            goods.set(key,data[key]);
+                        }
+                        showStoreFood(goods);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("错误状态码："+XMLHttpRequest.status+"\n错误信息："+textStatus+"\n"+errorThrown);
+                }
+            });
+        }
     };
     function logout(){
         localStorage.clear();

@@ -6,6 +6,7 @@ import com.model.Store;
 import com.util.GoodState;
 import com.util.ResultMessage;
 import com.util.StoreType;
+import com.util.UserState;
 import com.vo.StoreInfo;
 import com.vo.StoreVO;
 
@@ -63,4 +64,6 @@ public interface StoreBLService {
     ResultMessage outStock(List<GoodList> lists);
 
     ResultMessage inStock(List<GoodList> lists);
+
+    void updateStoreState(String store_id, UserState state);
 }

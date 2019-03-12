@@ -129,7 +129,7 @@ public class OrderController {
     /*
      * 商家拒单
      */
-    @RequestMapping(value = "/acceptOrder",method = RequestMethod.POST)
+    @RequestMapping(value = "/refuseOrder",method = RequestMethod.POST)
     public @ResponseBody ResultMessage refuse(String order_id){
         return orderBLService.refuseOrder(order_id);
     }

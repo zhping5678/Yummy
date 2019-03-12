@@ -10,6 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.concurrent.Executor;
 
 //@Configuration
@@ -20,12 +21,23 @@ public class ScheduleConfig {
     private int maxPoolSize = 200;
     private int queueCapacity = 10;
 
-//    public static void main(String[] args){
-//        System.out.println(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())+" "+new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()));
-//        Account account=new Account("57832579357934",90);
-//        JSONObject jsonObject=JSONObject.fromObject(account);
-//        System.out.println(jsonObject.toString());
-//    }
+    public static void main(String[] args){
+        Scanner in = new Scanner(System.in);
+        String input=in.nextLine();
+        char[] chars=input.toCharArray();
+        in.close();
+    }
+    public static int calculateBottle(int n,int total){
+        if(n<2){
+            return total;
+        }else if(n==2){
+            return total+1;
+        }else{
+            int a=n/3;
+            int b=n%3;
+            return calculateBottle( a+b,a+total);
+        }
+    }
 
 //    @Bean
     public Executor taskExecutor() {

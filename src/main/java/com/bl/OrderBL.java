@@ -171,7 +171,7 @@ public class OrderBL implements OrderBLService {
         if(orderDao.refuseOrder(order_id)==1){
             return ResultMessage.SUCCESS;
         }else{
-            return ResultMessage.FAIL;
+            return ResultMessage.Cancel;
         }
     }
 }

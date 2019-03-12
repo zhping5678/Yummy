@@ -341,4 +341,10 @@ public class StoreBL implements StoreBLService {
         }
         return ResultMessage.SUCCESS;
     }
+
+    @Override
+    @Transactional
+    public void updateStoreState(String store_id,UserState state){
+        storeDao.updateState(store_id,state);
+    }
 }

@@ -211,6 +211,7 @@
         });
 
         localStorage.setItem("store_name",storeInfo.name);
+        localStorage.setItem('store_state',storeInfo.state);
 
         $("#title-store-name").text(storeInfo.name);
         $("#store-state").text(changeStateToChinese(storeInfo.state));
@@ -375,6 +376,8 @@
                 return "信息更改审核中";
             case 'Valid':
                 return "已通过";
+            case 'BeRefused':
+                return "审核申请被驳回";
         }
     }
 </script>

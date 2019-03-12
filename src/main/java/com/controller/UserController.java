@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.blservice.AdminBLService;
 import com.blservice.StoreBLService;
 import com.blservice.CustomerBLService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ public class UserController {
     private CustomerBLService customerBLService;
     @Autowired
     private StoreBLService storeBLService;
+    @Autowired
+    private AdminBLService adminBLService;
 
     /**
      * 普通用户或店铺登录
@@ -29,6 +32,8 @@ public class UserController {
 //        System.out.println("登录用户名："+username+", 密码："+password);
         if(username.contains("@")){
             return customerBLService.customerLogin(username,password);
+        }else if (username.equals("admin")){
+            return adminBLService.adminLogin(password);
         }else{
             return storeBLService.storeLogin(username,password);
         }
