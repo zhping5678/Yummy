@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AdminDao extends JpaRepository<Record,Long> {
+public interface AdminDao extends JpaRepository<Record,Long>{
 
     @Query(value = "select r from Record r where r.state='WaitToCheck' order by r.applyTime desc ")
     List<Record> getWaitCheckRecords();

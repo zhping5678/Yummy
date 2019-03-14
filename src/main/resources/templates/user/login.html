@@ -54,7 +54,7 @@
     <div style="text-align: center">
         <input class="input-box" id="username-input" type="text" placeholder="请输入邮箱账号/店铺编号">
         <div></div>
-        <input class="input-box" id="password-input" type="password" placeholder="请输入8-12位密码">
+        <input class="input-box" id="password-input" type="password" placeholder="请输入密码">
     </div>
     <div style="text-align: center">
         <button class="btn" id="sign-in">登录</button>
@@ -77,8 +77,6 @@
         // var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
         if(username === "" || pass === ""){
             alert("请将邮箱和密码填写完全")
-        }else if(pass.length < 8 || pass.length > 12 ){
-            alert("请输入长度为8-12位的密码")
         }else {
             $.ajax({
                 url: "/signIn",

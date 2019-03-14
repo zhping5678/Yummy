@@ -605,7 +605,6 @@
         return year + "-" + month + "-" + day;
     }
     function modifyGoodInfo(good_id) {
-        alert("修改商品信息："+good_id);
         localStorage.setItem("box-usage","modify");
         localStorage.setItem("modify-good-id",good_id);
         $("#new-good-box").css("display","block");

@@ -20,10 +20,6 @@ public interface OrderDao extends JpaRepository<Orders,String> {
     @Query(value = "update Orders o set o.state='WaitStoreToAccept' where o.id=:id")
     int payOrder(@Param("id")String order_id);
 
-    @Modifying
-    @Query(value = "update Orders o set o.state='Over' where o.id=:id")
-    int confirmOrder(@Param("id")String order_id);
-
     @Query(value = "select o from Orders o where o.customer=:username and (o.state='Over' or o.state='CancelAfterAccept'" +
             "or o.state='CancelBeforeAccept' or o.state='Refuse') order by o.date desc")
     List<Orders> getHistoryOrders(@Param("username") String username);
@@ -58,4 +54,8 @@ public interface OrderDao extends JpaRepository<Orders,String> {
     @Modifying
     @Query(value = "update Orders o set o.state='Refuse' where o.id=:id and o.state='WaitStoreToAccept'")
     int refuseOrder(@Param("id")String order_id);
+
+    //得到用户的消费数据
+    @Query(value = "select sum(o.money) from Orders o where o.customer=:customer and o.state='Over'")
+    double getSumConsume(@Param("customer")String customer);
 }

@@ -6,6 +6,7 @@ import com.dao.AdminDao;
 import com.model.Record;
 import com.util.CheckState;
 import com.util.ResultMessage;
+import com.util.StoreType;
 import com.util.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,30 +33,30 @@ public class AdminBL implements AdminBLService {
     }
 
     @Override
-    public ResultMessage newApply(String store_id) {
-        Record newRecord=new Record(0,new Date(),null,store_id, CheckState.WaitToCheck);
+    public ResultMessage newApply(String store_id, String store_name,String boss, String email,String address, StoreType type) {
+        Record newRecord=new Record(0,new Date(),null,store_id,store_name,boss,email,address,type ,CheckState.WaitToCheck);
         adminDao.save(newRecord);
         return ResultMessage.SUCCESS;
     }
 
     @Override
     @Transactional
-    public ResultMessage passApply(long id, String store_id) {
-        storeBLService.updateStoreState(store_id, UserState.Valid);
+    public ResultMessage passApply(long id) {
         Record record=adminDao.getOne(id);
         record.setCheckTime(new Date());
         record.setState(CheckState.Pass);
         adminDao.saveAndFlush(record);
+        storeBLService.updateStoreState(record.getStore_id(), UserState.Valid);
         return ResultMessage.SUCCESS;
     }
 
     @Override
-    public ResultMessage refuseApply(long id, String store_id) {
-        storeBLService.updateStoreState(store_id, UserState.BeRefused);
+    public ResultMessage refuseApply(long id) {
         Record record=adminDao.getOne(id);
         record.setCheckTime(new Date());
         record.setState(CheckState.Refuse);
         adminDao.saveAndFlush(record);
+        storeBLService.updateStoreState(record.getStore_id(), UserState.BeRefused);
         return ResultMessage.SUCCESS;
     }
 

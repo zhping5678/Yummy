@@ -99,6 +99,7 @@ public class OrderBL implements OrderBLService {
         }else if(order.getState()==OrderState.WaitToPay||order.getState()==OrderState.WaitStoreToAccept) {
             order.setState(OrderState.CancelBeforeAccept);
             orderDao.saveAndFlush(order);
+            customerBLService.accountIn(order.getAccount(),order.getMoney());
             return ResultMessage.SUCCESS;
         }else {
             return ResultMessage.FAIL;
@@ -106,13 +107,14 @@ public class OrderBL implements OrderBLService {
     }
 
     @Override
-    @Transactional
     public ResultMessage confirmOrder(String order_id){
-        if(orderDao.confirmOrder(order_id)==1){
-            return ResultMessage.SUCCESS;
-        }else{
-            return ResultMessage.FAIL;
-        }
+        Orders order=orderDao.getOne(order_id);
+        order.setState(OrderState.Over);
+        order.setArrive(new Date());
+        orderDao.saveAndFlush(order);
+        double sum=orderDao.getSumConsume(order.getCustomer());
+        customerBLService.updateLevel(order.getCustomer(),sum);
+        return ResultMessage.SUCCESS;
     }
 
     @Override
@@ -148,9 +150,12 @@ public class OrderBL implements OrderBLService {
     @Override
     @Transactional
     public ResultMessage acceptOrder(String order_id) {
-        if(orderDao.acceptOrder(order_id)==1){
+        Orders order=orderDao.getOne(order_id);
+        if(order.getState()==OrderState.WaitStoreToAccept){
+            order.setState(OrderState.WaitToSendOut);
+            storeBLService.outStock(order.getGoodLists());
             return ResultMessage.SUCCESS;
-        }else{
+        } else{
             return ResultMessage.Cancel;
         }
     }

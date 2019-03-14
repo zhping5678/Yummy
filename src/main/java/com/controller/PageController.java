@@ -138,4 +138,20 @@ public class PageController{
     public String getAdminHome(){
         return "admin/adminHome";
     }
+
+    /*
+     * 系统管理员已审核列表
+     */
+    @RequestMapping(value = "/adminDone",method = RequestMethod.GET)
+    public String getAdminDone(){
+        return "admin/adminDone";
+    }
+
+    /*
+     * 系统管理员已审核列表
+     */
+    @RequestMapping(value = "/adminStatistics",method = RequestMethod.GET)
+    public String getAdminStatistics(){
+        return "admin/adminStatistics";
+    }
 }

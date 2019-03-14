@@ -48,4 +48,6 @@ public interface CustomerBLService {
     int accountIn(String account,double money);
 
     int accountOut(String account,double money);
+
+    void updateLevel(String username,double sumConsume);
 }

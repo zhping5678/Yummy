@@ -10,11 +10,6 @@
     <link href="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.css" rel="stylesheet">
     <script src="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="/js/util.js"></script>
-    <style>
-        th,td{
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin:0;font-size: 23px;font-family: 华文楷体, serif;">
@@ -24,9 +19,9 @@
         </div>
         <div>
             <ul class="nav navbar-nav">
-                <li class="active"><a href="/waitCheck">待审核</a></li>
-                <li><a href="/adminDone">已审核</a></li>
-                <li><a href="/adminStatistics">统计信息</a></li>
+                <li><a href="/admin">待审核</a></li>
+                <li class="active"><a href="/adminDone">已审核</a></li>
+                <li><a href="/adminDone">统计信息</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
@@ -43,7 +38,7 @@
     </div>
 </nav>
 <div class="container" style="margin-top: 60px;font-family: 华文楷体, serif;">
-    <table id="wait-check-table"
+    <table id="checked-table"
            data-detail-view="true"
            data-detail-formatter="detailFormatter"
            data-search="true"
@@ -62,7 +57,7 @@
 <script>
     window.onload=function (ev) {
         $.ajax({
-            url:'/getWaitCheckRecords',
+            url:'/getDoneRecords',
             type:'POST',
             cache:false,
             async:false,
@@ -74,9 +69,9 @@
                 console.log(x.status+" "+s+" "+e)
             }
         });
-    };
-    function loadTable(waitCheckedStores) {
-        $('#wait-check-table').bootstrapTable({
+    }
+    function loadTable(doneCheckedStores) {
+        $('#checked-table').bootstrapTable({
             showColumns: false,
             columns: [
                 {
@@ -88,6 +83,12 @@
                     field: 'applyTime',
                     title: '申请时间',
                     visible: true,
+                    sortable:true
+                },
+                {
+                    field:'checkTime',
+                    title: '审核时间',
+                    visible:true,
                     sortable:true
                 },
                 {
@@ -112,60 +113,19 @@
                     field: 'type',
                     title: '经营范围',
                     visible: true,
-                    formatter: translateType,
-                    sortable:true
+                    sortable:true,
+                    formatter: translateType
                 },
                 {
-                    title: '操作',
-                    formatter: operateFormatter
+                    field:'state',
+                    title:'审核结果',
+                    visible:true,
+                    sortable:true,
+                    formatter: translateState
                 }
             ],
-            data: waitCheckedStores
+            data: doneCheckedStores
         });
-    }
-    function operateFormatter(value, row, index) {
-        return ["<button id='pass-"+row.id+"' class='btn btn-success' style='margin-right: 10px' onclick='passApply(this.id)'>通过</button>" +
-        "<button id='refuse-"+row.id+"' class='btn btn-danger' onclick='refuseApply(this.id)'>拒绝</button>"].join('');
-    }
-    function passApply(btn_id) {
-        //参数为pass-xxxx
-        var id=btn_id.substr(5);
-        $.ajax({
-            url:'/passApply',
-            type:'POST',
-            cache:false,
-            async:false,
-            data:{
-                id:id
-            },
-            success:function (data) {
-                location.reload();
-            },
-            error:function (x ,s ,e) {
-                console.log(x.status+" "+s+" "+e);
-                alert("服务器连接失败")
-            }
-        })
-    }
-    function refuseApply(btn_id) {
-        //参数为refuse-xxxx
-        var id=btn_id.substr(5);
-        $.ajax({
-            url:'/refuseApply',
-            type:'POST',
-            cache:false,
-            async:false,
-            data:{
-                id:id
-            },
-            success:function (data) {
-                location.reload();
-            },
-            error:function (x ,s ,e) {
-                console.log(x.status+" "+s+" "+e);
-                alert("服务器连接失败")
-            }
-        })
     }
     function translateType(value,row,index) {
         switch (value) {
@@ -181,6 +141,14 @@
                 return "医药健康";
             default:
                 return "其他类别"
+        }
+    }
+    function translateState(value,row,index) {
+        switch (value) {
+            case 'Pass':
+                return "已通过";
+            case 'Refuse':
+                return "以拒绝";
         }
     }
     function detailFormatter(index, row) {

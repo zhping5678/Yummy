@@ -34,4 +34,8 @@ public interface CustomerDao extends JpaRepository<Customer, String> {
      @Modifying
      @Query(value = "update Customer c set c.state='CloseAccount' where c.email=:username")
      int closeAccount(@Param("username")String username);
+
+     @Modifying
+     @Query(value = "update Customer c set c.level=:level where c.email=:username")
+     void updateLevel(@Param("username")String username,@Param("level")int level);
 }

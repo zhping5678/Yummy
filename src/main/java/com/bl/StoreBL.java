@@ -1,5 +1,6 @@
 package com.bl;
 
+import com.blservice.AdminBLService;
 import com.blservice.StoreBLService;
 import com.dao.GoodDao;
 import com.dao.StoreDao;
@@ -25,6 +26,9 @@ public class StoreBL implements StoreBLService {
     @Autowired
     private GoodDao goodDao;
 
+    @Autowired
+    private AdminBLService adminBLService;
+
     @Override
     public ResultMessage applyNewStore(String store_id, String store_name, String store_boss, String store_email,
                                        String store_pass, StoreType store_type, String province, String city,
@@ -34,7 +38,8 @@ public class StoreBL implements StoreBLService {
             Store newStore = new Store(store_id, store_name, store_boss, store_pass, store_email, "", store_type,
                     new ArrayList<>(),province, city, area, detail_address, UserState.ToCheck,null,null);
             storeDao.saveAndFlush(newStore);
-
+            String address=province+city+area+detail_address;
+            adminBLService.newApply(store_id,store_name,store_boss,store_email,address,store_type);
             //更新counter.txt(店铺编号)
             File file = new File("counter.txt");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));

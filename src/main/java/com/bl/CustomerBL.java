@@ -25,6 +25,9 @@ public class CustomerBL implements CustomerBLService {
     @Autowired
     private AccountDao accountDao;
 
+    //>200,level=1 ; >500,level=2 ; >1000,level=3 ; >1800,level=4 ; >2500,level=5
+    private static final double[] levelLines={200,500,1000,1800,2500};
+
     @Override
     public ResultMessage signUpByEmail(String email, String password) {
         try {
@@ -262,5 +265,17 @@ public class CustomerBL implements CustomerBLService {
     @Transactional
     public int accountOut(String account,double money){
         return accountDao.minus(account,money);
+    }
+
+    //levelLines={200,500,1000,1800,2500} 1,2,3,4,5
+    @Override
+    public void updateLevel(String username,double sumConsume){
+        int level=0;
+        for(int i=0;i<levelLines.length;i++){
+            if(sumConsume>levelLines[i]){
+                level=i+1;
+            }
+        }
+        customerDao.updateLevel(username,level);
     }
 }
