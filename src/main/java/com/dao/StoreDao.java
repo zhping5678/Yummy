@@ -1,6 +1,7 @@
 package com.dao;
 
 import com.model.Store;
+import com.util.StoreType;
 import com.util.UserState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,4 +27,10 @@ public interface StoreDao extends JpaRepository<Store, String> {
     @Modifying
     @Query(value = "update Store s set s.state=:state where s.id=:id")
     int updateState(@Param("id")String store_id, @Param("state")UserState state);
+
+    @Query(value = "select count(s) from Store s where s.state='Valid' and s.type=?1")
+    int countStoresByType(StoreType type);
+
+    @Query(value = "select count(s) from Store s where s.state<>'Valid'")
+    int countInValidStores();
 }

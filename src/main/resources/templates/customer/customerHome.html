@@ -257,64 +257,6 @@
                 console.log("错误状态码："+XMLHttpRequest.status+" 错误信息："+textStatus+" "+errorThrown);
             }
         });
-        /*storeList=[
-            {
-                storeID:"store1",
-                storeName:"name1",
-                description:"description1"
-            },
-            {
-                storeID:"store2",
-                storeName:"name2",
-                description:"description2"
-            },
-            {
-                storeID:"store3",
-                storeName:"name3",
-                description:"description3"
-            },
-            {
-                storeID:"store4",
-                storeName:"name4",
-                description:"description1"
-            },
-            {
-                storeID:"store5",
-                storeName:"name5",
-                description:"description2"
-            },{
-                storeID:"store6",
-                storeName:"name6",
-                description:"description3"
-            },
-            {
-                storeID:"store7",
-                storeName:"name7",
-                description:"description2"
-            },{
-                storeID:"store8",
-                storeName:"name8",
-                description:"description3"
-            },
-            {
-                storeID:"store7",
-                storeName:"name7",
-                description:"description2"
-            },{
-                storeID:"store8",
-                storeName:"name8",
-                description:"description3"
-            },
-            {
-                storeID:"store7",
-                storeName:"name7",
-                description:"description2"
-            },{
-                storeID:"store8",
-                storeName:"name8",
-                description:"description3"
-            }
-        ];*/
         //每6个店铺生成一个div--row
         if(storeList ===undefined||storeList ===null||storeList==[]||storeList.length ===0 ){
             $("#storeList").css("display","none");
@@ -339,7 +281,9 @@
                     var thumbnail = document.createElement("div");
                     thumbnail.className="thumbnail";
                     var img=document.createElement("img");
-                    img.src="/images/test.jpg";
+                    img.src="/images/stores/store"+(6*i+j)%10+".jpg";
+                    img.style.width='180px';
+                    img.style.height='120px';
                     var caption = document.createElement("div");
                     caption.className="caption";
                     var h4 = document.createElement("h4");

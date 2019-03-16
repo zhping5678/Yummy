@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -68,4 +69,13 @@ public interface OrderDao extends JpaRepository<Orders,String> {
     List<Orders> getAllOrders(String store_id);
     @Query(value = "select count(distinct o.customer) from Orders o where o.store_id=?1 and (o.state='Over' or o.state='CancelAfterAccept')")
     int getCustomerOfStore(String store_id);
+
+    @Query(value = "select sum(o.money) from Orders o where o.state='Over'")
+    double getSumProfit();
+
+    @Query(value = "select sum(o.money) from Orders o where o.state='CancelAfterAccept'")
+    double getSumProfitCancel();
+
+    @Query(value = "select sum(o.money) from Orders o where o.state='Over' and o.date<?1")
+    double calculate(Date date);
 }

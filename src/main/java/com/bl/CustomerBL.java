@@ -269,6 +269,7 @@ public class CustomerBL implements CustomerBLService {
 
     //levelLines={200,500,1000,1800,2500} 1,2,3,4,5
     @Override
+    @Transactional
     public void updateLevel(String username,double sumConsume){
         int level=0;
         for(int i=0;i<levelLines.length;i++){

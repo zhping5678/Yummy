@@ -45,11 +45,203 @@
             </ul>
         </div>
         <div class="col-md-10 tab-content" style="font-family: 华文楷体, serif;">
-            <div class="tab-pane fade in active" id="user"></div>
-            <div class="tab-pane fade in active" id="store"></div>
-            <div class="tab-pane fade in active" id="money"></div>
+            <style>
+                .temp{
+                    font-size: 25px;
+                    margin-left: 10px;
+                }
+            </style>
+            <div class="tab-pane fade in active" id="user">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>正常会员数量</h2>
+                        <p id="p-c1" class="temp"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>已注销会员数量</h2>
+                        <p id="p-c2" class="temp"></p>
+                    </div>
+                </div>
+                <div>
+                    <h2>各级别会员数量</h2>
+                    <div id="customers-pie" style="width: 400px;height: 400px;"></div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="store">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>有效店铺数量</h2>
+                        <p id="p-s1" class="temp"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>无效店铺数量</h2>
+                        <p id="p-s2" class="temp"></p>
+                    </div>
+                </div>
+                <div>
+                    <h2>各类型店铺数量</h2>
+                    <div id="stores-pie" style="width: 400px;height: 400px;"></div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="money">
+                <div>
+                    <h2>平台总收益</h2>
+                    <p id="total-money" class="temp"></p>
+                </div>
+                <div>
+                    <h2>平台每月收益走势图</h2>
+                    <div id="money-lines" style="width: 900px;height: 500px"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 </body>
+<script>
+    window.onload=function (ev) {
+        $.ajax({
+            url:'/getAdminStatistics',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{},
+            success:function (data) {
+                loadAll(data);
+            },
+            error:function (x,s,e) {
+                console.log(x.status+" "+s+" "+e);
+                alert('服务器连接失败');
+            }
+        })
+    };
+    function loadAll(data) {
+        $('#p-c1').html(data.validCustomer);
+        $('#p-c2').html(data.inValidCustomer);
+        var legend=['0级','1级','2级','3级','4级','5级'];
+        var value1=[];
+        for(var i=0;i<6;i++){
+            value1.push({name:legend[i],value:data.levels[i]});
+        }
+        initCustomerPie(legend,value1);
+
+        $('#p-s1').html(data.validStore);
+        $('#p-s2').html(data.inValidStore);
+        var type=['热制食品','果树生鲜','商店超市','鲜花绿植','医药健康','其他'];
+        var value2=[];
+        for(var m=0;m<6;m++){
+            value2.push({name:type[m],value:data.types[m]});
+        }
+        initTypePie(type,value2);
+
+        $('#total-money').html(data.totalMoney.toFixed(2)+'<small>元</small>');
+        var x=[];
+        var y=[];
+        for(var k=1;k<=data.moneyPerMonth.length;k++){
+            x.push('2019-'+k+'月');
+            y.push(data.moneyPerMonth[k-1].toFixed(2));
+        }
+        initMoneyLines(x,y);
+    }
+    function initMoneyLines(x,y) {
+        var option = {
+            xAxis: {
+                type: 'category',
+                data: x
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: y,
+                type: 'line'
+            }]
+        };
+        var line=echarts.init(document.getElementById('money-lines'));
+        line.setOption(option);
+    }
+    function initCustomerPie(legend, value) {
+        var option={
+            tooltip:{
+                trigger:'item',
+                formatter:"{a} <br>{b}: {c} ({d}%)"
+            },
+            legend:{
+                orient:'vertical',
+                x:'left',
+                data:legend,
+                textStyle:{
+                    fontFamily:'华文楷体',
+                    fontSize:16
+                }
+            },
+            series:[
+                {
+                    name:'级别',
+                    type:'pie',
+                    radius:70,
+                    center:['70%','50%'],
+                    avoidLabelOverlap:false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data:value
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('customers-pie'));
+        pie.setOption(option);
+    }
+    function initTypePie(legend, value) {
+        var option={
+            tooltip:{
+                trigger:'item',
+                formatter:"{a} <br>{b}: {c} ({d}%)",
+                textStyle:{
+                    fontFamily:'华文楷体',
+                    fontSize:16
+                }
+            },
+            legend:{
+                orient:'vertical',
+                x:'left',
+                data:legend,
+                textStyle:{
+                    fontFamily:'华文楷体',
+                    fontSize:16
+                }
+            },
+            series:[
+                {
+                    name:'店铺类别',
+                    type:'pie',
+                    radius:70,
+                    center:['70%','50%'],
+                    avoidLabelOverlap:false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data:value
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('stores-pie'));
+        pie.setOption(option);
+    }
+</script>
 </html>

@@ -1,7 +1,9 @@
 package com.bl;
 
 import com.blservice.StatisticsBLService;
+import com.dao.CustomerDao;
 import com.dao.OrderDao;
+import com.dao.StoreDao;
 import com.model.Orders;
 import com.util.StoreType;
 import com.view.CustomerView;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static com.util.StoreType.*;
@@ -22,16 +25,22 @@ public class StatisticsBL implements StatisticsBLService {
 
     @Autowired
     private OrderDao orderDao;
+    @Autowired
+    private CustomerDao customerDao;
+    @Autowired
+    private StoreDao storeDao;
+
+    private StoreType[] types={
+            HotFood,
+            FruitAndVegetable, //果蔬生鲜
+            Market,//商店超市
+            FlowerAndPlant,//鲜花绿植
+            HealthAndMedicine,//医药健康
+            Other
+    };
 
     @Override
     public CustomerStatistics getCustomerStatistics(String customer) {
-        StoreType[] types={
-                HotFood,
-                FruitAndVegetable, //果蔬生鲜
-                Market,//商店超市
-                FlowerAndPlant,//鲜花绿植
-                HealthAndMedicine,//医药健康
-                Other};
         List<CustomerView> views=orderDao.getCustomerViews(customer);
         int completeNums=0,cancelNums=0,compensateNums=0;
         double completeCost=0, compensateCost=0;
@@ -174,6 +183,59 @@ public class StatisticsBL implements StatisticsBLService {
 
     @Override
     public AdminStatistics getAdminStatistics() {
-        return null;
+        int validCustomer=0;//正在使用的用户
+        int inValidCustomer=0;//已注销的用户
+        //0--5级
+        int[] levels={0, 0, 0, 0 ,0 ,0};//不同等级的用户比例
+        int tmp;
+        for(int i=0;i<6;i++){
+            tmp=customerDao.countCustomersOnLevel(i);
+            levels[i]=tmp;
+            validCustomer+=tmp;
+        }
+        inValidCustomer=customerDao.countInValidCustomer();
+
+        int validStore=0;//有效的店铺数
+        int inValidStore=0;//无效的店铺数
+        //共6种类型
+        int[] numsPerType={0,0,0,0,0,0};//各个类型的店铺比例(仅限有效店铺)
+        for(int j=0;j<6;j++){
+            tmp=storeDao.countStoresByType(types[j]);
+            numsPerType[j]=tmp;
+            validStore+=tmp;
+        }
+        inValidStore=storeDao.countInValidStores();
+
+        double part1=orderDao.getSumProfit();
+        double part2=orderDao.getSumProfitCancel()*0.3;
+        double totalMoney=(part1+part2)*0.15;//总收益
+        //今年每月收益变化曲线
+        Calendar calendar=Calendar.getInstance();
+        Date date;
+        int month=calendar.get(Calendar.MONTH)+1;
+        double[] moneyPerMonth=new double[month];//累积的
+        for(int k=0;k<month;k++){
+            calendar.set(Calendar.MONTH,k+1);
+            calendar.set(Calendar.DAY_OF_MONTH,1);
+            calendar.set(Calendar.HOUR_OF_DAY,0);
+            calendar.set(Calendar.MINUTE,0);
+            calendar.set(Calendar.SECOND,0);
+            date=calendar.getTime();
+
+            moneyPerMonth[k]=orderDao.calculate(date)*0.15;
+        }
+
+        AdminStatistics statistics=new AdminStatistics();
+        statistics.setValidCustomer(validCustomer);
+        statistics.setInValidCustomer(inValidCustomer);
+        statistics.setLevels(levels);
+
+        statistics.setValidStore(validStore);
+        statistics.setInValidStore(inValidStore);
+        statistics.setTypes(numsPerType);
+
+        statistics.setTotalMoney(totalMoney);
+        statistics.setMoneyPerMonth(moneyPerMonth);
+        return statistics;
     }
 }
