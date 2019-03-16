@@ -11,6 +11,7 @@ import com.vo.StoreStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -98,25 +99,47 @@ public class StatisticsBL implements StatisticsBLService {
         //<20  20-30  30-40 40-50 >50
         int[] orderCost={0, 0, 0, 0, 0};//订单的消费金额分布
 
+        //真正完成的 接单后取消的 接单前取消的 被拒单的
+//        int[] customerNums={0,0,0,0};//在本餐厅消费过的会员数
+        ArrayList<String> over=new ArrayList<>();
+        ArrayList<String> after=new ArrayList<>();
+        ArrayList<String> before=new ArrayList<>();
+        ArrayList<String> refuse=new ArrayList<>();
+
+        String c;
         for(Orders order:orders){
+            c=order.getCustomer();
             switch (order.getState()){
                 case Over:
                     completeOrderNums++;
                     completeIncome+=order.getMoney();
+                    if(!over.contains(c)){
+                        over.add(c);
+                    }
                     break;
                 case Refuse:
                     refuseOrderNums++;
+                    if(!refuse.contains(c)){
+                        refuse.add(c);
+                    }
                     break;
                 case CancelBeforeAccept:
                     cancelBeforeAcceptNums++;
+                    if(!before.contains(c)){
+                        before.add(c);
+                    }
                     break;
                 case CancelAfterAccept:
                     cancelAfterAcceptNum++;
                     compensate+=order.getMoney();
+                    if(!after.contains(c)){
+                        after.add(c);
+                    }
                     break;
                     default:
                         break;
             }
+
             Calendar calendar=Calendar.getInstance();
             calendar.setTime(order.getDate());
             int hour=calendar.get(Calendar.HOUR_OF_DAY);
@@ -135,7 +158,7 @@ public class StatisticsBL implements StatisticsBLService {
             }
             orderCost[j]++;
         }
-        int customerNums=orderDao.getCustomerOfStore(store_id);//本餐厅消费过的会员数
+        int[] customerNums={over.size(), after.size(), before.size(), refuse.size()};
         StoreStatistics statistics=new StoreStatistics();
         statistics.setCompleteOrderNums(completeOrderNums);
         statistics.setCancelAfterAcceptNums(cancelAfterAcceptNum);

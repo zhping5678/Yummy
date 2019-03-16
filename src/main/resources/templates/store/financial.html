@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/echarts.js"></script>
 </head>
 <body>
 <div>
@@ -38,8 +39,307 @@
         </div>
     </nav>
 </div>
-<div class="container" style="margin-top: 60px;">
-    <div class="row"></div>
+<div class="container-fluid" style="margin-top: 60px">
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="nav nav-tabs nav-stacked" style="font-size: 22px;font-family: 华文楷体, serif;text-align: center">
+                <li class="active"><a href="#overview" data-toggle="tab">收益概览</a></li>
+                <li><a href="#customer" data-toggle="tab">顾客统计</a></li>
+                <li><a href="#analysis" data-toggle="tab">订单分析</a></li>
+            </ul>
+        </div>
+        <div class="col-md-10 tab-content" style="font-family: 华文楷体, serif;">
+            <div class="tab-pane fade in active" id="overview">
+                <div class="con" style="font-size: 20px;width: 85%">
+                    <style>
+                        .temp{
+                            font-size: 25px;
+                            margin-left: 10px;
+                        }
+                    </style>
+                    <div class="row" style="margin-bottom: 70px;">
+                        <div class="col-md-4">
+                            <h2>完成订单数</h2>
+                            <p id="p1" class="temp"></p>
+                        </div>
+                        <div class="col-md-4">
+                            <h2>收益总额</h2>
+                            <p id="p2" class="temp"></p>
+                        </div>
+                        <div class="col-md-4">
+                            <h2>实际收益<small style="color: red;">平台抽成15%</small></h2>
+                            <p id="p3" class="temp"></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h2>被取消订单数<small>(有赔付)</small></h2>
+                            <p id="p4" class="temp"></p>
+                        </div>
+                        <div class="col-md-4">
+                            <h2>赔付总额</h2>
+                            <p id="p5" class="temp"></p>
+                        </div>
+                        <div class="col-md-4">
+                            <h2>实际获得赔付<small style="color: red;">平台抽成15%</small></h2>
+                            <p id="p6" class="temp"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="customer">
+                <div style="margin-bottom: 40px;">
+                    <h2>完成消费顾客数</h2>
+                    <p id="p-c1" class="temp"></p>
+                </div>
+                <div style="margin-bottom: 40px;">
+                    <h2>取消订单顾客数</h2>
+                    <p id="p-c2" class="temp"></p>
+                </div>
+                <h2>取消订单原因分布</h2>
+                <div id="customer-pie" style="width: 400px;height: 400px;"></div>
+            </div>
+            <div class="tab-pane fade" id="analysis">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>订单状态分布</h2>
+                        <div id="perState" style="width: 400px;height: 400px"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>订单时间段分布</h2>
+                        <div id="perTime" style="width: 400px;height: 400px"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>订单消费额分布</h2>
+                        <div id="perCost" style="width: 400px;height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
+<script>
+    window.onload=function (ev) {
+        $.ajax({
+            url:'/getStoreStatistics',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                store_id:localStorage.getItem('username')
+            },
+            success:function (data) {
+                load(data);
+            },
+            error:function (x, s ,e) {
+                console.log(x.status+" "+s+" "+e)
+                alert('服务器连接失败')
+            }
+        })
+    };
+    function load(data) {
+        $("#p1").html(data.completeOrderNums+'<small>份</small>');
+        $("#p2").html(data.completeIncome+'<small>元</small>');
+        $("#p3").html((data.completeIncome * 0.85)+'<small>元</small>')
+        $("#p4").html(data.cancelAfterAcceptNums+'<small>份</small>');
+        $("#p5").html(data.compensate+'<small>元</small>');
+        $("#p6").html((data.compensate * 0.85)+'<small>元</small>')
+
+        //真正完成的 接单后取消的 接单前取消的 被拒单的
+        var customerNums=data.customerNums;//在本餐厅消费过的会员数
+        $("#p-c1").html(customerNums[0]+'<small>人</small>');
+        $("#p-c2").html((customerNums[3]+customerNums[1]+customerNums[2])+'<small>人</small>');
+        var legend=['成功送达','接单后取消','接单前取消','商家拒单'];
+        var arr=[];
+        for(var n=1;n<4;n++){
+            arr.push({name:legend[n],value:customerNums[n]});
+        }
+        loadCustomerPie(legend, arr);
+
+        //8:00-11 11:00-15:00 15:00-19：00 19：00-22:00
+        var orderTime=['8:00-11:00','11:00-15:00','15:00-19:00','19:00-22:00'];//点餐时间段
+        var arrTime=[];
+        for(var m=0;m<4;m++){
+            arrTime.push({name:orderTime[m],value:data.orderTime[m]});
+        }
+        loadTimePie(orderTime,arrTime);
+
+        //<20  20-30  30-40 40-50 >50
+        var orderCost=['<20元','20-30元','30-40元','40-50元','>50元'];//订单的消费金额分布
+        var arrCost=[];
+        for(var j=0;j<5;j++){
+            arrCost.push({name:orderCost[j],value:data.orderCost[j]});
+        }
+        loadCostPie(orderCost,arrCost);
+
+        var orderState=['完成','取消','拒单'];
+        var value=[];
+        value.push({name:'完成',value:data.completeOrderNums});
+        value.push({name:'取消',value:(data.cancelBeforeAcceptNums+data.cancelAfterAcceptNums)});
+        value.push({name:'拒单',value:data.refuseOrderNums});
+        loadStatePie(orderState,value);
+
+    }
+    function loadCustomerPie(legend, arr) {
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: legend,
+                textStyle: {
+                    fontFamily: '华文楷体',
+                    fontSize: 16
+                }
+            },
+            series: [
+                {
+                    name: '取消原因',
+                    type: 'pie',
+                    radius: 70,
+                    center: ['70%', '50%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: arr
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('customer-pie'));
+        pie.setOption(option);
+    }
+    function loadTimePie(timeLegend, arr) {
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: timeLegend,
+                textStyle: {
+                    fontFamily: '华文楷体',
+                    fontSize: 16
+                }
+            },
+            series: [
+                {
+                    name: '时间段',
+                    type: 'pie',
+                    radius: 70,
+                    center: ['70%', '50%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: arr
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('perTime'));
+        pie.setOption(option);
+    }
+    function loadCostPie(legend, arr) {
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: legend,
+                textStyle: {
+                    fontFamily: '华文楷体',
+                    fontSize: 16
+                }
+            },
+            series: [
+                {
+                    name: '消费金额',
+                    type: 'pie',
+                    radius: 70,
+                    center: ['70%', '50%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: arr
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('perCost'));
+        pie.setOption(option);
+    }
+    function loadStatePie(legend, arr) {
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: legend,
+                textStyle: {
+                    fontFamily: '华文楷体',
+                    fontSize: 16
+                }
+            },
+            series: [
+                {
+                    name: '消费金额',
+                    type: 'pie',
+                    radius: 70,
+                    center: ['70%', '50%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: arr
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('perState'));
+        pie.setOption(option);
+    }
+</script>
 </html>

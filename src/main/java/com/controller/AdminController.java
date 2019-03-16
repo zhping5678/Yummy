@@ -1,9 +1,11 @@
 package com.controller;
 
 import com.blservice.AdminBLService;
+import com.blservice.StatisticsBLService;
 import com.dao.OrderDao;
 import com.model.Record;
 import com.util.ResultMessage;
+import com.vo.AdminStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +19,8 @@ public class AdminController {
 
     @Autowired
     private AdminBLService adminBLService;
-//    @Autowired
-//    private OrderDao orderDao;
-//    @RequestMapping(value = "/test",method = RequestMethod.POST)
-//    public @ResponseBody
-//    List<View> test(){
-//        return orderDao.getViews("2946062178@qq.com");
-//    }
+    @Autowired
+    private StatisticsBLService statisticsBLService;
 
     @RequestMapping(value = "/passApply", method = RequestMethod.POST)
     public @ResponseBody
@@ -49,6 +46,10 @@ public class AdminController {
         return adminBLService.getDoneRecords();
     }
 
+    @RequestMapping(value = "/getAdminStatistics",method = RequestMethod.POST)
+    public @ResponseBody AdminStatistics getAdminStatistics(){
+        return statisticsBLService.getAdminStatistics();
+    }
 
 
 }

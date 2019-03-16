@@ -17,7 +17,8 @@ public class StoreStatistics {
     private double completeIncome;//抽成前收益
     private double compensate;//抽成前赔付
 
-    private int customerNums;//在本餐厅消费过的会员数
+    //真正完成的 接单后取消的 接单前取消的 被拒单的
+    private int[] customerNums;//在本餐厅消费过的会员数
 
     //8:00-11 11:00-15:00 15:00-19：00 19：00-22:00
     private int[] orderTime;//点餐时间段
