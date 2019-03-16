@@ -1,9 +1,11 @@
 package com.controller;
 
 import com.blservice.CustomerBLService;
+import com.blservice.StatisticsBLService;
 import com.model.Account;
 import com.model.Address;
 import com.util.ResultMessage;
+import com.vo.CustomerStatistics;
 import com.vo.CustomerVO;
 import com.vo.StringVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class CustomerController {
 
     @Autowired
     private CustomerBLService customerBLService;
+    @Autowired
+    private StatisticsBLService statisticsBLService;
 
     /**
      * 普通消费者通过邮箱注册
@@ -127,7 +131,12 @@ public class CustomerController {
     @RequestMapping(value = "/deleteAccount",method = RequestMethod.POST)
     public @ResponseBody
     ResultMessage deleteAccount(@RequestBody StringVO list){
-        System.out.println(list.toString());
         return customerBLService.deleteAccount(list.getUsername(),list.getLists());
+    }
+
+    @RequestMapping(value = "/getCustomerStatistics",method = RequestMethod.POST)
+    public @ResponseBody
+    CustomerStatistics getCustomerStatistics(String username){
+        return statisticsBLService.getCustomerStatistics(username);
     }
 }

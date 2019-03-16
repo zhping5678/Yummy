@@ -93,13 +93,6 @@ public class PageController{
     }
 
     /*
-     * 显示普通用户的消费统计数据
-     */
-    @RequestMapping(value = "/myStatistics",method = RequestMethod.GET)
-    public String getMyStatistics(){
-        return "customer/statistics";
-    }
-    /*
      * 显示商户登录进入后的页面
      */
     @RequestMapping(value = "/store_home", method = RequestMethod.GET)

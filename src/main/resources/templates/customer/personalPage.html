@@ -9,6 +9,7 @@
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.css" rel="stylesheet">
     <script src="https://unpkg.com/bootstrap-table@1.13.5/dist/bootstrap-table.min.js"></script>
+    <script src="/js/echarts.js"></script>
     <style>
         .basic-info:focus{
             background: none;
@@ -52,7 +53,6 @@
                     <li><a href="/user_home">商品主页</a></li>
                     <li><a href="/myOrder">我的订单</a></li>
                     <li class="active"><a href="/personal">个人中心</a></li>
-                    <li><a href="/myStatistics">消费统计</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -77,6 +77,7 @@
                     <li class="active"><a href="#basic" data-toggle="tab">基本资料</a></li>
                     <li onclick="loadAddressTable()"><a href="#addressManage" data-toggle="tab">地址管理</a></li>
                     <li onclick="loadAccountTable()"><a href="#accountManage" data-toggle="tab">支付管理</a></li>
+                    <li onclick="loadCustomerStatistics()"><a href="#statistics" data-toggle="tab">消费统计</a></li>
                 </ul>
             </div>
             <div class="col-md-10 tab-content">
@@ -150,6 +151,48 @@
                             <div class="btns" style="text-align: center;margin-top: 10px;">
                                 <button id="add-account-cancel" class="btn btn-dark" style="margin-right: 5px;">取消</button>
                                 <button id="add-account-sure" class="btn btn-success">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="statistics" style="font-family: 华文楷体, serif">
+                    <div class="container">
+                        <div class="row" style="font-size: 20px">
+                            <style>
+                                .temp{
+                                    font-size: 25px;
+                                    margin-left: 10px;
+                                }
+                            </style>
+                            <div class="col-md-6">
+                                <h2>完成订单</h2>
+                                <p id="p1" class="temp"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h2>总金额</h2>
+                                <p id="p2" class="temp"><small>元</small></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h2>需扣款订单<small style="color: red;">商家接单后取消订单扣除原单30%</small></h2>
+                                <p id="p3" class="temp"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h2>扣款金额</h2>
+                                <p id="p4" class="temp"><small>元</small></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h2>取消订单数</h2>
+                                <p id="p5" class="temp"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h2>每笔订单金额分布</h2>
+                                <div id="perCost" style="width: 400px;height: 400px"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h2>消费店铺类型分布</h2>
+                                <div id="perType" style="width: 400px;height: 400px"></div>
                             </div>
                         </div>
                     </div>
@@ -282,6 +325,123 @@
             ],
             data:addresses
         });
+    }
+    function loadCustomerStatistics() {
+        $.ajax({
+            url:'/getCustomerStatistics',
+            type:'POST',
+            cache:false,
+            async:false,
+            data:{
+                username:localStorage.getItem('username')
+            },
+            success:function (data) {
+                showStatics(data);
+            },
+            error:function (x,s,e) {
+                console.log(x.status+ " "+s+" "+e);
+                alert("服务器连接失败");
+            }
+        })
+    }
+    function showStatics(data) {
+        $("#p1").html(data.overOrdersNum);
+        $("#p2").html(data.overOrdersConsume+'<small>元</small>');
+        $("#p3").html(data.cancelPayNum);
+        $("#p4").html(data.payForCancelOrders+'<small>元</small>');
+        $("#p5").html(data.cancelOrdersNum);
+        var orderPerCost=[];
+        var name=['<20元','20-30元','30-40元','>40元'];
+        for(var n=0;n<4;n++){
+            orderPerCost.push({name:name[n],value:data.orderNumsPerPrice[n]});
+        }
+        initCostPie(name,orderPerCost);
+        var types=['热制食品','果树生鲜','商店超市','鲜花绿植','医药健康','其他'];
+        var orderPerType=[];
+        for(var m=0;m<6;m++){
+            orderPerType.push({name:types[m],value:data.ordersNumPerStoreType[m]});
+        }
+        initTypePie(types,orderPerType);
+    }
+    function initCostPie(legendName,ordersPerCost) {
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: legendName,
+                textStyle: {
+                    fontFamily: '华文楷体',
+                    fontSize: 16
+                }
+            },
+            series: [
+                {
+                    name: '消费',
+                    type: 'pie',
+                    radius: 70,
+                    center: ['70%', '50%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: ordersPerCost
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('perCost'));
+        pie.setOption(option);
+    }
+    function initTypePie(types,ordersPerType) {
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: types,
+                textStyle: {
+                    fontFamily: '华文楷体',
+                    fontSize: 16
+                }
+            },
+            series: [
+                {
+                    name: '消费类型',
+                    type: 'pie',
+                    radius: 70,
+                    center: ['70%', '50%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: ordersPerType
+                }
+            ]
+        };
+        var pie=echarts.init(document.getElementById('perType'));
+        pie.setOption(option);
     }
     function logout(){
         localStorage.clear();

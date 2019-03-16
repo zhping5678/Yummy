@@ -92,7 +92,7 @@ public class OrderBL implements OrderBLService {
         if(order.getState()==OrderState.WaitToSendOut){
             customerBLService.accountIn(order.getAccount(),order.getMoney()*0.7);
             order.setState(OrderState.CancelAfterAccept);
-            order.setNote("因取消订单,扣除原订单的20%,即"+order.getMoney()*0.3);
+            order.setNote("因取消订单,扣除原订单的30%,即"+order.getMoney()*0.3);
             orderDao.saveAndFlush(order);
             storeBLService.inStock(order.getGoodLists());
             return ResultMessage.RefundSuccess;

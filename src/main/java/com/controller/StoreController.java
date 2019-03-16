@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.blservice.StatisticsBLService;
 import com.blservice.StoreBLService;
 import com.model.Good;
 import com.model.Store;
@@ -7,6 +8,7 @@ import com.util.ResultMessage;
 import com.util.StoreType;
 import com.vo.StoreInfo;
 
+import com.vo.StoreStatistics;
 import com.vo.StoreVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,8 @@ public class StoreController {
 
     @Autowired
     private StoreBLService storeBLService;
+    @Autowired
+    private StatisticsBLService statisticsBLService;
 
     @RequestMapping(value = "/getNextStoreId", method = RequestMethod.POST)
     public @ResponseBody String getNextStoreId(){
@@ -147,5 +151,11 @@ public class StoreController {
     public @ResponseBody
     StoreVO getStoreVO(String store_id){
         return storeBLService.getStoreVO(store_id);
+    }
+
+    @RequestMapping(value = "/getStoreStatistics",method = RequestMethod.POST)
+    public @ResponseBody
+    StoreStatistics getStoreStatistics(String store_id){
+        return statisticsBLService.getStoreStatistics(store_id);
     }
 }

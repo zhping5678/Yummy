@@ -1,7 +1,7 @@
 package com.controller;
 
 import com.blservice.AdminBLService;
-import com.blservice.AdminStatistics;
+import com.dao.OrderDao;
 import com.model.Record;
 import com.util.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,13 @@ public class AdminController {
 
     @Autowired
     private AdminBLService adminBLService;
-    @Autowired
-    private AdminStatistics adminStatistics;
+//    @Autowired
+//    private OrderDao orderDao;
+//    @RequestMapping(value = "/test",method = RequestMethod.POST)
+//    public @ResponseBody
+//    List<View> test(){
+//        return orderDao.getViews("2946062178@qq.com");
+//    }
 
     @RequestMapping(value = "/passApply", method = RequestMethod.POST)
     public @ResponseBody
