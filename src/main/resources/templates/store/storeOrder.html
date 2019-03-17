@@ -181,6 +181,7 @@
 </div>
 <script>
     window.onload=function (ev) {
+        $("#title-store-name").text(localStorage.getItem('store_name'));
         if(localStorage.getItem('store_state')==='ToCheck'){
             $("#all").css('display','none');
             $("#wait-to-check").css('display','block');

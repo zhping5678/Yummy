@@ -121,6 +121,7 @@
 </body>
 <script>
     window.onload=function (ev) {
+        $("#title-store-name").text(localStorage.getItem('store_name'));
         $.ajax({
             url:'/getStoreStatistics',
             type:'POST',
