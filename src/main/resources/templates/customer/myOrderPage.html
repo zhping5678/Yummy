@@ -252,7 +252,7 @@
                     var submitTime=new Date(Date.parse(order.date));
                     var pass=(now.getTime()-submitTime.getTime())/1000;
                     // alert(now+"\n"+submitTime+"\n"+pass);
-                    maxtime=15*60-pass;
+                    maxtime=2*60-pass;
                     beginTimer(order.id)
                 }else if(order.state==='Sending'){
                     $("#"+order.id).append(
@@ -314,85 +314,6 @@
         }
     }
     function loadHistoryOrder() {
-        /*var orders=[{
-            "id": "1111111111111111111111",
-            "customer": "2946062178@qq.com",
-            "store_id": "0000002",
-            "store_name": "武汉热干面",
-            "state": "WaitToPay",
-            "name": "可爱小朋友",
-            "tel": "13284281148",
-            "address": "南京市鼓楼区南京大学鼓楼校区",
-            "date": "2019-03-11 9:50",
-            "arrive": "2019-03-11 8:35",
-            "note": "不要葱姜蒜",
-            "goodLists": [
-                {
-                    "id": 1,
-                    "good_id": 4,
-                    "good_name":"原味热干面",
-                    "amount": 2,
-                    "price": 30
-                },
-                {"id":1,"good_id":4,"good_name":"热干","amount":2,"price":30},
-                {"id":1,"good_id":4,"good_name":"原味热","amount":2,"price":30}
-            ],
-            "money": 55,
-            "discount": 5,
-            "account": "2839289483290193203920490"
-        },
-            {
-                "id": "2222222222222222222222222222",
-                "customer": "2946062178@qq.com",
-                "store_id": "0000002",
-                "store_name": "武汉热干面",
-                "state": "Sending",
-                "name": "可爱小朋友",
-                "tel": "13284281148",
-                "address": "南京市鼓楼区南京大学鼓楼校区",
-                "date": "2019-03-10 14:12",
-                "arrive": "2019-03-10 15:12",
-                "note": "不要葱姜蒜",
-                "goodLists": [
-                    {
-                        "id": 1,
-                        "good_id": 4,
-                        "good_name":"原味热干面",
-                        "amount": 2,
-                        "price": 30
-                    }
-                ],
-                "money": 55,
-                "discount": 5,
-                "account": "2839289483290193203920490"
-            },
-            {
-                "id": "333333333333333333333333",
-                "customer": "2946062178@qq.com",
-                "store_id": "0000002",
-                "store_name": "武汉热干面",
-                "state": "WaitToSendOut",
-                "name": "可爱小朋友",
-                "tel": "13284281148",
-                "address": "南京市鼓楼区南京大学鼓楼校区",
-                "date": "2019-03-10 14:12",
-                "arrive": "2019-03-10 15:12",
-                "note": "不要葱姜蒜",
-                "goodLists": [
-                    {
-                        "id": 1,
-                        "good_id": 4,
-                        "good_name":"原味热干面",
-                        "amount": 2,
-                        "price": 30
-                    }
-                ],
-                "money": 55,
-                "discount": 5,
-                "account": "2839289483290193203920490"
-            }
-        ];
-        loadHistoryOrderTable(orders);*/
         $.ajax({
             url:'/getHistoryOrders',
             type:'POST',

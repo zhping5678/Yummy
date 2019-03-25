@@ -155,6 +155,7 @@ public class StoreBL implements StoreBLService {
 
         store.setState(UserState.ToModify);
         storeDao.saveAndFlush(store);
+        adminBLService.newApply(store_id,store_name,store_boss,contact,province+city+area+detail_address,store_type);
         return ResultMessage.SUCCESS;
     }
 
